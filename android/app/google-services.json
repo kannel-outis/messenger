@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "957917415347",
+    "project_id": "messenger-3d01a",
+    "storage_bucket": "messenger-3d01a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957917415347:android:1dbc95e3efec78e2132dc6",
+        "android_client_info": {
+          "package_name": "com.outis.messenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "957917415347-5kqk6d76c7r48375to90kbfeeg8md5rr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.outis.messenger",
+            "certificate_hash": "348f3019a78b1d0c182a88a063ea0b2b48bb8131"
+          }
+        },
+        {
+          "client_id": "957917415347-30la7k2jql643h2gibnq2otqnqngijgs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDD5ETSypGZdIZ2gJZifhybYYrHycjAK64"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "957917415347-30la7k2jql643h2gibnq2otqnqngijgs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
