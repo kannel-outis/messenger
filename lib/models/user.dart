@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+
+@immutable
 class User {
   final String id;
   final String userName;
