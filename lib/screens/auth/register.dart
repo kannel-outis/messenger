@@ -49,12 +49,13 @@ class RegistrationScreen extends HookWidget {
                         SizedBox(width: 10),
                         SizedBox(
                           width: 200,
-                          height: 45,
+                          height: 35,
                           child: Container(
-                            color: Colors.black,
+                            // color: Colors.black,
                             child: TextField(
                               decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.only(bottom: -20)),
+                                contentPadding: EdgeInsets.only(bottom: 15),
+                              ),
                             ),
                           ),
                         ),

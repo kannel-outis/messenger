@@ -23,7 +23,6 @@ class CountryDropDown extends StatelessWidget {
                 (e) => DropdownMenuItem<CountryCode>(
                   value: e,
                   child: Container(
-                    color: Colors.black,
                     width: 70,
                     child: Flex(
                       direction: Axis.horizontal,
