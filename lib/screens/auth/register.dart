@@ -7,6 +7,7 @@ import 'auth_provider.dart';
 class RegistrationScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final _phoneController = useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
@@ -53,9 +54,24 @@ class RegistrationScreen extends HookWidget {
                           child: Container(
                             // color: Colors.black,
                             child: TextField(
+                              keyboardType: TextInputType.phone,
+                              controller: _phoneController,
+                              maxLength: 11,
+                              maxLengthEnforced: true,
+                              buildCounter: (
+                                context, {
+                                int currentLength,
+                                int maxLength,
+                                bool isFocused,
+                              }) {
+                                return SizedBox();
+                              },
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 15),
                               ),
+                              onChanged: (value) {
+                                print(value);
+                              },
                             ),
                           ),
                         ),
