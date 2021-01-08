@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:messenger/screens/auth/verify_otp.dart';
+import 'package:messenger/screens/set_name/set_name_screen.dart';
 import 'package:provider/provider.dart';
 import '../../customs/widgets/country_drop_down.dart';
 import 'auth_provider.dart';
@@ -83,8 +86,36 @@ class RegistrationScreen extends HookWidget {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      _authProvider.verifyPhoneNumber(
-                          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
+                      _authProvider
+                          .verifyPhoneNumber(
+                              "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}")
+                          .then((value) async {
+                        if (await Future.delayed(Duration(seconds: 5),
+                                () => _authProvider.firebaseUser) !=
+                            null) {
+                          print(_authProvider.firebaseUser.phoneNumber);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => SetNameScreen()));
+                        }
+                        // FirebaseAuth.instance
+                        //     .authStateChanges().listen((event) {
+                        //   if (event != null) {
+                        //     Navigator.of(context).push(MaterialPageRoute(
+                        //         builder: (_) => SetNameScreen()));
+                        //   } else {
+                        //     Future.delayed(Duration(seconds: 15), () {
+                        //       Navigator.of(context)
+                        //           .push(MaterialPageRoute(
+                        //               builder: (_) => VerifyOTPScreen()))
+                        //           .then((value) {
+                        //         _authProvider.signOut;
+
+                        //       });
+                        //     });
+                        //   }
+                        // });
+                      });
+                      // _authProvider.signOut;
 
                       print(
                           "${_authProvider.countrycode.dialCode}${_phoneController.text}");

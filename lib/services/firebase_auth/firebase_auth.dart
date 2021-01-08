@@ -1,22 +1,36 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../../customs/error/error.dart';
 
 abstract class IFirebaseMAuth {
-  Future<void> verifyPhoneNumber(String phoneNumber,
-      {Function(String) setVerificationId,
-      Function(String) setPhoneAutoRetrieval});
-  Stream<User> fireBaseUserOnChanged();
+  Future<void> verifyPhoneNumber(
+    String phoneNumber, {
+    Function(String) setVerificationId,
+    Function(String) setPhoneAutoRetrieval,
+    @required Function(User) setFirebaseUser,
+  });
+  // ignore: unused_element
+  Stream<User> _fireBaseUserOnChanged();
+  Future<void> signOut();
+  Future<void> verifyOTP({String verificationID, int otp});
 }
 
 class FirebaseMAuth extends IFirebaseMAuth {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> verifyPhoneNumber(String phoneNumber,
-      {Function(String) setVerificationId,
-      Function(String) setPhoneAutoRetrieval}) async {
+  Future<void> verifyPhoneNumber(
+    String phoneNumber, {
+    Function(String) setVerificationId,
+    Function(String) setPhoneAutoRetrieval,
+    @required Function(User) setFirebaseUser,
+  }) async {
     PhoneVerificationCompleted _phoneVerificationCompleted =
         (PhoneAuthCredential _) async {
-      await _auth.signInWithCredential(_);
+      await _auth.signInWithCredential(_).then((value) {
+        _fireBaseUserOnChanged().listen((user) {
+          setFirebaseUser(user);
+        });
+      });
     };
 
     PhoneVerificationFailed _phoneVerificationFailed =
@@ -51,7 +65,25 @@ class FirebaseMAuth extends IFirebaseMAuth {
   }
 
   @override
-  Stream<User> fireBaseUserOnChanged() {
+  Stream<User> _fireBaseUserOnChanged() {
     return _auth.authStateChanges();
+  }
+
+  @override
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
+  @override
+  Future<void> verifyOTP({String verificationID, int otp}) async {
+    try {
+      final AuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationID,
+        smsCode: otp.toString(),
+      );
+      await _auth.signInWithCredential(credential);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }
