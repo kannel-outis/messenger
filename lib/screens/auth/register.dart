@@ -8,7 +8,6 @@ class RegistrationScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final _phoneController = useTextEditingController();
-    final _otpController = useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
@@ -86,14 +85,9 @@ class RegistrationScreen extends HookWidget {
                     onTap: () {
                       _authProvider.verifyPhoneNumber(
                           "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
-                      // _authProvider.setShit(
-                      //     "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
 
                       print(
                           "${_authProvider.countrycode.dialCode}${_phoneController.text}");
-                      // FirebaseAuth.instance
-                      //     .signInAnonymously()
-                      //     .then((value) => print(value.user.uid));
                     },
                     child: Container(
                       height: MediaQuery.of(context).size.width / 9,
@@ -102,61 +96,6 @@ class RegistrationScreen extends HookWidget {
                       child: Center(
                         child: Text(
                           'Send SMS',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Consumer<AuthProvider>(
-                  builder: (context, provider, _) {
-                    return Text(provider.shitHole ?? "Nothing yet");
-                  },
-                ),
-
-                /////////otp testing
-
-                SizedBox(width: 10),
-                SizedBox(
-                  width: 200,
-                  height: 35,
-                  child: Container(
-                    // color: Colors.black,
-                    child: TextField(
-                      keyboardType: TextInputType.phone,
-                      controller: _otpController,
-                      maxLength: 11,
-                      maxLengthEnforced: true,
-                      buildCounter: (
-                        context, {
-                        int currentLength,
-                        int maxLength,
-                        bool isFocused,
-                      }) {
-                        return SizedBox();
-                      },
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 15),
-                      ),
-                      // onChanged: (value) {
-                      //   print(value);
-                      // },
-                    ),
-                  ),
-                ),
-                SizedBox(height: 40),
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      _authProvider.confirmOtp(_otpController.text);
-                    },
-                    child: Container(
-                      height: MediaQuery.of(context).size.width / 9,
-                      width: MediaQuery.of(context).size.width / 3,
-                      color: Colors.blue,
-                      child: Center(
-                        child: Text(
-                          'Verify Otp',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),

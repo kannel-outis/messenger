@@ -5,7 +5,7 @@ abstract class IFirebaseMAuth {
   Future<void> verifyPhoneNumber(String phoneNumber,
       {Function(String) setVerificationId,
       Function(String) setPhoneAutoRetrieval});
-  Future<UserCredential> confirmOtp({String otp, String verificationId});
+  Stream<User> fireBaseUserOnChanged();
 }
 
 class FirebaseMAuth extends IFirebaseMAuth {
@@ -17,7 +17,6 @@ class FirebaseMAuth extends IFirebaseMAuth {
     PhoneVerificationCompleted _phoneVerificationCompleted =
         (PhoneAuthCredential _) async {
       await _auth.signInWithCredential(_);
-      print('Phone number already verified');
     };
 
     PhoneVerificationFailed _phoneVerificationFailed =
@@ -52,19 +51,7 @@ class FirebaseMAuth extends IFirebaseMAuth {
   }
 
   @override
-  Future<UserCredential> confirmOtp({String otp, String verificationId}) async {
-    UserCredential _user;
-    try {
-      final AuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: otp,
-      );
-
-      _user = await _auth.signInWithCredential(credential);
-      return _user;
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
+  Stream<User> fireBaseUserOnChanged() {
+    return _auth.authStateChanges();
   }
 }
