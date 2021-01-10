@@ -60,7 +60,7 @@ class SetNameScreen extends HookWidget {
                   child: GestureDetector(
                     onTap: () {
                       _authProvider
-                          .saveToNewUserCloud(_userNameController.text);
+                          .saveNewUserToCloud(_userNameController.text);
                       // _authProvider.signOut;
                     },
                     child: Container(

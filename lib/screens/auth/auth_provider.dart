@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/country_code.dart';
-import 'package:messenger/services/cloud_firestore/firestore_service.dart';
+import 'package:messenger/services/online/cloud_firestore/firestore_service.dart';
 import 'package:messenger/utils/codes.dart';
-import 'package:messenger/services/firebase_auth/firebase_auth.dart';
+import 'package:messenger/services/online/firebase_auth/firebase_auth.dart';
 
 class AuthProvider extends ChangeNotifier {
   List<CountryCode> _listOfCCs =
@@ -51,8 +51,8 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> saveToNewUserCloud(String username) async {
-    await _fireStoreService.saveToNewUserCloud(
+  Future<void> saveNewUserToCloud(String username) async {
+    await _fireStoreService.saveNewUserToCloud(
       user: _firebaseUser,
       userName: username,
     );
