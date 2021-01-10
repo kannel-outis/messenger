@@ -13,14 +13,14 @@ class FireStoreService extends IFireStoreService {
   Future<void> saveToNewUserCloud(
       {String userName, firebaseAuth.User user}) async {
     User _newUser = User(
-      id: user.uid,
+      id: user?.uid,
       phoneNumber: user.phoneNumber,
       photoUrl: user.photoURL ?? "",
       userName: userName,
     );
     await _cloud
         .collection(Constants.FIRESTORE_USER_REF)
-        .doc(_newUser.id ?? "Emirdilony")
+        .doc(_newUser?.id)
         .set(_newUser.toMap());
   }
 }

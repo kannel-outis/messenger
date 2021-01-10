@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
+import 'package:messenger/screens/set_name/set_name_screen.dart';
 import 'package:provider/provider.dart';
 
 class VerifyOTPScreen extends HookWidget {
@@ -55,7 +56,19 @@ class VerifyOTPScreen extends HookWidget {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      _authProvider.verifyOTP(int.parse(_otpController.text));
+                      _authProvider.verifyOTP(
+                        int.parse(_otpController.text),
+                        () async {
+                          await Future.delayed(
+                            Duration(seconds: 2),
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => SetNameScreen(),
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
                     child: Container(
                       height: MediaQuery.of(context).size.width / 9,

@@ -1,3 +1,3 @@
 class Constants {
-  static final FIRESTORE_USER_REF = 'Users';
+  static const FIRESTORE_USER_REF = 'Users';
 }

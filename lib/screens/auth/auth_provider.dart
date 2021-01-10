@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
+import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/country_code.dart';
 import 'package:messenger/services/cloud_firestore/firestore_service.dart';
 import 'package:messenger/utils/codes.dart';
@@ -19,22 +20,35 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> verifyPhoneNumber(
-      String phoneNumber, Function() navigate) async {
-    await _auth.verifyPhoneNumber(
-      phoneNumber,
-      setVerificationId: _setVerificationId,
-      setPhoneAutoRetrieval: _setVerificationId,
-      setFirebaseUser: _setFirebaseUser,
-      voidCallBack: navigate,
-    );
+  Future<void> verifyPhoneNumber(String phoneNumber,
+      {VoidCallback navigate, VoidCallback timeOutFunction}) async {
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber,
+        setVerificationId: _setVerificationId,
+        setPhoneAutoRetrieval: _setVerificationId,
+        setFirebaseUser: _setFirebaseUser,
+        voidCallBack: navigate,
+        timeOutFunction: timeOutFunction,
+      );
+    } on MessengerError catch (e) {
+      print(e.message);
+    }
   }
 
-  Future<void> verifyOTP(int otp) async {
-    await _auth.verifyOTP(
+  Future<void> verifyOTP(int otp, VoidCallback voidCallBack) async {
+    await _auth
+        .verifyOTP(
       otp: otp,
       verificationID: _verificationId,
-    );
+    )
+        .then((value) {
+      _auth.fireBaseUserOnChanged().listen((newUser) {
+        _setFirebaseUser(newUser);
+      });
+    }).then((value) {
+      voidCallBack();
+    });
   }
 
   Future<void> saveToNewUserCloud(String username) async {

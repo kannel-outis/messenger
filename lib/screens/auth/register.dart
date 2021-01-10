@@ -1,13 +1,37 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:messenger/screens/auth/verify_otp.dart';
 import 'package:messenger/screens/set_name/set_name_screen.dart';
 import 'package:provider/provider.dart';
+import 'dart:io' show Platform;
 import '../../customs/widgets/country_drop_down.dart';
 import 'auth_provider.dart';
 
 class RegistrationScreen extends HookWidget {
+  void _checkPlatformAndExecute(AuthProvider _authProvider,
+      BuildContext context, TextEditingController _phoneController) {
+    if (Platform.isAndroid) {
+      _authProvider.verifyPhoneNumber(
+          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}",
+          navigate: () async {
+        if (await Future.delayed(
+            Duration(seconds: 2), () => _authProvider.firebaseUser != null)) {
+          print(_authProvider.firebaseUser.phoneNumber);
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => SetNameScreen()));
+        } else {
+          print("Something Went Wrong");
+        }
+      }, timeOutFunction: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => VerifyOTPScreen()));
+      });
+    } else {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => VerifyOTPScreen()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _phoneController = useTextEditingController();
@@ -55,7 +79,6 @@ class RegistrationScreen extends HookWidget {
                           width: 200,
                           height: 35,
                           child: Container(
-                            // color: Colors.black,
                             child: TextField(
                               keyboardType: TextInputType.phone,
                               controller: _phoneController,
@@ -72,9 +95,6 @@ class RegistrationScreen extends HookWidget {
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 15),
                               ),
-                              // onChanged: (value) {
-                              //   print(value);
-                              // },
                             ),
                           ),
                         ),
@@ -85,21 +105,9 @@ class RegistrationScreen extends HookWidget {
                 SizedBox(height: 40),
                 Center(
                   child: GestureDetector(
-                    onTap: () async {
-                      _authProvider.verifyPhoneNumber(
-                          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}",
-                          () async {
-                        if (await Future.delayed(Duration(seconds: 2),
-                            () => _authProvider.firebaseUser != null)) {
-                          print(_authProvider.firebaseUser.phoneNumber);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) => SetNameScreen()));
-                        } else {
-                          print("Something Went Wrong");
-                        }
-                      });
-                      // print(_authProvider.firebaseUser.uid);
-
+                    onTap: () {
+                      _checkPlatformAndExecute(
+                          _authProvider, context, _phoneController);
                       // _authProvider.signOut;
                       print(
                           "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
