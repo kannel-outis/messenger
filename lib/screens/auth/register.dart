@@ -85,40 +85,24 @@ class RegistrationScreen extends HookWidget {
                 SizedBox(height: 40),
                 Center(
                   child: GestureDetector(
-                    onTap: () {
-                      _authProvider
-                          .verifyPhoneNumber(
-                              "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}")
-                          .then((value) async {
-                        if (await Future.delayed(Duration(seconds: 5),
-                                () => _authProvider.firebaseUser) !=
-                            null) {
+                    onTap: () async {
+                      _authProvider.verifyPhoneNumber(
+                          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}",
+                          () async {
+                        if (await Future.delayed(Duration(seconds: 2),
+                            () => _authProvider.firebaseUser != null)) {
                           print(_authProvider.firebaseUser.phoneNumber);
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (_) => SetNameScreen()));
+                        } else {
+                          print("Something Went Wrong");
                         }
-                        // FirebaseAuth.instance
-                        //     .authStateChanges().listen((event) {
-                        //   if (event != null) {
-                        //     Navigator.of(context).push(MaterialPageRoute(
-                        //         builder: (_) => SetNameScreen()));
-                        //   } else {
-                        //     Future.delayed(Duration(seconds: 15), () {
-                        //       Navigator.of(context)
-                        //           .push(MaterialPageRoute(
-                        //               builder: (_) => VerifyOTPScreen()))
-                        //           .then((value) {
-                        //         _authProvider.signOut;
-
-                        //       });
-                        //     });
-                        //   }
-                        // });
                       });
-                      // _authProvider.signOut;
+                      // print(_authProvider.firebaseUser.uid);
 
+                      // _authProvider.signOut;
                       print(
-                          "${_authProvider.countrycode.dialCode}${_phoneController.text}");
+                          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
                     },
                     child: Container(
                       height: MediaQuery.of(context).size.width / 9,

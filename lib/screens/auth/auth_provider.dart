@@ -19,12 +19,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> verifyPhoneNumber(String phoneNumber) async {
+  Future<void> verifyPhoneNumber(
+      String phoneNumber, Function() navigate) async {
     await _auth.verifyPhoneNumber(
       phoneNumber,
       setVerificationId: _setVerificationId,
       setPhoneAutoRetrieval: _setVerificationId,
       setFirebaseUser: _setFirebaseUser,
+      voidCallBack: navigate,
     );
   }
 

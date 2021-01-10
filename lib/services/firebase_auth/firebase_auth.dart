@@ -8,6 +8,7 @@ abstract class IFirebaseMAuth {
     Function(String) setVerificationId,
     Function(String) setPhoneAutoRetrieval,
     @required Function(User) setFirebaseUser,
+    @required Function() voidCallBack,
   });
   // ignore: unused_element
   Stream<User> _fireBaseUserOnChanged();
@@ -23,14 +24,21 @@ class FirebaseMAuth extends IFirebaseMAuth {
     Function(String) setVerificationId,
     Function(String) setPhoneAutoRetrieval,
     @required Function(User) setFirebaseUser,
+    @required Function() voidCallBack,
   }) async {
     PhoneVerificationCompleted _phoneVerificationCompleted =
         (PhoneAuthCredential _) async {
-      await _auth.signInWithCredential(_).then((value) {
-        _fireBaseUserOnChanged().listen((user) {
-          setFirebaseUser(user);
+      try {
+        await _auth.signInWithCredential(_).then((value) {
+          _fireBaseUserOnChanged().listen((user) {
+            setFirebaseUser(user);
+          });
+        }).then((value) {
+          voidCallBack();
         });
-      });
+      } catch (e) {
+        print(e.toString());
+      }
     };
 
     PhoneVerificationFailed _phoneVerificationFailed =
@@ -40,12 +48,15 @@ class FirebaseMAuth extends IFirebaseMAuth {
 
     PhoneCodeSent _phoneCodeSent =
         (String verificationId, [int forceResendingToken]) async {
+      print("::::::::::::::::" + forceResendingToken.toString());
+      print('::::::::::::Code Sent');
       setVerificationId(verificationId);
       print('VerifyId::::::::::::::::::: $verificationId');
     };
 
     PhoneCodeAutoRetrievalTimeout _phoneCodeAutoRetrievalTimeout =
         (String verificationId) {
+      // TODO: call function here ..... After automatic verification fails
       print(verificationId);
       setPhoneAutoRetrieval(verificationId);
     };
