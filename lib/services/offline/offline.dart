@@ -6,11 +6,11 @@ abstract class Offline {
 
   // SharedPReferences: User Personal info and app Data
 
-  Future<String> getString(String key) async {
+  String getString(String key) {
     return null;
   }
 
-  Future<bool> getBool(String key) async {
+  bool getBool(String key) {
     return false;
   }
 
@@ -22,9 +22,9 @@ abstract class Offline {
     return false;
   }
 
-  Future<bool> setUserData(String key, User user) async {
+  Future<bool> setUserData(User user) async {
     return false;
   }
 
-  Future<User> getUserData(String key) async => throw UnimplementedError();
+  User getUserData() => throw UnimplementedError();
 }

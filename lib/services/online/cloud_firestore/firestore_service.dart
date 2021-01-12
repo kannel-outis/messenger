@@ -7,7 +7,7 @@ import 'package:messenger/utils/constants.dart';
 class FireStoreService extends Online {
   final _cloud = FirebaseFirestore.instance;
   @override
-  Future<void> saveNewUserToCloud(
+  Future<User> saveNewUserToCloud(
       {String userName, firebaseAuth.User user}) async {
     User _newUser = User(
       id: user?.uid,
@@ -19,15 +19,15 @@ class FireStoreService extends Online {
         .collection(OnlineConstants.FIRESTORE_USER_REF)
         .doc(_newUser?.id)
         .set(_newUser.toMap());
+    return _newUser;
   }
 
-  // @override
-  // Future<User> getUserFromCloud(firebaseAuth.User user) async {
-  //   DocumentSnapshot _docSnapshot = await _cloud
-  //       .collection(OnlineConstants.FIRESTORE_USER_REF)
-  //       .doc(user.uid)
-  //       .get();
-  //   return User.fromMap(_docSnapshot.data());
-  // }
-
+  @override
+  Future<User> getUserFromCloud(firebaseAuth.User user) async {
+    DocumentSnapshot _docSnapshot = await _cloud
+        .collection(OnlineConstants.FIRESTORE_USER_REF)
+        .doc(user.uid)
+        .get();
+    return User.fromMap(_docSnapshot.data());
+  }
 }

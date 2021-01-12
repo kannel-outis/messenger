@@ -3,5 +3,6 @@ class OnlineConstants {
 }
 
 class OfflineConstants {
-  static const FIRST_TIMER = 'FirstTimer';
+  static const FIRST_TIME = 'FirstTimer';
+  static const MY_DATA = 'MyData';
 }

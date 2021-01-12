@@ -58,11 +58,15 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> saveNewUserToCloud(String username) async {
-    await _fireStoreService.saveNewUserToCloud(
+  Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
+    await _fireStoreService
+        .saveNewUserToCloud(
       user: _firebaseUser,
       userName: username,
-    );
+    )
+        .then((value) {
+      _offline.setUserData(value);
+    });
   }
 
   void _setVerificationId(String newVerificationId) {

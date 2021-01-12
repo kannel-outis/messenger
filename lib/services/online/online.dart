@@ -31,8 +31,9 @@ abstract class Online {
   ///////////////////////////
 
   // fireStore
-  Future<void> saveNewUserToCloud(
-      {String userName, firebaseAuth.User user}) async {}
+  Future<User> saveNewUserToCloud(
+          {String userName, firebaseAuth.User user}) async =>
+      throw UnimplementedError();
   Future<User> getUserFromCloud(firebaseAuth.User user) async =>
       throw UnimplementedError();
 }
