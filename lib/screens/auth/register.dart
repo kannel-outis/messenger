@@ -109,6 +109,8 @@ class RegistrationScreen extends HookWidget {
                       _checkPlatformAndExecute(
                           _authProvider, context, _phoneController);
                       // _authProvider.signOut;
+                      // print(
+                      //     _authProvider.firebaseUser?.uid ?? "Null from print");
                       print(
                           "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
                     },
@@ -133,3 +135,28 @@ class RegistrationScreen extends HookWidget {
     );
   }
 }
+
+// class Classss extends StatefulWidget {
+//   @override
+//   _ClassssState createState() => _ClassssState();
+// }
+
+// class _ClassssState extends State<Classss> {
+//   @override
+//   void didUpdateWidget(covariant Classss oldWidget) {
+//     // TODO: implement didUpdateWidget
+//     super.didUpdateWidget(oldWidget);
+//   }
+
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+
+//     );
+//   }
+// }

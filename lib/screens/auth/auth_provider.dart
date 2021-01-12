@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/country_code.dart';
+import 'package:messenger/services/offline/offline.dart';
+import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/services/online/cloud_firestore/firestore_service.dart';
+import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/codes.dart';
 import 'package:messenger/services/online/firebase_auth/firebase_auth.dart';
 
@@ -11,8 +14,9 @@ class AuthProvider extends ChangeNotifier {
       Codes.codes.map((e) => CountryCode.fromJson(e)).toList();
   CountryCode _countryCode;
   String _verificationId;
-  final IFirebaseMAuth _auth = FirebaseMAuth();
-  final IFireStoreService _fireStoreService = FireStoreService();
+  final Online _auth = FirebaseMAuth();
+  final Online _fireStoreService = FireStoreService();
+  final Offline _offline = SharedPrefs.instance;
   firebaseAuth.User _firebaseUser;
 
   void dropDownOnChanged(CountryCode c) {
@@ -43,11 +47,14 @@ class AuthProvider extends ChangeNotifier {
       verificationID: _verificationId,
     )
         .then((value) {
-      _auth.fireBaseUserOnChanged().listen((newUser) {
+      _auth.firebaseUser.listen((newUser) {
         _setFirebaseUser(newUser);
       });
-    }).then((value) {
-      voidCallBack();
+    }).then((value) async {
+      if (await Future.delayed(Duration(seconds: 2), () => _firebaseUser) !=
+          null) {
+        voidCallBack();
+      }
     });
   }
 
@@ -65,6 +72,7 @@ class AuthProvider extends ChangeNotifier {
 
   void _setFirebaseUser(firebaseAuth.User newUser) {
     _firebaseUser = newUser;
+    print(" from _setFirebaseUser method" + _firebaseUser?.uid ?? 'Null ');
     notifyListeners();
   }
 

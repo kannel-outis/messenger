@@ -58,13 +58,10 @@ class VerifyOTPScreen extends HookWidget {
                     onTap: () {
                       _authProvider.verifyOTP(
                         int.parse(_otpController.text),
-                        () async {
-                          await Future.delayed(
-                            Duration(seconds: 2),
-                            () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => SetNameScreen(),
-                              ),
+                        () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => SetNameScreen(),
                             ),
                           );
                         },
