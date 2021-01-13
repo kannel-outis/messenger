@@ -1,16 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:messenger/models/user.dart';
+import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
 
-abstract class IFireStoreService {
-  Future<void> saveToNewUserCloud({String userName, firebaseAuth.User user});
-}
-
-class FireStoreService extends IFireStoreService {
+class FireStoreService extends Online {
   final _cloud = FirebaseFirestore.instance;
   @override
-  Future<void> saveToNewUserCloud(
+  Future<User> saveNewUserToCloud(
       {String userName, firebaseAuth.User user}) async {
     User _newUser = User(
       id: user?.uid,
@@ -19,8 +16,18 @@ class FireStoreService extends IFireStoreService {
       userName: userName,
     );
     await _cloud
-        .collection(Constants.FIRESTORE_USER_REF)
+        .collection(OnlineConstants.FIRESTORE_USER_REF)
         .doc(_newUser?.id)
         .set(_newUser.toMap());
+    return _newUser;
+  }
+
+  @override
+  Future<User> getUserFromCloud(firebaseAuth.User user) async {
+    DocumentSnapshot _docSnapshot = await _cloud
+        .collection(OnlineConstants.FIRESTORE_USER_REF)
+        .doc(user.uid)
+        .get();
+    return User.fromMap(_docSnapshot.data());
   }
 }

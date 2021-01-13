@@ -1,25 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
-import 'package:messenger/utils/typedef.dart';
-import '../../customs/error/error.dart';
+import 'package:messenger/services/online/online.dart';
+import '../../../customs/error/error.dart';
 
-abstract class IFirebaseMAuth {
-  Future<void> verifyPhoneNumber(
-    String phoneNumber, {
-    VoidStringCallBack setVerificationId,
-    VoidStringCallBack setPhoneAutoRetrieval,
-    @required VoidUserCallBack setFirebaseUser,
-    @required VoidCallback voidCallBack,
-    @required VoidCallback timeOutFunction,
-  });
-  Stream<User> fireBaseUserOnChanged();
-  Future<void> signOut();
-  Future<void> verifyOTP({String verificationID, int otp});
-}
-
-class FirebaseMAuth extends IFirebaseMAuth {
+class FirebaseMAuth extends Online {
   FirebaseAuth _auth = FirebaseAuth.instance;
-
+  @override
   Future<void> verifyPhoneNumber(
     phoneNumber, {
     setVerificationId,
@@ -73,11 +58,6 @@ class FirebaseMAuth extends IFirebaseMAuth {
     } catch (e) {
       throw MessengerError(e.toString());
     }
-  }
-
-  @override
-  Stream<User> fireBaseUserOnChanged() {
-    return _auth.authStateChanges();
   }
 
   @override
