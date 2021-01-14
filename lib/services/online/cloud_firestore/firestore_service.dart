@@ -30,4 +30,13 @@ class FireStoreService extends Online {
         .get();
     return User.fromMap(_docSnapshot.data());
   }
+
+  @override
+  Future<QuerySnapshot> queryMobileNumberORUsername(
+      String query, String field) async {
+    return await _cloud
+        .collection(OnlineConstants.FIRESTORE_USER_REF)
+        .where(field, isEqualTo: query)
+        .get();
+  }
 }

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/country_code.dart';
+import 'package:messenger/services/offline/contacts/contacts.dart';
 import 'package:messenger/services/offline/offline.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/services/online/cloud_firestore/firestore_service.dart';
