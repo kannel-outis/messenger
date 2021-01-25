@@ -82,7 +82,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   List<CountryCode> get listOfCCs => _listOfCCs;
-  CountryCode get countrycode => _countryCode ?? listOfCCs[0];
+  CountryCode get countrycode =>
+      _countryCode ??
+      listOfCCs.where((element) => element.dialCode == "+234").first;
   String get verificationId => _verificationId;
   void get signOut => _auth.signOut();
   firebaseAuth.User get firebaseUser => _firebaseUser;

@@ -36,7 +36,10 @@ class FireStoreService extends Online {
       String query, String field) async {
     return await _cloud
         .collection(OnlineConstants.FIRESTORE_USER_REF)
-        .where(field, isEqualTo: query)
+        .where(
+          field,
+          isEqualTo: query,
+        )
         .get();
   }
 }

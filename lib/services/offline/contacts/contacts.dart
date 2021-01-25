@@ -17,31 +17,18 @@ class Contacts extends Offline {
     await PermissionHandler.checkContactsPermission().then((value) async {
       if (value.isGranted) {
         Iterable<Contact> _getAllContacts = await ContactsService.getContacts();
-        List<Contact> _listOfAllContacts =
-            _getAllContacts.toList(growable: false);
-        // _listOfAllContacts.map((_contact) async {
-        //   final QuerySnapshot _result =
-        //       await _cloud.queryMobileNumberORUsername(
-        //           _cleanNumber('+23481808 09519'), 'phone');
-        //   final bool _isClean = _contact.phones.toList().isNotEmpty &&
-        //       _result.docChanges.isNotEmpty &&
-        //       _result.docChanges[0].doc?.data()['phone'] ==
-        //           _contact.phones.toList()[0]?.value;
-        //   if (_isClean) {
-        //     print('Found Something');
-        //     _registeredContacts?.add(_contact);
-        //   } else {
-        //     print('Found Nothing');
-        //     _unRegisteredContacts?.add(_contact);
-        //   }
-        // });
+        List<Contact> _listOfAllContacts = _getAllContacts.toList();
+
         for (var _contact in _listOfAllContacts) {
+          final String _cleanContactNumber = _contact.phones.toList().isNotEmpty
+              ? _contact.phones?.toList()[0].value
+              : "";
           final QuerySnapshot _result =
               await _cloud.queryMobileNumberORUsername(
-                  _cleanNumber('+23481808 09519'), 'phone');
+                  _cleanNumber(_cleanContactNumber), 'phone');
           final bool _isClean = _contact.phones.toList().isNotEmpty &&
-              _result.docChanges.isNotEmpty &&
-              _result.docChanges[0].doc?.data()['phone'] ==
+              _result.docs.isNotEmpty &&
+              _result.docs[0]?.data()['phone'] ==
                   _contact.phones.toList()[0]?.value;
           if (_isClean) {
             print('Found Something');
