@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
 import 'package:messenger/models/user.dart';
@@ -35,5 +36,8 @@ abstract class Online {
           {String userName, firebaseAuth.User user}) async =>
       throw UnimplementedError();
   Future<User> getUserFromCloud(firebaseAuth.User user) async =>
+      throw UnimplementedError();
+  Future<QuerySnapshot> queryMobileNumberORUsername(
+          String query, String field) async =>
       throw UnimplementedError();
 }

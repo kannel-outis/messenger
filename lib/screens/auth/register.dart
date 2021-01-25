@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:messenger/screens/auth/verify_otp.dart';
 import 'package:messenger/screens/set_name/set_name_screen.dart';
@@ -83,7 +84,8 @@ class RegistrationScreen extends HookWidget {
                               keyboardType: TextInputType.phone,
                               controller: _phoneController,
                               maxLength: 11,
-                              maxLengthEnforced: true,
+                              maxLengthEnforcement:
+                                  MaxLengthEnforcement.enforced,
                               buildCounter: (
                                 context, {
                                 int currentLength,
