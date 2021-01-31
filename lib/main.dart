@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:messenger/screens/contacts/contacts_provider.dart';
+import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'customs/error/error.dart';
 import 'screens/auth/register.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await SharedPrefs.getInstance();
+  await HiveInit.hiveInit();
   runApp(MyApp());
 }
 
@@ -27,11 +29,11 @@ class MyApp extends StatelessWidget {
         FutureProvider(
           create: (_) => ContactProvider().registeredAndUnregisteredContacts(),
           catchError: (context, error) {
-            MessengerError _messengerError = error as MessengerError;
+            // MessengerError _messengerError = error as MessengerError;
             // return [];
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error fetching Contacts')));
-            print(_messengerError.message);
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //     SnackBar(content: Text('Error fetching Contacts')));
+            print(error.toString());
           },
         ),
       ],

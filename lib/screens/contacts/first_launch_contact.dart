@@ -1,11 +1,87 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:messenger/models/contacts_model.dart';
+import 'package:messenger/screens/auth/auth_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'contacts_provider.dart';
+
 class FirstLaunchContactScreen extends StatelessWidget {
+  Widget _buildContactTile(ContactProvider _contactModel, PhoneContacts element,
+      BuildContext context) {
+    if (element is RegisteredPhoneContacts) {
+      var e = element;
+
+      return ListTile(
+        title: Text(e.contact?.givenName ?? e.contact?.displayName),
+        subtitle: Text(e.contact.phones.length == 0
+            ? ""
+            : e.contact?.phones?.toList()[0]?.value),
+        trailing: InkWell(
+          onTap: () {
+            // _contactModel.messageUser(
+            //     "${context.read<AuthProvider>().countrycode.dialCode}${context.read<AuthProvider>().phoneNumberWithoutCC}",
+            //     e.contact.phones.first);
+            _contactModel.messageUser(_contactModel.getUserPref(), e.user);
+          },
+          child: Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width / 5,
+            decoration: BoxDecoration(
+              color: Colors.pink,
+              borderRadius: BorderRadius.all(
+                Radius.circular(7),
+              ),
+            ),
+            child: Center(
+              child: Text(
+                "Message",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      var e = element as UnRegisteredPhoneContacts;
+
+      return ListTile(
+        title: Text(e.contact?.givenName ?? e.contact?.displayName),
+        subtitle: Text(e.contact.phones.length == 0
+            ? ""
+            : e.contact?.phones?.toList()[0]?.value),
+        trailing: InkWell(
+          onTap: () {},
+          child: Container(
+            height: 50,
+            width: MediaQuery.of(context).size.width / 5,
+            decoration: BoxDecoration(
+              color: Colors.pink,
+              borderRadius: BorderRadius.all(
+                Radius.circular(7),
+              ),
+            ),
+            child: Center(
+              child: Text(
+                "Invite",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    var _listOfContacts = Provider.of<List<List<Contact>>>(context);
+    var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
+    final _contactModel = Provider.of<ContactProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,6 +119,8 @@ class FirstLaunchContactScreen extends StatelessWidget {
               itemCount: _listOfContacts.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
+                bool _isRegistered =
+                    _listOfContacts[index] == _listOfContacts.first;
                 return Container(
                   child: Column(
                     children: [
@@ -56,9 +134,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
                         width: double.infinity,
                         color: Colors.grey.shade600,
                         child: Text(
-                          _listOfContacts[index] == _listOfContacts.first
-                              ? 'Registered'
-                              : 'UnRegistered',
+                          _isRegistered ? 'Registered' : 'UnRegistered',
                           style: TextStyle(
                               fontSize: 20,
                               color: Colors.white,
@@ -66,44 +142,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
                         ),
                       ),
                       ..._listOfContacts[index].map((e) {
-                        return ListTile(
-                          title: Text(e?.givenName ?? e?.displayName),
-                          subtitle: Text(e.phones.length == 0
-                              ? ""
-                              : e?.phones?.toList()[0]?.value),
-                          trailing: GestureDetector(
-                            onTap: () {
-                              if (_listOfContacts[index] ==
-                                  _listOfContacts.first) {
-                                // message contact
-                              } else {
-                                // invite Contact
-                              }
-                            },
-                            child: Container(
-                              height: 50,
-                              width: MediaQuery.of(context).size.width / 5,
-                              decoration: BoxDecoration(
-                                color: Colors.pink,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(7),
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  _listOfContacts[index] ==
-                                          _listOfContacts.first
-                                      ? "Message"
-                                      : "Invite",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
+                        return _buildContactTile(_contactModel, e, context);
                       }).toList(),
                     ],
                   ),

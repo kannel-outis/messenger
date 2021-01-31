@@ -4,16 +4,23 @@ import 'package:flutter/foundation.dart';
 class User {
   final String id;
   final String userName;
-  final String phoneNumber;
+  final List<dynamic> phoneNumbers;
+  // final String phoneNumberWithoutCC;
   final String photoUrl;
 
-  User({this.id, this.userName, this.phoneNumber, this.photoUrl});
+  User({
+    this.id,
+    this.userName,
+    this.phoneNumbers,
+    this.photoUrl,
+  });
 
   Map<String, dynamic> toMap() {
     return {
       "id": id,
       "userName": userName,
-      "phone": phoneNumber,
+      "phoneNumbers": phoneNumbers,
+      // "phoneWithoutCC": phoneNumberWithoutCC,
       "photoUrl": photoUrl,
     };
   }
@@ -21,6 +28,7 @@ class User {
   User.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         userName = map['userName'],
-        phoneNumber = map['phone'],
+        phoneNumbers = List<String>.from(map['phoneNumbers']),
+        // phoneNumberWithoutCC = map['phoneWithoutCC'],
         photoUrl = map['photoUrl'];
 }

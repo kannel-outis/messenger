@@ -12,8 +12,7 @@ class RegistrationScreen extends HookWidget {
   void _checkPlatformAndExecute(AuthProvider _authProvider,
       BuildContext context, TextEditingController _phoneController) {
     if (Platform.isAndroid) {
-      _authProvider.verifyPhoneNumber(
-          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}",
+      _authProvider.verifyPhoneNumber("${_phoneController.text.toString()}",
           navigate: () async {
         if (await Future.delayed(
             Duration(seconds: 2), () => _authProvider.firebaseUser != null)) {
