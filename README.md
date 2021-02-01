@@ -1,6 +1,7 @@
 # messenger
 
 Messenger is a chat app. built using mqtt and works like whatsapp
+In progress..... 
 
 ## Getting Started
 
