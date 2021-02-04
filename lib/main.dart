@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'screens/auth/auth_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'screens/home/home_provider.dart';
 import 'services/offline/shared_prefs/shared_prefs.dart';
 
 void main() async {
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
             print(error.toString());
           },
         ),
+        ChangeNotifierProvider(create: (_) => HomeProvider()),
       ],
       child: MaterialApp(
         title: 'Messenger',

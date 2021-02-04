@@ -10,6 +10,8 @@ class HiveChat {
   @HiveField(1)
   final List<u.User> participants;
 
+  // List of Map<String, dynamic>
+
   HiveChat({
     this.chatId,
     this.participants,

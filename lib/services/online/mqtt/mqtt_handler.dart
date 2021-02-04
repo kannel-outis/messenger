@@ -4,7 +4,7 @@ import 'package:messenger/services/manager/mqtt.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
-class MQTThandler extends Manager<MQTTManager> {
+class MQTThandler extends ManagerHandler<MQTTManager> {
   final String identifier;
   MQTThandler({
     @required this.identifier,

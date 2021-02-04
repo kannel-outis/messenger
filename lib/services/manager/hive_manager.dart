@@ -1,11 +1,13 @@
 import 'package:hive/hive.dart';
 import 'package:messenger/models/chat.dart';
-import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 
-class HiveManager {
+import 'manager.dart';
+
+class HiveManager extends Manager {
   HiveManager._();
   static HiveManager _instance;
   static HiveManager get instance {
@@ -16,7 +18,7 @@ class HiveManager {
   }
 
   final _chatBox = Hive.box<HiveChat>(HiveInit.chatBoxName);
-  final _messageBox = Hive.box<Message>(HiveInit.messagesBoxName);
+  final _messageBox = Hive.box<HiveMessages>(HiveInit.messagesBoxName);
 
   Future<void> saveChatToDB(Chat chat) async {
     List<User> _users = [];
@@ -27,13 +29,20 @@ class HiveManager {
     await _chatBox.add(_hiveChat);
   }
 
-  Future<void> saveMessages(Message message) async {
+  Future<void> saveMessages(HiveMessages message) async {
     await _messageBox.add(message);
   }
 
-  List<Message> getMessagesFromDB(String chatID) {
+  List<HiveMessages> getMessagesFromDB(String chatID) {
     return _messageBox.values
         .where((element) => element.chatID == chatID)
         .toList();
   }
+
+  List<HiveChat> loadChatsFromLocalDB() {
+    return _chatBox.values.toList();
+  }
+
+  Box<HiveChat> get chatBox => _chatBox;
+  Box<HiveMessages> get messageBox => _messageBox;
 }

@@ -1,11 +1,18 @@
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+part 'user.g.dart';
 
 @immutable
+@HiveType(typeId: 3)
 class User {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String userName;
+  @HiveField(2)
   final List<dynamic> phoneNumbers;
   // final String phoneNumberWithoutCC;
+  @HiveField(3)
   final String photoUrl;
 
   User({

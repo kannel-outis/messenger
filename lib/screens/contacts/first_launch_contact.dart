@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
+import 'package:messenger/screens/home/home.dart';
 import 'package:provider/provider.dart';
 
 import 'contacts_provider.dart';
@@ -18,10 +19,17 @@ class FirstLaunchContactScreen extends StatelessWidget {
             : e.contact?.phones?.toList()[0]?.value),
         trailing: InkWell(
           onTap: () {
-            // _contactModel.messageUser(
-            //     "${context.read<AuthProvider>().countrycode.dialCode}${context.read<AuthProvider>().phoneNumberWithoutCC}",
-            //     e.contact.phones.first);
-            _contactModel.messageUser(_contactModel.getUserPref(), e.user);
+            _contactModel.messageUser(
+              _contactModel.getUserPref(),
+              e.user,
+              navigate: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => HomeScreen(),
+                  ),
+                );
+              },
+            );
           },
           child: Container(
             height: 50,

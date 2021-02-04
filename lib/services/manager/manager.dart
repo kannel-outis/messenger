@@ -1,9 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/message.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
-abstract class Manager<T> {
+abstract class Manager {
+  @override
+  String toString() {
+    return '${this.runtimeType}';
+  }
+}
+
+abstract class ManagerHandler<T extends Manager> {
   T _manager;
 
   // MQTTOnline(this._manager);
@@ -30,4 +38,5 @@ abstract class Manager<T> {
   Future<void> saveChatToDB(Chat chat) => throw UnimplementedError();
   Future<void> saveMessages(Message message) => throw UnimplementedError();
   List<Message> getMessagesFromDB(String chatID) => throw UnimplementedError();
+  List<HiveChat> loadChatsFromDB() => throw UnimplementedError();
 }

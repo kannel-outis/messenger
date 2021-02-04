@@ -1,10 +1,11 @@
 import 'dart:convert';
-
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/contacts/contacts.dart';
+import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/services/online/cloud_firestore/firestore_service.dart';
 import 'package:messenger/services/online/online.dart';
@@ -15,6 +16,7 @@ import '../../models/chat.dart';
 class ContactProvider extends ChangeNotifier {
   final Online _fireStoreService = FireStoreService();
   final SharedPrefs sharedPrefs = SharedPrefs.instance;
+  final _hiveHandler = HiveHandler();
   List<List<PhoneContacts>> _listOfContact = [];
   Future<List<List<PhoneContacts>>> registeredAndUnregisteredContacts() async {
     var _contacts = Contacts(_fireStoreService);
@@ -29,7 +31,8 @@ class ContactProvider extends ChangeNotifier {
     return _listOfContact;
   }
 
-  Future<void> messageUser(User myUser, User friendUser) async {
+  Future<void> messageUser(User myUser, User friendUser,
+      {VoidCallback navigate}) async {
     Chat _chat = Chat(
       chatID: _chatID(),
       participants: [
@@ -40,8 +43,14 @@ class ContactProvider extends ChangeNotifier {
     print(_chat.participants);
     if (await _checkIfChatExistAlready(participants: _chat.participants)) {
       print('Love Done');
-      await _fireStoreService.createNewChat(_chat);
+      await _fireStoreService.createNewChat(_chat).then((value) {
+        _hiveHandler.saveChatToDB(_chat).then((value) {
+          print('saved');
+          navigate();
+        });
+      });
     } else {
+      navigate();
       print('Nothing done');
     }
   }
