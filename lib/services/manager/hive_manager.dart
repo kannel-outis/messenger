@@ -39,6 +39,11 @@ class HiveManager extends Manager {
         .toList();
   }
 
+  bool checkIfChatExist(HiveChat chat) {
+    ///check if already exist in the db and dont create a new chat
+    return _chatBox.values.where((element) => chat == element).isNotEmpty;
+  }
+
   List<HiveChat> loadChatsFromLocalDB() {
     return _chatBox.values.toList();
   }

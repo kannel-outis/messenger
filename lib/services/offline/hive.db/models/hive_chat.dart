@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:hive/hive.dart';
 import 'package:messenger/models/user.dart' as u;
 import 'package:messenger/models/user.dart';
@@ -16,4 +18,15 @@ class HiveChat {
     this.chatId,
     this.participants,
   });
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) return false;
+    final HiveChat typedOther = other;
+    return typedOther.chatId == chatId &&
+        typedOther.participants == participants;
+  }
+
+  @override
+  int get hashCode => hashValues(chatId, hashList(participants));
 }
