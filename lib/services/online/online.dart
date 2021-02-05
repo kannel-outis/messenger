@@ -5,6 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/utils/typedef.dart';
+import '../../models/message.dart';
+import '../../models/chat.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 
 /// Handles all Online operations
 abstract class Online {
@@ -33,11 +36,21 @@ abstract class Online {
 
   // fireStore
   Future<User> saveNewUserToCloud(
-          {String userName, firebaseAuth.User user}) async =>
+          {String userName,
+          @required String phoneNumberWithoutCC,
+          firebaseAuth.User user}) async =>
       throw UnimplementedError();
   Future<User> getUserFromCloud(firebaseAuth.User user) async =>
       throw UnimplementedError();
   Future<QuerySnapshot> queryMobileNumberORUsername(
-          String query, String field) async =>
+    String query,
+    String field,
+  ) async =>
       throw UnimplementedError();
+  Future<QuerySnapshot> queryInfo(dynamic query, String field,
+          {@required String path}) =>
+      throw UnimplementedError();
+
+  Future<void> createNewChat(Chat chat) => throw UnimplementedError();
+  Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
 }

@@ -15,6 +15,7 @@ class AuthProvider extends ChangeNotifier {
       Codes.codes.map((e) => CountryCode.fromJson(e)).toList();
   CountryCode _countryCode;
   String _verificationId;
+  String _phoneNumberWithoutCC;
   final Online _auth = FirebaseMAuth();
   final Online _fireStoreService = FireStoreService();
   final Offline _offline = SharedPrefs.instance;
@@ -27,15 +28,18 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> verifyPhoneNumber(String phoneNumber,
       {VoidCallback navigate, VoidCallback timeOutFunction}) async {
+    _countryCode =
+        listOfCCs.where((element) => element.dialCode == "+234").first;
     try {
       await _auth.verifyPhoneNumber(
-        phoneNumber,
+        _countryCode.dialCode + phoneNumber,
         setVerificationId: _setVerificationId,
         setPhoneAutoRetrieval: _setVerificationId,
         setFirebaseUser: _setFirebaseUser,
         voidCallBack: navigate,
         timeOutFunction: timeOutFunction,
       );
+      _phoneNumberWithoutCC = phoneNumber;
     } on MessengerError catch (e) {
       print(e.message);
     }
@@ -62,9 +66,9 @@ class AuthProvider extends ChangeNotifier {
   Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
     await _fireStoreService
         .saveNewUserToCloud(
-      user: _firebaseUser,
-      userName: username,
-    )
+            user: _firebaseUser,
+            userName: username,
+            phoneNumberWithoutCC: _phoneNumberWithoutCC)
         .then((value) {
       _offline.setUserData(value);
     });
@@ -88,4 +92,5 @@ class AuthProvider extends ChangeNotifier {
   String get verificationId => _verificationId;
   void get signOut => _auth.signOut();
   firebaseAuth.User get firebaseUser => _firebaseUser;
+  String get phoneNumberWithoutCC => _phoneNumberWithoutCC;
 }

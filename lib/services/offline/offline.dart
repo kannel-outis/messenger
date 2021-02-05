@@ -1,5 +1,5 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:messenger/models/user.dart';
+import 'package:messenger/models/contacts_model.dart';
 
 /// Handles all Offline operations
 abstract class Offline {
@@ -32,6 +32,7 @@ abstract class Offline {
   ///Loads all contacts from phone and filters registered from unregistered  contacts
   // Future<Iterable<Contact>> loadAllContacts() async =>
   //     throw UnimplementedError();
-  Future<List<List<Contact>>> listOfRegisteredAndUnregisteredUsers() async =>
-      throw UnimplementedError();
+  Future<List<List<PhoneContacts>>>
+      listOfRegisteredAndUnregisteredUsers() async =>
+          throw UnimplementedError();
 }
