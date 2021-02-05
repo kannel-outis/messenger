@@ -18,5 +18,5 @@ class Chat {
 
   Chat.froMap(Map<String, dynamic> map)
       : chatID = map["chatID"],
-        participants = map["participants"];
+        participants = List<Map<String, dynamic>>.from(map["participants"]);
 }

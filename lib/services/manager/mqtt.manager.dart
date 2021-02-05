@@ -10,8 +10,14 @@ import 'manager.dart';
 class MQTTManager implements Manager {
   final String broker;
   final String clientIdentifier;
+  final String username;
+  final String password;
 
-  MQTTManager({@required this.broker, @required this.clientIdentifier});
+  MQTTManager(
+      {@required this.broker,
+      @required this.clientIdentifier,
+      @required this.username,
+      @required this.password});
   MqttServerClient _client;
 
   Future<MqttClient> login() async {
@@ -25,16 +31,18 @@ class MQTTManager implements Manager {
         .withWillRetain()
         .withWillQos(MqttQos.exactlyOnce);
     _client.connectionMessage = connMess;
+    await connectMQTTClient();
 
     return _client;
   }
 
-  Future<void> connectMQTTClient(String username, String password) async {
+  Future<void> connectMQTTClient() async {
     try {
       if (_client.connectionStatus.state != MqttConnectionState.connected) {
         await _client.connect(username, password).then((value) {
           if (value.state == MqttConnectionState.disconnected &&
               value.state == MqttConnectionState.faulted) {
+            print('::::::::::::::::::::::::::::::');
             _client.autoReconnect = true;
             _client.onAutoReconnect = () => print('Reconnecting');
             _client.onAutoReconnected = () => print('Reconnected');
@@ -64,7 +72,8 @@ class MQTTManager implements Manager {
   }
 
   Future<bool> subscribe(String topic) async {
-    if (await _checkConnection() == true) {
+    if (await _checkConnection() == true &&
+        _client.connectionStatus.state == MqttConnectionState.connected) {
       _client.onConnected = () {
         print('connected');
       };
@@ -81,9 +90,15 @@ class MQTTManager implements Manager {
   }
 
   Future<void> publish(String topic, Message message) async {
+    // _client = MqttServerClient(broker, clientIdentifier);
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     Map<String, dynamic> _message = message.toMap();
     builder.addString(json.encode(_message));
+    print(':::::::::::::::::' + json.encode(_message));
+    // if (await _checkConnection()) {
     _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload);
+    // } else {
+    // print('null');
+    // }
   }
 }

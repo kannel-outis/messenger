@@ -5,10 +5,10 @@ import 'package:messenger/models/country_code.dart';
 import 'package:messenger/services/offline/contacts/contacts.dart';
 import 'package:messenger/services/offline/offline.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
-import 'package:messenger/services/online/cloud_firestore/firestore_service.dart';
+import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/codes.dart';
-import 'package:messenger/services/online/firebase_auth/firebase_auth.dart';
+import 'package:messenger/services/online/firebase/firebase_auth.dart';
 
 class AuthProvider extends ChangeNotifier {
   List<CountryCode> _listOfCCs =

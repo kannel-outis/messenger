@@ -7,7 +7,7 @@ import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/contacts/contacts.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
-import 'package:messenger/services/online/cloud_firestore/firestore_service.dart';
+import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:uuid/uuid.dart';

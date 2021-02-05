@@ -1,13 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:messenger/screens/contacts/contacts_provider.dart';
 import 'package:messenger/screens/home/home_provider.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import '../../screens/chats/chats.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final user = context.read<ContactProvider>().getUserPref();
+    //remove
+    MQTThandler().login().then((value) {
+      context
+          .read<HomeProvider>()
+          .listenTocloudStreamAndSubscribeTopic(user.id, user);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final _homeProvider = Provider.of<HomeProvider>(context);
@@ -56,6 +81,9 @@ class HomeScreen extends StatelessWidget {
                           builder: (_) => ChatsScreen(hiveChats[index]),
                         ),
                       );
+                      // hiveChats[index].participants.forEach((element) {
+                      //   print(element.phoneNumbers);
+                      // });
                     },
                   );
                 },

@@ -5,12 +5,12 @@ import 'package:messenger/services/manager/manager.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 class MQTThandler extends ManagerHandler<MQTTManager> {
-  final String identifier;
-  MQTThandler({
-    @required this.identifier,
-  }) {
-    MQTTManager _newManager =
-        MQTTManager(broker: "broker.emqx.io", clientIdentifier: identifier);
+  MQTThandler() {
+    MQTTManager _newManager = MQTTManager(
+        broker: "broker.emqx.io",
+        clientIdentifier: user.id,
+        username: user.id.substring(0, 10),
+        password: user.phoneNumbers[0].substring(0, 7));
     setManager(_newManager);
   }
   @override
@@ -19,8 +19,8 @@ class MQTThandler extends ManagerHandler<MQTTManager> {
   }
 
   @override
-  Future<void> connectToClient(String username, String password) async {
-    await manager.connectMQTTClient(username, password);
+  Future<void> connectToClient() async {
+    await manager.connectMQTTClient();
   }
 
   @override

@@ -53,4 +53,9 @@ abstract class Online {
 
   Future<void> createNewChat(Chat chat) => throw UnimplementedError();
   Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
+  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) =>
+      throw UnimplementedError();
+
+  ///firebase Storage for profile pics setUp
+
 }
