@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.outis.messenger">
+    <uses-permission android:name="android.permission.READ_CONTACTS" />  
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />  
+
    <application
         android:label="messenger"
         android:icon="@mipmap/ic_launcher">

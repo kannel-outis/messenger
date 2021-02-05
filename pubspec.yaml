@@ -17,10 +17,20 @@ dependencies:
   cloud_firestore: ^0.14.4
   firebase_core: ^0.5.3
   firebase_auth: ^0.18.4+1
+  shared_preferences: ^0.5.12+4
+  contacts_service: ^0.4.6
+  permission_handler: ^5.0.1+1
+  mqtt_client: ^8.1.0
+  uuid: ^2.2.2
+  hive_flutter: ^0.3.1
+  hive: ^1.4.4+1
+  path_provider: ^1.6.27
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  hive_generator: null
+  build_runner: null
 
 flutter:
 

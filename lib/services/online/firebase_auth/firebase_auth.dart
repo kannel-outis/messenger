@@ -1,23 +1,31 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../customs/error/error.dart';
+import 'package:messenger/services/online/online.dart';
+import '../../../customs/error/error.dart';
 
-abstract class IFirebaseMAuth {
-  Future<void> verifyPhoneNumber(String phoneNumber,
-      {Function(String) setVerificationId,
-      Function(String) setPhoneAutoRetrieval});
-  Future<UserCredential> confirmOtp({String otp, String verificationId});
-}
-
-class FirebaseMAuth extends IFirebaseMAuth {
+class FirebaseMAuth extends Online {
   FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<void> verifyPhoneNumber(String phoneNumber,
-      {Function(String) setVerificationId,
-      Function(String) setPhoneAutoRetrieval}) async {
+  @override
+  Future<void> verifyPhoneNumber(
+    phoneNumber, {
+    setVerificationId,
+    setPhoneAutoRetrieval,
+    setFirebaseUser,
+    voidCallBack,
+    timeOutFunction,
+  }) async {
     PhoneVerificationCompleted _phoneVerificationCompleted =
         (PhoneAuthCredential _) async {
-      await _auth.signInWithCredential(_);
-      print('Phone number already verified');
+      try {
+        await _auth.signInWithCredential(_).then((value) {
+          fireBaseUserOnChanged().listen((user) {
+            setFirebaseUser(user);
+          });
+        }).then((value) {
+          voidCallBack();
+        });
+      } catch (e) {
+        print(e.toString());
+      }
     };
 
     PhoneVerificationFailed _phoneVerificationFailed =
@@ -27,19 +35,21 @@ class FirebaseMAuth extends IFirebaseMAuth {
 
     PhoneCodeSent _phoneCodeSent =
         (String verificationId, [int forceResendingToken]) async {
-      setVerificationId(verificationId);
+      print("::::::::::::::::" + forceResendingToken.toString());
       print('VerifyId::::::::::::::::::: $verificationId');
+      setVerificationId(verificationId);
     };
 
     PhoneCodeAutoRetrievalTimeout _phoneCodeAutoRetrievalTimeout =
         (String verificationId) {
-      print(verificationId);
+      print('auto Verification Timed Out');
+      timeOutFunction();
       setPhoneAutoRetrieval(verificationId);
     };
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
-        timeout: const Duration(minutes: 2),
+        timeout: const Duration(seconds: 20),
         verificationCompleted: _phoneVerificationCompleted,
         verificationFailed: _phoneVerificationFailed,
         codeSent: _phoneCodeSent,
@@ -47,24 +57,24 @@ class FirebaseMAuth extends IFirebaseMAuth {
       );
     } catch (e) {
       throw MessengerError(e.toString());
-      // print("Verify Exception:::::::::::::::::::: ${e.toString()}");
     }
   }
 
   @override
-  Future<UserCredential> confirmOtp({String otp, String verificationId}) async {
-    UserCredential _user;
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
+  @override
+  Future<void> verifyOTP({String verificationID, int otp}) async {
     try {
       final AuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: otp,
+        verificationId: verificationID,
+        smsCode: otp.toString(),
       );
-
-      _user = await _auth.signInWithCredential(credential);
-      return _user;
+      await _auth.signInWithCredential(credential);
     } catch (e) {
       print(e.toString());
-      return null;
     }
   }
 }
