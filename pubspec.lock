@@ -167,8 +167,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0-nullsafety.5"
-<<<<<<< HEAD
-=======
+
   contacts_service:
     dependency: "direct main"
     description:
@@ -190,7 +189,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
->>>>>>> bf7d9ee72c435992b55366d5cc454c1cae52d4f7
+
   cupertino_icons:
     dependency: "direct main"
     description:

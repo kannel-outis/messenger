@@ -27,9 +27,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final user = context.read<ContactProvider>().getUserPref();
     //remove
     MQTThandler().login().then((value) {
-      context
-          .read<HomeProvider>()
-          .listenTocloudStreamAndSubscribeTopic(user.id, user);
+      context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
     });
   }
 
