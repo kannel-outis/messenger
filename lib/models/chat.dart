@@ -1,5 +1,3 @@
-import 'package:messenger/models/user.dart';
-
 class Chat {
   final String chatID;
   final List<Map<String, dynamic>> participants;
@@ -18,5 +16,5 @@ class Chat {
 
   Chat.froMap(Map<String, dynamic> map)
       : chatID = map["chatID"],
-        participants = map["participants"];
+        participants = List<Map<String, dynamic>>.from(map["participants"]);
 }

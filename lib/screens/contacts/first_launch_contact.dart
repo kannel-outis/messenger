@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:messenger/models/contacts_model.dart';
-import 'package:messenger/screens/auth/auth_provider.dart';
 import 'package:messenger/screens/home/home.dart';
 import 'package:provider/provider.dart';
 

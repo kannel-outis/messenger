@@ -11,7 +11,7 @@ import '../offline.dart';
 class Contacts extends Offline {
   final Online _cloud;
 
-  const Contacts(this._cloud) : super();
+  Contacts(this._cloud);
   @override
   Future<List<List<PhoneContacts>>>
       listOfRegisteredAndUnregisteredUsers() async {
