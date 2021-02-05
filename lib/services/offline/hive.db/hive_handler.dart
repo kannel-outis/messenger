@@ -22,4 +22,9 @@ class HiveHandler extends ManagerHandler<HiveManager> {
   List<HiveChat> loadChatsFromDB() {
     return manager.loadChatsFromLocalDB();
   }
+
+  @override
+  bool checkIfchatExists(HiveChat hiveChat) {
+    return manager.checkIfChatExist(hiveChat);
+  }
 }

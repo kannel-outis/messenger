@@ -11,15 +11,17 @@ class User {
   final String userName;
   @HiveField(2)
   final List<dynamic> phoneNumbers;
-  // final String phoneNumberWithoutCC;
   @HiveField(3)
   final String photoUrl;
+  @HiveField(4)
+  final String status;
 
   User({
     this.id,
     this.userName,
     this.phoneNumbers,
     this.photoUrl,
+    this.status,
   });
 
   Map<String, dynamic> toMap() {
@@ -27,8 +29,8 @@ class User {
       "id": id,
       "userName": userName,
       "phoneNumbers": phoneNumbers,
-      // "phoneWithoutCC": phoneNumberWithoutCC,
       "photoUrl": photoUrl,
+      "status": status,
     };
   }
 
@@ -36,6 +38,6 @@ class User {
       : id = map['id'],
         userName = map['userName'],
         phoneNumbers = List<String>.from(map['phoneNumbers']),
-        // phoneNumberWithoutCC = map['phoneWithoutCC'],
-        photoUrl = map['photoUrl'];
+        photoUrl = map['photoUrl'],
+        status = map['status'];
 }

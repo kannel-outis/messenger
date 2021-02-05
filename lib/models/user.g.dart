@@ -21,13 +21,14 @@ class UserAdapter extends TypeAdapter<User> {
       userName: fields[1] as String,
       phoneNumbers: (fields[2] as List)?.cast<dynamic>(),
       photoUrl: fields[3] as String,
+      status: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(2)
       ..write(obj.phoneNumbers)
       ..writeByte(3)
-      ..write(obj.photoUrl);
+      ..write(obj.photoUrl)
+      ..writeByte(4)
+      ..write(obj.status);
   }
 
   @override

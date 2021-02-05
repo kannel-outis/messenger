@@ -7,7 +7,7 @@ import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/services/online/firebase/firestore_service.dart';
-import '../../services/online/mqtt/mqtt_handler.dart';
+import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
 

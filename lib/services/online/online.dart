@@ -5,14 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/utils/typedef.dart';
-import '../../models/message.dart';
 import '../../models/chat.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 
 /// Handles all Online operations
 abstract class Online {
-  const Online();
-
   //firebaseAuth
   Future<void> verifyPhoneNumber(
     String phoneNumber, {
@@ -53,4 +49,9 @@ abstract class Online {
 
   Future<void> createNewChat(Chat chat) => throw UnimplementedError();
   Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
+  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) =>
+      throw UnimplementedError();
+
+  ///firebase Storage for profile pics setUp
+
 }
