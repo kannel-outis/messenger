@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import '../../models/message.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -13,11 +11,17 @@ class MQTTManager implements Manager {
   final String username;
   final String password;
 
-  MQTTManager(
-      {@required this.broker,
-      @required this.clientIdentifier,
-      @required this.username,
-      @required this.password});
+  MQTTManager._(
+      this.broker, this.clientIdentifier, this.password, this.username);
+  static MQTTManager _instance;
+  static MQTTManager getInstance(String broker, String clientIdentifier,
+      String username, String password) {
+    if (_instance == null) {
+      _instance = MQTTManager._(broker, clientIdentifier, password, username);
+    }
+    return _instance;
+  }
+
   MqttServerClient _client;
 
   Future<MqttClient> login() async {

@@ -82,7 +82,7 @@ class FireStoreService extends Online {
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) {
     return _cloud
         .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .where('participants', arrayContains: user.toMap())
+        .where('participants', arrayContains: user.id)
         .snapshots();
   }
 }

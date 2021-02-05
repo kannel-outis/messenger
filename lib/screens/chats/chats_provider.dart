@@ -5,8 +5,7 @@ import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 
 class ChatsProvider extends ChangeNotifier {
   MQTThandler _mqttHandler = MQTThandler();
-  void sendMessage(
-      {String identifier, @required HiveChat hiveChat, @required String msg}) {
+  void sendMessage({@required HiveChat hiveChat, @required String msg}) {
     final Message message = Message(
       chatID: hiveChat.chatId,
       message: msg,

@@ -1,5 +1,3 @@
-import 'package:messenger/models/user.dart';
-
 class Chat {
   final String chatID;
   final List<Map<String, dynamic>> participants;

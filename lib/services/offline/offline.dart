@@ -3,7 +3,7 @@ import 'package:messenger/models/contacts_model.dart';
 
 /// Handles all Offline operations
 abstract class Offline {
-  const Offline();
+  // const Offline();
 
   // SharedPReferences: User Personal info and app Data
 

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/services/manager/mqtt.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
@@ -6,11 +5,8 @@ import 'package:mqtt_client/mqtt_client.dart';
 
 class MQTThandler extends ManagerHandler<MQTTManager> {
   MQTThandler() {
-    MQTTManager _newManager = MQTTManager(
-        broker: "broker.emqx.io",
-        clientIdentifier: user.id,
-        username: user.id.substring(0, 10),
-        password: user.phoneNumbers[0].substring(0, 7));
+    MQTTManager _newManager = MQTTManager.getInstance("broker.emqx.io", user.id,
+        user.id.substring(0, 10), user.phoneNumbers[0].substring(0, 7));
     setManager(_newManager);
   }
   @override
