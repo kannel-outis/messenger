@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:messenger/models/chat.dart';
+import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
@@ -19,6 +20,8 @@ class HiveManager extends Manager {
 
   final _chatBox = Hive.box<HiveChat>(HiveInit.chatBoxName);
   final _messageBox = Hive.box<HiveMessages>(HiveInit.messagesBoxName);
+  final _hiveContactsList =
+      Hive.box<HivePhoneContactsList>(HiveInit.hiveContactsList);
 
   Future<void> saveChatToDB(Chat chat) async {
     List<User> _users = [];
@@ -48,6 +51,39 @@ class HiveManager extends Manager {
     return _chatBox.values.toList();
   }
 
+  List<List<Map<String, dynamic>>> getContactsListFromDB() {
+    return _hiveContactsList.values.toList().single.phoneContacts;
+  }
+
+  Future<void> saveContactsListToDB(
+      List<List<PhoneContacts>> phoneContact) async {
+    // to List<Map<String, dynamic>>
+    List<Map<String, Map<String, dynamic>>> _registered = [];
+    List<Map<String, Map<String, dynamic>>> _unRegistered = [];
+    print("Start");
+    phoneContact.forEach((element) {
+      print("Start++");
+
+      element.forEach((element) {
+        print("Start+++");
+        if (element is RegisteredPhoneContacts) {
+          print('Start and make sense ....then work');
+          _registered.add(element.toMap());
+        } else {
+          _unRegistered.add((element as UnRegisteredPhoneContacts).toMap());
+        }
+      });
+    });
+    var hiveContact = HivePhoneContactsList(
+      phoneContacts: [
+        _registered,
+        _unRegistered,
+      ],
+    );
+    await _hiveContactsList.add(hiveContact);
+  }
+
   Box<HiveChat> get chatBox => _chatBox;
   Box<HiveMessages> get messageBox => _messageBox;
+  bool get checkIfChatBoxExistAlready => _hiveContactsList.isNotEmpty;
 }

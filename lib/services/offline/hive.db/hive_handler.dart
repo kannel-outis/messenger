@@ -1,4 +1,5 @@
 import 'package:messenger/models/chat.dart';
+import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/services/manager/hive_manager.dart';
 import 'package:messenger/services/manager/manager.dart';
 
@@ -26,5 +27,16 @@ class HiveHandler extends ManagerHandler<HiveManager> {
   @override
   bool checkIfchatExists(HiveChat hiveChat) {
     return manager.checkIfChatExist(hiveChat);
+  }
+
+  @override
+  List<List<Map<String, dynamic>>> getContactsListFromDB() {
+    return manager.getContactsListFromDB();
+  }
+
+  @override
+  Future<void> saveContactsListToDB(
+      List<List<PhoneContacts>> phoneContact) async {
+    manager.saveContactsListToDB(phoneContact);
   }
 }

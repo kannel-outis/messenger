@@ -21,12 +21,19 @@ class ContactProvider extends ChangeNotifier {
   Future<List<List<PhoneContacts>>> registeredAndUnregisteredContacts() async {
     var _contacts = Contacts(_fireStoreService);
     try {
-      await _contacts.listOfRegisteredAndUnregisteredUsers().then((value) {
-        _listOfContact = value;
+      if (!_hiveHandler.checkIfChatBoxExistAlready) {
+        await _contacts.listOfRegisteredAndUnregisteredUsers().then((value) {
+          _listOfContact = value;
+          notifyListeners();
+          _hiveHandler.saveContactsListToDB(_listOfContact);
+        });
+      } else {
+        _listOfContact = _getPhoneContactsFromHiveDB();
         notifyListeners();
-      });
-    } catch (e) {
-      throw MessengerError(e.message);
+      }
+    } catch (e, s) {
+      print(s.toString());
+      throw MessengerError(e.toString());
     }
     return _listOfContact;
   }
@@ -88,6 +95,35 @@ class ContactProvider extends ChangeNotifier {
     final User _user = User.fromMap(
         json.decode(sharedPrefs.getString(OfflineConstants.MY_DATA)));
     return _user;
+  }
+
+  List<List<PhoneContacts>> _getPhoneContactsFromHiveDB() {
+    List<RegisteredPhoneContacts> registered = [];
+    List<UnRegisteredPhoneContacts> unRegistered = [];
+    final _contactListFromHiveDB = _hiveHandler.getContactsListFromDB();
+    if (_contactListFromHiveDB.length > 0) {
+      print(_contactListFromHiveDB[0].length);
+      print(_contactListFromHiveDB[1].length);
+      _contactListFromHiveDB[0].forEach(
+        (element) {
+          print(element);
+
+          registered.add(
+            RegisteredPhoneContacts.fromMap(element),
+          );
+        },
+      );
+      _contactListFromHiveDB[1].forEach(
+        (element) {
+          unRegistered.add(
+            UnRegisteredPhoneContacts.fromMap(element),
+          );
+        },
+      );
+    } else {
+      print("List is Empty");
+    }
+    return [registered, unRegistered];
   }
 
   String _chatID() {

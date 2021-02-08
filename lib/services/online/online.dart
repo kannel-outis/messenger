@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,5 +54,6 @@ abstract class Online {
       throw UnimplementedError();
 
   ///firebase Storage for profile pics setUp
-
+  Future<String> saveImageToFireStore(String uid, File file) =>
+      throw UnimplementedError();
 }
