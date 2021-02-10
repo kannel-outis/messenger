@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
 import 'package:messenger/screens/contacts/first_launch_contact.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
 class SetNameScreen extends HookWidget {
@@ -42,17 +43,71 @@ class SetNameScreen extends HookWidget {
                 SizedBox(height: 30),
                 Center(
                   child: Container(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - 120,
-                      height: 35,
-                      child: Container(
-                        child: TextField(
-                          controller: _userNameController,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(bottom: 15),
+                    // height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Consumer<AuthProvider>(builder: (context, auth, child) {
+                          return Stack(
+                            children: [
+                              Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(
+                                      width: 3,
+                                      style: BorderStyle.solid,
+                                      color: Colors.blue),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: auth.imageUrl == null &&
+                                            auth.photoUrlFromUserDataPref ==
+                                                null
+                                        ? AssetImage('assets/person.png')
+                                        : CachedNetworkImageProvider(
+                                            auth.imageUrl ??
+                                                auth.photoUrlFromUserDataPref,
+                                          ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: -10,
+                                child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: IconButton(
+                                    icon: Icon(Icons.camera_alt),
+                                    onPressed: () {
+                                      auth.pickeImageAndSaveToCloudStorage();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: Container(
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width - 190,
+                              height: 35,
+                              child: Container(
+                                child: TextField(
+                                  controller: _userNameController,
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.only(bottom: 15),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
@@ -63,10 +118,15 @@ class SetNameScreen extends HookWidget {
                       _authProvider
                           .saveNewUserToCloudAndSetPrefs(
                               _userNameController.text)
-                          .then((value) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => FirstLaunchContactScreen()));
-                      });
+                          .then(
+                        (value) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => FirstLaunchContactScreen(),
+                            ),
+                          );
+                        },
+                      );
                       // _authProvider.signOut;
                     },
                     child: Container(

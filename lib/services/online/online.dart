@@ -35,7 +35,9 @@ abstract class Online {
   Future<User> saveNewUserToCloud(
           {String userName,
           @required String phoneNumberWithoutCC,
-          firebaseAuth.User user}) async =>
+          firebaseAuth.User user,
+          @required User userDataPref,
+          @required String newPhotoUrlString}) async =>
       throw UnimplementedError();
   Future<User> getUserFromCloud(firebaseAuth.User user) async =>
       throw UnimplementedError();

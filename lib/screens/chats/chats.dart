@@ -14,6 +14,7 @@ class ChatsScreen extends HookWidget {
   Widget build(BuildContext context) {
     final _textController = useTextEditingController();
     final _chatsProvider = Provider.of<ChatsProvider>(context);
+    print(hiveChat.chatId);
     return Scaffold(
       appBar: CustomAppBar(
         height: 150,

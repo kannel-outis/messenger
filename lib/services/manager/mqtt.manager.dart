@@ -36,6 +36,15 @@ class MQTTManager implements Manager {
         .withWillQos(MqttQos.exactlyOnce);
     _client.connectionMessage = connMess;
     await connectMQTTClient();
+    _client.updates.listen((event) {
+      final MqttPublishMessage payLoad = event[0].payload;
+      String data =
+          MqttPublishPayload.bytesToStringAsString(payLoad.payload.message);
+      Map<String, dynamic> dataPayload = json.decode(data);
+      // return data;
+      print(dataPayload);
+      print("::::::::::::::::::::::::::::::::::::::::::::");
+    });
 
     return _client;
   }

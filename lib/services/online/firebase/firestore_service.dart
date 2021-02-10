@@ -12,14 +12,21 @@ class FireStoreService extends Online {
   Future<User> saveNewUserToCloud(
       {String userName,
       @required String phoneNumberWithoutCC,
-      firebaseAuth.User user}) async {
+      firebaseAuth.User user,
+      @required User userDataPref,
+      @required String newPhotoUrlString}) async {
     User _newUser = User(
-        id: user?.uid,
-        phoneNumbers: [user?.phoneNumber, phoneNumberWithoutCC],
-        photoUrl: user?.photoURL ??
-            "https://firebasestorage.googleapis.com/v0/b/messenger-3d01a.appspot.com/o/PngItem_4212617.png?alt=media&token=d81897d9-5e7f-42a1-8f76-7955cf0afca1",
-        userName: userName,
-        status: "Hey There, I'm Using Messenger Demo");
+      id: user?.uid,
+      phoneNumbers: [user?.phoneNumber, phoneNumberWithoutCC],
+      photoUrl: user?.uid == userDataPref.id && newPhotoUrlString == null
+          ? userDataPref?.photoUrl
+          : user?.photoURL ??
+              newPhotoUrlString ??
+              GeneralConstants.DEFAULT_PHOTOURL,
+      userName: userName,
+      status: GeneralConstants.DEFAULT_STATUS,
+    );
+    print(_newUser.photoUrl);
 
     await _cloud
         .collection(OnlineConstants.FIRESTORE_USER_REF)
@@ -83,7 +90,7 @@ class FireStoreService extends Online {
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) {
     return _cloud
         .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .where('participants', arrayContains: user.id)
+        .where('participants.id', isEqualTo: user.id)
         .snapshots();
   }
 }

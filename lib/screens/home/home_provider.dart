@@ -33,7 +33,8 @@ class HomeProvider extends ChangeNotifier {
           Chat chat = Chat.froMap(element.doc.data());
           bool exists = _hiveHandler.checkIfchatExists(HiveChat(
             chatId: chat.chatID,
-            participants: List<User>.from(chat.participants),
+            participants:
+                chat.participants.map((e) => User.fromMap(e)).toList(),
           ));
           if (exists == false) {
             _hiveHandler.saveChatToDB(chat);
@@ -47,4 +48,6 @@ class HomeProvider extends ChangeNotifier {
       }
     });
   }
+
+  User get user => SharedPrefs.instance.getUserData();
 }
