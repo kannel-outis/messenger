@@ -59,13 +59,13 @@ class FireStoreService extends Online {
   }
 
   @override
-  Future<QuerySnapshot> queryInfo(dynamic query, String field,
-      {@required String path}) async {
+  Future<QuerySnapshot> queryInfo(
+    dynamic query,
+  ) async {
     return await _cloud
-        .collection(path)
+        .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
         .where(
-          field,
-          // isEqualTo: query,
+          'participantsIDs',
           isEqualTo: query,
         )
         .get();
@@ -90,7 +90,59 @@ class FireStoreService extends Online {
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) {
     return _cloud
         .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .where('participants.id', isEqualTo: user.id)
+        .where('participantsIDs', arrayContains: user.id)
         .snapshots();
   }
+
+  @override
+  Future<bool> updateUserInCloud({User user}) async {
+    bool success = false;
+    super.updateUserInCloud(user: user);
+    await _cloud
+        .collection(OnlineConstants.FIRESTORE_USER_REF)
+        .doc(user.id)
+        .update(user.toMap())
+        .then(
+      (value) async {
+        print('done this');
+        await _cloud
+            .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
+            .where('participantsIDs', arrayContains: user.id)
+            .get()
+            .then(
+          (value) async {
+            value.docs.forEach(
+              (element) async {
+                print('done this');
+
+                final Chat chat = Chat.froMap(element?.data());
+                final Chat newChat = Chat(
+                    chatID: chat.chatID,
+                    participantsIDs: chat.participantsIDs,
+                    participants: [user.toMap(), chat.participants?.last]);
+
+                await element.reference.update(newChat.toMap()).then((value) {
+                  print('done');
+                  return success = true;
+                });
+              },
+            );
+          },
+        );
+      },
+    );
+    return success;
+  }
+
+  // Future<void> _updateUserInChats(User user) async {
+  //   await _cloud
+  //       .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
+  //       .where("participantsIDs", arrayContains: user.id)
+  //       .get()
+  //       .then(
+  //         (value) {
+
+  //         },
+  //       );
+  // }
 }

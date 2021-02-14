@@ -23,6 +23,7 @@ class MQTTManager implements Manager {
   }
 
   MqttServerClient _client;
+  bool isConnected;
 
   Future<MqttClient> login() async {
     _client = MqttServerClient(broker, clientIdentifier);
@@ -59,6 +60,7 @@ class MQTTManager implements Manager {
             _client.autoReconnect = true;
             _client.onAutoReconnect = () => print('Reconnecting');
             _client.onAutoReconnected = () => print('Reconnected');
+            _client.onConnected = () => isConnected = true;
           }
         });
       }
@@ -73,7 +75,6 @@ class MQTTManager implements Manager {
   }
 
   Future<bool> _checkConnection() async {
-    bool isConnected;
     await login().then((value) {
       if (value == null) {
         isConnected = false;
@@ -84,8 +85,8 @@ class MQTTManager implements Manager {
     return isConnected;
   }
 
-  Future<bool> subscribe(String topic) async {
-    if (await _checkConnection() == true &&
+  bool subscribe(String topic) {
+    if (isConnected == true &&
         _client.connectionStatus.state == MqttConnectionState.connected) {
       _client.onConnected = () {
         print('connected');
