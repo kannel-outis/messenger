@@ -26,18 +26,28 @@ class HomeProvider extends ChangeNotifier {
         .listenWhenAUserInitializesAChat(_mqttHandler.user)
         .listen((event) {
       event.docChanges.forEach((element) {
+        ///remove when done
         print(element.doc.data());
       });
       if (event.docChanges.isNotEmpty) {
         event.docChanges.forEach((element) {
           Chat chat = Chat.froMap(element.doc.data());
-          bool exists = _hiveHandler.checkIfchatExists(HiveChat(
+          HiveChat hiveChat = HiveChat(
             chatId: chat.chatID,
             participants:
                 chat.participants.map((e) => User.fromMap(e)).toList(),
-          ));
+          );
+          bool exists = _hiveHandler.checkIfchatExists(hiveChat);
+
           if (exists == false) {
             _hiveHandler.saveChatToDB(chat);
+          } else {
+            for (var user in hiveChat.participants) {
+              print(user.userName);
+              _hiveHandler
+                ..updateUserInHive(user, 1)
+                ..updateUserOnContactsListInHive(user, 1);
+            }
           }
           _mqttHandler
               .subscribe(chat.chatID)
@@ -49,5 +59,7 @@ class HomeProvider extends ChangeNotifier {
     });
   }
 
-  User get user => SharedPrefs.instance.getUserData();
+  User get user {
+    return SharedPrefs.instance.getUserData();
+  }
 }

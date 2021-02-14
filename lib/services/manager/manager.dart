@@ -11,6 +11,11 @@ import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
+///do you see more??
+/////like more files??
+///yeah, keep it coming !
+//thi is cool i swear
+//yeah! dope asf
 abstract class Manager {
   @override
   String toString() {
@@ -53,6 +58,9 @@ abstract class ManagerHandler<T extends Manager> {
   List<List<Map<String, dynamic>>> getContactsListFromDB() =>
       throw UnimplementedError();
   Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact) =>
+      throw UnimplementedError();
+  void updateUserInHive(User user, int index) => throw UnimplementedError();
+  void updateUserOnContactsListInHive(User user, int index) =>
       throw UnimplementedError();
   bool get checkIfChatBoxExistAlready {
     if (_manager is HiveManager) {

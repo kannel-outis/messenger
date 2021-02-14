@@ -8,6 +8,7 @@ import 'screens/chats/chats_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'screens/home/home_provider.dart';
+import 'screens/profile/profile_provider.dart';
 import 'services/offline/shared_prefs/shared_prefs.dart';
 
 void main() async {
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(create: (_) => ChatsProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MaterialApp(
         title: 'Messenger',

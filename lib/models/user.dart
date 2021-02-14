@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 part 'user.g.dart';
 
@@ -23,6 +24,20 @@ class User {
     this.photoUrl,
     this.status,
   });
+
+  @override
+  bool operator ==(dynamic other) {
+    if (other.runtimeType != runtimeType) return false;
+    final User typedOther = other;
+    return typedOther.id == id &&
+        typedOther.phoneNumbers == phoneNumbers &&
+        typedOther.photoUrl == photoUrl &&
+        typedOther.status == status &&
+        typedOther.userName == userName;
+  }
+
+  @override
+  int get hashCode => hashValues(id, hashList(phoneNumbers));
 
   Map<String, dynamic> toMap() {
     return {

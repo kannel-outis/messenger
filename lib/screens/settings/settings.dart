@@ -2,16 +2,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:messenger/models/user.dart';
+import 'package:messenger/screens/home/home_provider.dart';
 import 'package:messenger/utils/constants.dart';
+import 'package:provider/provider.dart';
 import '../../customs/custom_route.dart';
 import '../../screens/profile/profile_page.dart';
 
-class SettingsScreen extends StatelessWidget {
-  final User user;
+class SettingsScreen extends StatefulWidget {
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
 
-  const SettingsScreen({Key key, this.user}) : super(key: key);
+class _SettingsScreenState extends State<SettingsScreen> {
+  /// return a User object on pop adn compare it to the user from settings page then update
   @override
   Widget build(BuildContext context) {
+    var user = context.read<HomeProvider>().user;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
@@ -20,13 +26,19 @@ class SettingsScreen extends StatelessWidget {
             _TopAppBar(),
             SizedBox(height: 10),
             _ProfileTopSec(user: user),
-            // SizedBox(height: 0),
             InkWell(
-              onTap: () => Navigator.of(context).push(
-                CustomRoute(
-                  builder: (_) => ProfileScreen(user: user),
-                ),
-              ),
+              onTap: () async {
+                User returnUserValue = await Navigator.of(context).push(
+                  CustomRoute(
+                    builder: (_) => ProfileScreen(user: user),
+                  ),
+                );
+                if (user != returnUserValue) {
+                  setState(() {
+                    user = returnUserValue;
+                  });
+                }
+              },
               child: Container(
                 height: 40,
                 width: 150,
@@ -78,6 +90,7 @@ class _TopAppBar extends StatelessWidget {
 
 class _ProfileTopSec extends StatelessWidget {
   final User user;
+
   const _ProfileTopSec({Key key, this.user}) : super(key: key);
 
   @override

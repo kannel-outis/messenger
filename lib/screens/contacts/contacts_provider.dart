@@ -42,13 +42,14 @@ class ContactProvider extends ChangeNotifier {
       {VoidCallback navigate}) async {
     Chat _chat = Chat(
       chatID: _chatID(),
+      participantsIDs: [myUser.id, friendUser.id],
       participants: [
         myUser.toMap(),
         friendUser.toMap(),
       ],
     );
     print(_chat.participants);
-    if (await _checkIfChatExistAlready(participants: _chat.participants)) {
+    if (await _checkIfChatExistAlready(participants: _chat.participantsIDs)) {
       print('Love Done');
       await _fireStoreService.createNewChat(_chat).then((value) {
         _hiveHandler.saveChatToDB(_chat).then((value) {
@@ -62,26 +63,19 @@ class ContactProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> _checkIfChatExistAlready(
-      {List<Map<String, dynamic>> participants}) async {
+  Future<bool> _checkIfChatExistAlready({List<String> participants}) async {
     print('Love and try');
     bool exists;
-    await _fireStoreService
-        .queryInfo(participants, 'participants',
-            path: OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .then((value) {
+    await _fireStoreService.queryInfo(participants).then((value) {
       print('Love');
 
       bool _contains = value.docChanges.isNotEmpty;
       print(_contains
-          ? value.docChanges[0].doc?.data()['participants'][0]['phoneNumbers']
-              [0]
+          ? value.docChanges[0].doc.data()['participantsIDs'][0]
           : "null + ppp");
-      print(participants[0]['phoneNumbers'][0]);
       if (_contains &&
-          value.docChanges[0].doc?.data()['participants'][0]['phoneNumbers']
-                  [0] ==
-              participants[0]['phoneNumbers'][0]) {
+          value.docChanges[0].doc.data()['participantsIDs'][0] ==
+              participants[0]) {
         exists = false;
       } else {
         exists = true;

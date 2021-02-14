@@ -15,19 +15,14 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    //remove
-    MQTThandler().login().then((value) {
-      context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      MQTThandler().login().then((value) {
+        context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
+      });
     });
   }
 
@@ -93,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
       floatingActionButton: InkWell(
         onTap: () {
-          Navigator.of(context).push(CupertinoPageRoute(
-              builder: (_) => SettingsScreen(user: _homeProvider.user)));
+          Navigator.of(context)
+              .push(CupertinoPageRoute(builder: (_) => SettingsScreen()));
         },
         child: Container(
           height: 60,
