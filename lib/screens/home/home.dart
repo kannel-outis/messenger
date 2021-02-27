@@ -19,16 +19,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      MQTThandler().login().then((value) {
-        context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
-      });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    MQTThandler().login().then((value) {
+      context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
     });
   }
 
   @override
   void dispose() {
-    MQTThandler().dispose();
+    // MQTThandler().dispose();
     super.dispose();
   }
 

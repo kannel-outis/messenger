@@ -30,7 +30,7 @@ class MQTTManager implements Manager {
 
   Future<MqttClient> login() async {
     _client = MqttServerClient(broker, clientIdentifier);
-    // _client.logging(on: true);
+    _client.logging(on: true);
     final MqttConnectMessage connMess = MqttConnectMessage()
         .withClientIdentifier(clientIdentifier)
         .keepAliveFor(60)
@@ -48,7 +48,7 @@ class MQTTManager implements Manager {
           MqttPublishPayload.bytesToStringAsString(payLoad.payload.message);
       Map<String, dynamic> dataPayload = json.decode(data);
       print(dataPayload);
-      // _streamController.add(dataPayload);
+      _streamController.add(dataPayload);
       print("::::::::::::::::::::::::::::::::::::::::::::");
     });
     print("is working");
@@ -66,6 +66,7 @@ class MQTTManager implements Manager {
             _client.autoReconnect = true;
             _client.onAutoReconnect = () => print('Reconnecting');
             _client.onAutoReconnected = () => print('Reconnected');
+            _client.onDisconnected = () => print('discconnected');
             _client.onConnected = () => isConnected = true;
           }
         });
