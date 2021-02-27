@@ -6,13 +6,11 @@ import 'package:messenger/models/user.dart';
 part 'hive_chat.g.dart';
 
 @HiveType(typeId: 1)
-class HiveChat {
+class HiveChat extends HiveObject {
   @HiveField(0)
   final String chatId;
   @HiveField(1)
   final List<u.User> participants;
-
-  // List of Map<String, dynamic>
 
   HiveChat({
     this.chatId,

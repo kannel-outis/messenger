@@ -106,7 +106,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
-            onPressed: () => {print('100')},
+            onPressed: () => _contactModel.registeredAndUnregisteredContacts(),
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all<TextStyle>(
                 TextStyle(fontSize: 18),

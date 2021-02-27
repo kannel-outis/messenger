@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:messenger/models/chat.dart';
+import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
@@ -25,18 +26,25 @@ class HomeProvider extends ChangeNotifier {
     _storeService
         .listenWhenAUserInitializesAChat(_mqttHandler.user)
         .listen((event) {
-      event.docChanges.forEach((element) {
-        print(element.doc.data());
-      });
       if (event.docChanges.isNotEmpty) {
         event.docChanges.forEach((element) {
           Chat chat = Chat.froMap(element.doc.data());
-          bool exists = _hiveHandler.checkIfchatExists(HiveChat(
+          HiveChat hiveChat = HiveChat(
             chatId: chat.chatID,
-            participants: List<User>.from(chat.participants),
-          ));
+            participants:
+                chat.participants.map((e) => User.fromMap(e)).toList(),
+          );
+          bool exists = _hiveHandler.checkIfchatExists(hiveChat);
+
           if (exists == false) {
             _hiveHandler.saveChatToDB(chat);
+          } else {
+            for (var user in hiveChat.participants) {
+              print(user.userName);
+              _hiveHandler
+                ..updateUserInHive(user, 1)
+                ..updateUserOnContactsListInHive(user, 1);
+            }
           }
           _mqttHandler
               .subscribe(chat.chatID)
@@ -46,5 +54,21 @@ class HomeProvider extends ChangeNotifier {
         print('Empty');
       }
     });
+    _mqttHandler.messageController.asBroadcastStream().listen((event) {
+      _hiveHandler.saveMessages(Message.fromMap(event));
+    });
+  }
+
+  // void runFromIniState() {
+  //   _mqttHandler.login().then((value) {
+  //     listenTocloudStreamAndSubscribeTopic();
+  //     _mqttHandler.messageController.listen((event) {
+  //       _hiveHandler.saveMessages(Message.fromMap(event));
+  //     });
+  //   });
+  // }
+
+  User get user {
+    return SharedPrefs.instance.getUserData();
   }
 }

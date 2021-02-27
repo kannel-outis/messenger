@@ -21,13 +21,15 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
       msg: fields[1] as String,
       messageType: fields[2] as String,
       dateTime: fields[3] as DateTime,
+      senderID: fields[4] as String,
+      receiverID: fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, HiveMessages obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.chatID)
       ..writeByte(1)
@@ -35,7 +37,11 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
       ..writeByte(2)
       ..write(obj.messageType)
       ..writeByte(3)
-      ..write(obj.dateTime);
+      ..write(obj.dateTime)
+      ..writeByte(4)
+      ..write(obj.senderID)
+      ..writeByte(5)
+      ..write(obj.receiverID);
   }
 
   @override

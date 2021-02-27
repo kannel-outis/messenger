@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:messenger/models/message.dart';
 import 'package:messenger/services/manager/mqtt.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
@@ -31,11 +33,18 @@ class MQTThandler extends ManagerHandler<MQTTManager> {
 
   @override
   Future<void> publish(String topic, Message message) async {
-    manager.publish(topic, message);
+    manager.publish(topic, message.toMap());
   }
 
   @override
   Future<bool> subscribe(String topic) async {
     return manager.subscribe(topic);
   }
+
+  @override
+  dispose() {
+    super.dispose();
+  }
+
+  Stream<Map<String, dynamic>> get messageController => manager.messageStream;
 }

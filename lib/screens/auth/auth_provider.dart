@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/country_code.dart';
+import 'package:messenger/services/offline/image_picker.dart';
 import 'package:messenger/services/offline/offline.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
+import 'package:messenger/services/online/firebase/firebase_storage.dart';
 import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/codes.dart';
@@ -15,9 +17,11 @@ class AuthProvider extends ChangeNotifier {
   CountryCode _countryCode;
   String _verificationId;
   String _phoneNumberWithoutCC;
+  String _imageUrl;
   final Online _auth = FirebaseMAuth();
   final Online _fireStoreService = FireStoreService();
   final Offline _offline = SharedPrefs.instance;
+  final Online _firebaseStorage = MessengerFirebaseStorage();
   firebaseAuth.User _firebaseUser;
 
   void dropDownOnChanged(CountryCode c) {
@@ -65,9 +69,12 @@ class AuthProvider extends ChangeNotifier {
   Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
     await _fireStoreService
         .saveNewUserToCloud(
-            user: _firebaseUser,
-            userName: username,
-            phoneNumberWithoutCC: _phoneNumberWithoutCC)
+      user: _firebaseUser,
+      userName: username,
+      phoneNumberWithoutCC: _phoneNumberWithoutCC,
+      userDataPref: _offline.getUserData(),
+      newPhotoUrlString: _imageUrl,
+    )
         .then((value) {
       _offline.setUserData(value);
     });
@@ -84,6 +91,20 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> pickeImageAndSaveToCloudStorage() async {
+    await MessengerImagePicker.pickeImage().then(
+      (value) async {
+        _firebaseStorage.saveImageToFireStore(_firebaseUser.uid, value).then(
+          (value) {
+            _imageUrl = value;
+            print(_imageUrl);
+            notifyListeners();
+          },
+        );
+      },
+    );
+  }
+
   List<CountryCode> get listOfCCs => _listOfCCs;
   CountryCode get countrycode =>
       _countryCode ??
@@ -92,4 +113,9 @@ class AuthProvider extends ChangeNotifier {
   void get signOut => _auth.signOut();
   firebaseAuth.User get firebaseUser => _firebaseUser;
   String get phoneNumberWithoutCC => _phoneNumberWithoutCC;
+  String get imageUrl => _imageUrl;
+  String get photoUrlFromUserDataPref =>
+      _offline.getUserData()?.id == _firebaseUser?.uid
+          ? _offline.getUserData().photoUrl
+          : null;
 }

@@ -11,11 +11,17 @@ class HiveMessages {
   final String messageType;
   @HiveField(3)
   final DateTime dateTime;
+  @HiveField(4)
+  final String senderID;
+  @HiveField(5)
+  final String receiverID;
 
   HiveMessages({
     this.chatID,
     this.msg,
     this.messageType,
     this.dateTime,
+    this.senderID,
+    this.receiverID,
   });
 }

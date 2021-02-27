@@ -21,12 +21,19 @@ class ContactProvider extends ChangeNotifier {
   Future<List<List<PhoneContacts>>> registeredAndUnregisteredContacts() async {
     var _contacts = Contacts(_fireStoreService);
     try {
-      await _contacts.listOfRegisteredAndUnregisteredUsers().then((value) {
-        _listOfContact = value;
+      if (!_hiveHandler.checkIfChatBoxExistAlready) {
+        await _contacts.listOfRegisteredAndUnregisteredUsers().then((value) {
+          _listOfContact = value;
+          notifyListeners();
+          _hiveHandler.saveContactsListToDB(_listOfContact);
+        });
+      } else {
+        _listOfContact = _getPhoneContactsFromHiveDB();
         notifyListeners();
-      });
-    } catch (e) {
-      throw MessengerError(e.message);
+      }
+    } catch (e, s) {
+      print(s.toString());
+      throw MessengerError(e.toString());
     }
     return _listOfContact;
   }
@@ -35,13 +42,14 @@ class ContactProvider extends ChangeNotifier {
       {VoidCallback navigate}) async {
     Chat _chat = Chat(
       chatID: _chatID(),
+      participantsIDs: [myUser.id, friendUser.id],
       participants: [
         myUser.toMap(),
         friendUser.toMap(),
       ],
     );
     print(_chat.participants);
-    if (await _checkIfChatExistAlready(participants: _chat.participants)) {
+    if (await _checkIfChatExistAlready(participants: _chat.participantsIDs)) {
       print('Love Done');
       await _fireStoreService.createNewChat(_chat).then((value) {
         _hiveHandler.saveChatToDB(_chat).then((value) {
@@ -55,26 +63,19 @@ class ContactProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> _checkIfChatExistAlready(
-      {List<Map<String, dynamic>> participants}) async {
+  Future<bool> _checkIfChatExistAlready({List<String> participants}) async {
     print('Love and try');
     bool exists;
-    await _fireStoreService
-        .queryInfo(participants, 'participants',
-            path: OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .then((value) {
+    await _fireStoreService.queryInfo(participants).then((value) {
       print('Love');
 
       bool _contains = value.docChanges.isNotEmpty;
       print(_contains
-          ? value.docChanges[0].doc?.data()['participants'][0]['phoneNumbers']
-              [0]
+          ? value.docChanges[0].doc.data()['participantsIDs'][0]
           : "null + ppp");
-      print(participants[0]['phoneNumbers'][0]);
       if (_contains &&
-          value.docChanges[0].doc?.data()['participants'][0]['phoneNumbers']
-                  [0] ==
-              participants[0]['phoneNumbers'][0]) {
+          value.docChanges[0].doc.data()['participantsIDs'][0] ==
+              participants[0]) {
         exists = false;
       } else {
         exists = true;
@@ -88,6 +89,35 @@ class ContactProvider extends ChangeNotifier {
     final User _user = User.fromMap(
         json.decode(sharedPrefs.getString(OfflineConstants.MY_DATA)));
     return _user;
+  }
+
+  List<List<PhoneContacts>> _getPhoneContactsFromHiveDB() {
+    List<RegisteredPhoneContacts> registered = [];
+    List<UnRegisteredPhoneContacts> unRegistered = [];
+    final _contactListFromHiveDB = _hiveHandler.getContactsListFromDB();
+    if (_contactListFromHiveDB.length > 0) {
+      print(_contactListFromHiveDB[0].length);
+      print(_contactListFromHiveDB[1].length);
+      _contactListFromHiveDB[0].forEach(
+        (element) {
+          print(element);
+
+          registered.add(
+            RegisteredPhoneContacts.fromMap(element),
+          );
+        },
+      );
+      _contactListFromHiveDB[1].forEach(
+        (element) {
+          unRegistered.add(
+            UnRegisteredPhoneContacts.fromMap(element),
+          );
+        },
+      );
+    } else {
+      print("List is Empty");
+    }
+    return [registered, unRegistered];
   }
 
   String _chatID() {
