@@ -16,13 +16,15 @@ class ProfileScreen extends HookWidget {
         useTextEditingController(text: user.phoneNumbers[0]);
     var _userNameTextController = useTextEditingController(text: user.userName);
     var _statusTextController = useTextEditingController(text: user.status);
+    var _profileProvider = Provider.of<ProfileProvider>(context);
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pop(
           User(
             id: user.id,
             phoneNumbers: user.phoneNumbers,
-            photoUrl: user.photoUrl,
+            photoUrl: _profileProvider.imageUrl ?? user.photoUrl,
             status: _statusTextController.text,
             userName: _userNameTextController.text,
           ),
@@ -34,17 +36,28 @@ class ProfileScreen extends HookWidget {
           child: Column(
             children: [
               Expanded(
-                child: _ProfileImageBuilder(profileUrl: user.photoUrl),
+                child: Consumer<ProfileProvider>(
+                    builder: (context, provider, child) {
+                  return _ProfileImageBuilder(
+                    profileUrl: provider.imageUrl ?? user.photoUrl,
+                    profileProvider: provider,
+                    user: user,
+                  );
+                }),
               ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 25.0, horizontal: 25.0),
-                  child: _Bottom(controllers: [
-                    _phoneTextController,
-                    _userNameTextController,
-                    _statusTextController
-                  ], enabled: false),
+                  child: _Bottom(
+                    controllers: [
+                      _phoneTextController,
+                      _userNameTextController,
+                      _statusTextController
+                    ],
+                    enabled: false,
+                    profileProvider: _profileProvider,
+                  ),
                 ),
               ),
             ],
@@ -57,23 +70,45 @@ class ProfileScreen extends HookWidget {
 
 class _ProfileImageBuilder extends StatelessWidget {
   final String profileUrl;
+  final ProfileProvider profileProvider;
+  final User user;
 
-  const _ProfileImageBuilder({Key key, this.profileUrl}) : super(key: key);
+  const _ProfileImageBuilder({
+    Key key,
+    this.profileUrl,
+    this.profileProvider,
+    this.user,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Hero(
       tag: 'profielImage',
-      child: Container(
-        height: MediaQuery.of(context).size.height / 2,
-        width: double.infinity,
-        color: Colors.grey,
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: CachedNetworkImageProvider(profileUrl),
+      child: Stack(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height / 2,
+            width: double.infinity,
+            color: Colors.grey,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(profileUrl),
+                ),
+              ),
             ),
           ),
-        ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Material(
+              child: IconButton(
+                icon: Icon(Icons.camera_alt),
+                onPressed: () {
+                  profileProvider.pickeImageAndSaveToCloudStorage(user);
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -82,8 +117,10 @@ class _ProfileImageBuilder extends StatelessWidget {
 class _Bottom extends StatelessWidget {
   final List<TextEditingController> controllers;
   final bool enabled;
+  final ProfileProvider profileProvider;
 
-  const _Bottom({Key key, this.controllers, this.enabled}) : super(key: key);
+  const _Bottom({Key key, this.controllers, this.enabled, this.profileProvider})
+      : super(key: key);
   Widget _buildTextField(TextEditingController controller, {bool enabled}) {
     return Expanded(
       child: TextFormField(
@@ -95,7 +132,6 @@ class _Bottom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var _profileProvider = Provider.of<ProfileProvider>(context);
     return Container(
       child: Column(
         children: [
@@ -104,8 +140,10 @@ class _Bottom extends StatelessWidget {
           _buildTextField(controllers[2]),
           InkWell(
             onTap: () {
-              _profileProvider.updateAllDataInCloud(
-                  status: controllers[2].text, username: controllers[1].text);
+              profileProvider.updateAllDataInCloud(
+                status: controllers[2].text,
+                username: controllers[1].text,
+              );
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),

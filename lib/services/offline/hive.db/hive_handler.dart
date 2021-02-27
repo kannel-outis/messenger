@@ -1,8 +1,10 @@
 import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/contacts_model.dart';
+import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/manager/hive_manager.dart';
 import 'package:messenger/services/manager/manager.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 
 import 'models/hive_chat.dart';
 
@@ -51,5 +53,23 @@ class HiveHandler extends ManagerHandler<HiveManager> {
   @override
   void updateUserOnContactsListInHive(User user, int index) {
     manager.updateUserOnContactsListInHive(user, index);
+  }
+
+  List<HiveMessages> getMessagesFromDB(String chatID) {
+    return manager.getMessagesFromDB(chatID);
+  }
+
+  @override
+  Future<void> saveMessages(Message message) {
+    return manager.saveMessages(
+      HiveMessages(
+        chatID: message.chatID,
+        dateTime: message.timeOfMessage,
+        messageType: message.messageType,
+        msg: message.message,
+        receiverID: message.receiverID,
+        senderID: message.senderID,
+      ),
+    );
   }
 }

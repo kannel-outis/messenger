@@ -133,16 +133,4 @@ class FireStoreService extends Online {
     );
     return success;
   }
-
-  // Future<void> _updateUserInChats(User user) async {
-  //   await _cloud
-  //       .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-  //       .where("participantsIDs", arrayContains: user.id)
-  //       .get()
-  //       .then(
-  //         (value) {
-
-  //         },
-  //       );
-  // }
 }

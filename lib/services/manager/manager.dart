@@ -7,6 +7,7 @@ import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/manager/hive_manager.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -17,6 +18,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 //thi is cool i swear
 //yeah! dope asf
 abstract class Manager {
+  void dispose() {}
   @override
   String toString() {
     return '${this.runtimeType}';
@@ -38,6 +40,11 @@ abstract class ManagerHandler<T extends Manager> {
     return _manager;
   }
 
+  @mustCallSuper
+  void dispose() {
+    _manager.dispose();
+  }
+
   User get user {
     final _rawData = SharedPrefs.instance.getString(OfflineConstants.MY_DATA);
     return User.fromMap(json.decode(_rawData));
@@ -49,10 +56,12 @@ abstract class ManagerHandler<T extends Manager> {
   Future<bool> subscribe(String topic) => throw UnimplementedError();
   Future<void> publish(String topic, Message message) =>
       throw UnimplementedError();
+
 // hive manager
   Future<void> saveChatToDB(Chat chat) => throw UnimplementedError();
   Future<void> saveMessages(Message message) => throw UnimplementedError();
-  List<Message> getMessagesFromDB(String chatID) => throw UnimplementedError();
+  List<HiveMessages> getMessagesFromDB(String chatID) =>
+      throw UnimplementedError();
   List<HiveChat> loadChatsFromDB() => throw UnimplementedError();
   bool checkIfchatExists(HiveChat hiveChat) => throw UnimplementedError();
   List<List<Map<String, dynamic>>> getContactsListFromDB() =>

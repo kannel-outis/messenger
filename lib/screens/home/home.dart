@@ -27,6 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    MQTThandler().dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final _homeProvider = Provider.of<HomeProvider>(context);
     return Scaffold(
@@ -63,8 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   shrinkWrap: true,
                   itemCount: hiveChats.length,
                   itemBuilder: (context, index) {
-                    // final HiveChat hiveChat = box.get(keys[index]);
-
                     return ListTile(
                       title: Text(
                           hiveChats[index].participants[1].userName ?? 'Null'),
@@ -74,9 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             builder: (_) => ChatsScreen(hiveChats[index]),
                           ),
                         );
-                        // hiveChats[index].participants.forEach((element) {
-                        //   print(element.phoneNumbers);
-                        // });
                       },
                     );
                   },
