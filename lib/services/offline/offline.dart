@@ -28,11 +28,4 @@ abstract class Offline {
   }
 
   User getUserData() => throw UnimplementedError();
-
-  ///Loads all contacts from phone and filters registered from unregistered  contacts
-  // Future<Iterable<Contact>> loadAllContacts() async =>
-  //     throw UnimplementedError();
-  Future<List<List<PhoneContacts>>>
-      listOfRegisteredAndUnregisteredUsers() async =>
-          throw UnimplementedError();
 }

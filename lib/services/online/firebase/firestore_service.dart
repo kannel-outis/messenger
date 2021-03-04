@@ -104,7 +104,6 @@ class FireStoreService extends Online {
         .update(user.toMap())
         .then(
       (value) async {
-        print('done this');
         await _cloud
             .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
             .where('participantsIDs', arrayContains: user.id)
@@ -113,16 +112,12 @@ class FireStoreService extends Online {
           (value) async {
             value.docs.forEach(
               (element) async {
-                print('done this');
-
                 final Chat chat = Chat.froMap(element?.data());
                 final Chat newChat = Chat(
                     chatID: chat.chatID,
                     participantsIDs: chat.participantsIDs,
                     participants: [user.toMap(), chat.participants?.last]);
-
                 await element.reference.update(newChat.toMap()).then((value) {
-                  print('done');
                   return success = true;
                 });
               },

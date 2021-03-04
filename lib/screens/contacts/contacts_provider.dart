@@ -50,29 +50,21 @@ class ContactProvider extends ChangeNotifier {
     );
     print(_chat.participants);
     if (await _checkIfChatExistAlready(participants: _chat.participantsIDs)) {
-      print('Love Done');
       await _fireStoreService.createNewChat(_chat).then((value) {
         _hiveHandler.saveChatToDB(_chat).then((value) {
-          print('saved');
           navigate();
         });
       });
     } else {
       navigate();
-      print('Nothing done');
     }
   }
 
   Future<bool> _checkIfChatExistAlready({List<String> participants}) async {
-    print('Love and try');
     bool exists;
     await _fireStoreService.queryInfo(participants).then((value) {
-      print('Love');
-
       bool _contains = value.docChanges.isNotEmpty;
-      print(_contains
-          ? value.docChanges[0].doc.data()['participantsIDs'][0]
-          : "null + ppp");
+
       if (_contains &&
           value.docChanges[0].doc.data()['participantsIDs'][0] ==
               participants[0]) {
@@ -80,7 +72,6 @@ class ContactProvider extends ChangeNotifier {
       } else {
         exists = true;
       }
-      print('Love');
     });
     return exists;
   }

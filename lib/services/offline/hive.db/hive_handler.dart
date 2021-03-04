@@ -2,7 +2,7 @@ import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
-import 'package:messenger/services/manager/hive_manager.dart';
+import 'package:messenger/services/manager/hive.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 
@@ -29,15 +29,13 @@ class HiveHandler extends ManagerHandler<HiveManager> {
 
   @override
   bool checkIfchatExists(HiveChat hiveChat) {
-    return manager.checkIfChatExist(hiveChat);
+    return manager.checkIfChatExists(hiveChat);
   }
 
   @override
   List<List<Map<String, dynamic>>> getContactsListFromDB() {
     return manager.getContactsListFromDB();
   }
-
-  // yeah??
 
   @override
   Future<void> saveContactsListToDB(
@@ -69,6 +67,7 @@ class HiveHandler extends ManagerHandler<HiveManager> {
         msg: message.message,
         receiverID: message.receiverID,
         senderID: message.senderID,
+        messageID: message.messageID,
       ),
     );
   }

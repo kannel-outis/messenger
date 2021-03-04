@@ -77,6 +77,7 @@ class AuthProvider extends ChangeNotifier {
     )
         .then((value) {
       _offline.setUserData(value);
+      _fireStoreService.updateUserInCloud(user: value);
     });
   }
 

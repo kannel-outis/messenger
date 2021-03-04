@@ -16,6 +16,7 @@ class HomeProvider extends ChangeNotifier {
   Online _storeService = FireStoreService();
   MQTThandler _mqttHandler = MQTThandler();
   HiveHandler _hiveHandler = HiveHandler();
+  List<Map<String, dynamic>> _list = [];
   bool isme(String userID) {
     final User prefUser = User.fromMap(
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)));
@@ -54,19 +55,17 @@ class HomeProvider extends ChangeNotifier {
         print('Empty');
       }
     });
-    _mqttHandler.messageController.asBroadcastStream().listen((event) {
-      _hiveHandler.saveMessages(Message.fromMap(event));
+    _mqttHandler.messageController.listen((event) {
+      print("$event  :::::::::::::::::::");
+      _list.add(event);
+      print(_list.length);
+      try {
+        _hiveHandler.saveMessages(Message.fromMap(_list.last));
+      } catch (e) {
+        print(e.toString());
+      }
     });
   }
-
-  // void runFromIniState() {
-  //   _mqttHandler.login().then((value) {
-  //     listenTocloudStreamAndSubscribeTopic();
-  //     _mqttHandler.messageController.listen((event) {
-  //       _hiveHandler.saveMessages(Message.fromMap(event));
-  //     });
-  //   });
-  // }
 
   User get user {
     return SharedPrefs.instance.getUserData();

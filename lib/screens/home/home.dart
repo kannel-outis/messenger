@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:messenger/screens/contacts/first_launch_contact.dart';
 import 'package:messenger/screens/home/home_provider.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
@@ -9,6 +10,7 @@ import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import '../../screens/chats/chats.dart';
 import 'package:provider/provider.dart';
 import '../../screens/settings/settings.dart';
+import '../../utils/_extensions_.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,16 +21,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      MQTThandler().login().then((value) {
-        context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
-      });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    MQTThandler().login().then((value) {
+      context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
     });
   }
 
   @override
   void dispose() {
-    MQTThandler().dispose();
+    // MQTThandler().dispose();
     super.dispose();
   }
 
@@ -53,8 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Expanded(child: SizedBox()),
                 IconButton(
-                    icon: Icon(Icons.add_comment),
-                    onPressed: () => print('Icon Pressed'))
+                  icon: Icon(Icons.add_comment),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => FirstLaunchContactScreen(),
+                      ),
+                    );
+                  },
+                )
               ],
             ),
             ValueListenableBuilder<Box<HiveChat>>(
@@ -70,8 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: hiveChats.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(
-                          hiveChats[index].participants[1].userName ?? 'Null'),
+                      title: Text(hiveChats[index]
+                              .participants[1]
+                              .userName
+                              .capitalize() ??
+                          'Null'),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

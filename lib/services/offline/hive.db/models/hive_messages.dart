@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 part 'hive_messages.g.dart';
 
@@ -15,6 +16,8 @@ class HiveMessages {
   final String senderID;
   @HiveField(5)
   final String receiverID;
+  @HiveField(6)
+  final String messageID;
 
   HiveMessages({
     this.chatID,
@@ -23,5 +26,11 @@ class HiveMessages {
     this.dateTime,
     this.senderID,
     this.receiverID,
+    @required this.messageID,
   });
+
+  @override
+  String toString() {
+    return '$chatID,  $dateTime, $msg, $senderID, $receiverID, $messageType, $messageID';
+  }
 }
