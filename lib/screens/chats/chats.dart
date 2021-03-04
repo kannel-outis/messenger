@@ -13,12 +13,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'chats_provider.dart';
 
+// ignore: must_be_immutable
 class ChatsScreen extends HookWidget {
   final HiveChat hiveChat;
 
   ChatsScreen(this.hiveChat);
   @override
   Widget build(BuildContext context) {
+    var valueListener = useState<String>();
     Utils.getBlockHeightAndWidth(context);
     final _textController = useTextEditingController();
     final _chatsProvider = Provider.of<ChatsProvider>(context);
@@ -55,6 +57,7 @@ class ChatsScreen extends HookWidget {
                   itemBuilder: (context, index) {
                     bool isMe = hiveMessages[index].senderID ==
                         hiveChat.participants[0].id;
+                    // box.clear();
                     return Row(
                       mainAxisAlignment: isMe
                           ? MainAxisAlignment.end
@@ -149,6 +152,9 @@ class ChatsScreen extends HookWidget {
                 Expanded(
                   child: TextField(
                     controller: _textController,
+                    onChanged: (value) {
+                      valueListener.value = value;
+                    },
                     style: TextStyle(
                         fontSize:
                             Utils.blockWidth * 4.0 //will give 18 by default,
@@ -160,15 +166,16 @@ class ChatsScreen extends HookWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: _textController.text.length > 0
+                  onTap: valueListener.value != null
                       ? () {
-                          String msg = _textController.text;
+                          String msg = valueListener.value;
                           _chatsProvider.sendMessage(
                               hiveChat: hiveChat, msg: msg);
                           _textController.clear();
+                          valueListener.value = null;
                         }
                       : () {
-                          print('Null pressed');
+                          print(_textController.text.length);
                         },
                   child: Container(
                     width: 100,

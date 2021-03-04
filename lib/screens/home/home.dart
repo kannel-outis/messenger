@@ -4,8 +4,10 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messenger/screens/contacts/first_launch_contact.dart';
 import 'package:messenger/screens/home/home_provider.dart';
+import 'package:messenger/customs/double_listenable.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import '../../screens/chats/chats.dart';
 import 'package:provider/provider.dart';
@@ -69,24 +71,68 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               ],
             ),
-            ValueListenableBuilder<Box<HiveChat>>(
+            // ValueListenableBuilder<Box<HiveChat>>(
+            //   valueListenable:
+            //       Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
+            //   builder: (context, box, child) {
+            // final List<HiveChat> hiveChats = box.values
+            //     .where((element) =>
+            //         _homeProvider.isme(element.participants[0].id))
+            //     .toList();
+            // return ListView.builder(
+            //   shrinkWrap: true,
+            //   itemCount: hiveChats.length,
+            //   itemBuilder: (context, index) {
+            //     return ListTile(
+            //       title: Text(hiveChats[index]
+            //               .participants[1]
+            //               .userName
+            //               .capitalize() ??
+            //           'Null'),
+            //       onTap: () {
+            //         Navigator.of(context).push(
+            //           MaterialPageRoute(
+            //             builder: (_) => ChatsScreen(hiveChats[index]),
+            //           ),
+            //         );
+            //           },
+            //         );
+            //       },
+            //     );
+            //   },
+            // )
+            DoubleListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
               valueListenable:
                   Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
-              builder: (context, box, child) {
-                final List<HiveChat> hiveChats = box.values
+              valueListenable2:
+                  Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
+              builder: (context, hiveChat, hiveMessage, child) {
+                final List<HiveChat> hiveChats = hiveChat.values
                     .where((element) =>
                         _homeProvider.isme(element.participants[0].id))
                     .toList();
+
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: hiveChats.length,
                   itemBuilder: (context, index) {
+                    final List<HiveMessages> hiveMessages = hiveMessage.values
+                        .where((element) =>
+                            element.chatID == hiveChats[index].chatId)
+                        .toList()
+                        .reversed
+                        .toList();
+                    print(hiveMessages.length);
+                    print(hiveChats.length);
                     return ListTile(
                       title: Text(hiveChats[index]
                               .participants[1]
                               .userName
                               .capitalize() ??
                           'Null'),
+                      subtitle: hiveMessages.isNotEmpty
+                          ? Text(hiveMessages.first.msg ?? "emir")
+                          : null,
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -98,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 );
               },
-            )
+            ),
           ],
         ),
       ),

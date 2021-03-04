@@ -48,7 +48,6 @@ class ContactProvider extends ChangeNotifier {
         friendUser.toMap(),
       ],
     );
-    print(_chat.participants);
     if (await _checkIfChatExistAlready(participants: _chat.participantsIDs)) {
       await _fireStoreService.createNewChat(_chat).then((value) {
         _hiveHandler.saveChatToDB(_chat).then((value) {
@@ -113,7 +112,6 @@ class ContactProvider extends ChangeNotifier {
 
   String _chatID() {
     String _chatID = Uuid().v4();
-    print(_chatID);
     return _chatID;
   }
 
