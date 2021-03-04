@@ -12,10 +12,10 @@ class FirstLaunchContactScreen extends StatelessWidget {
       var e = element;
 
       return ListTile(
-        title: Text(e.contact?.givenName ?? e.contact?.displayName),
+        title: Text("${e.contact?.givenName ?? e.contact?.displayName}"),
         subtitle: Text(e.contact.phones.length == 0
             ? ""
-            : e.contact?.phones?.toList()[0]?.value),
+            : "${e.contact?.phones?.toList()[0]?.value}"),
         trailing: InkWell(
           onTap: () {
             _contactModel.messageUser(
@@ -55,10 +55,10 @@ class FirstLaunchContactScreen extends StatelessWidget {
       var e = element as UnRegisteredPhoneContacts;
 
       return ListTile(
-        title: Text(e.contact?.givenName ?? e.contact?.displayName),
+        title: Text("${e.contact?.givenName ?? e.contact?.displayName}"),
         subtitle: Text(e.contact.phones.length == 0
             ? ""
-            : e.contact?.phones?.toList()[0]?.value),
+            : "${e.contact?.phones?.toList()[0]?.value}"),
         trailing: InkWell(
           onTap: () {},
           child: Container(
@@ -106,7 +106,8 @@ class FirstLaunchContactScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
-            onPressed: () => _contactModel.registeredAndUnregisteredContacts(),
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => HomeScreen())),
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all<TextStyle>(
                 TextStyle(fontSize: 18),

@@ -5,18 +5,13 @@ import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
-import 'package:messenger/services/manager/hive_manager.dart';
+import 'package:messenger/services/manager/hive.manager.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
-///do you see more??
-/////like more files??
-///yeah, keep it coming !
-//thi is cool i swear
-//yeah! dope asf
 abstract class Manager {
   void dispose() {}
   @override

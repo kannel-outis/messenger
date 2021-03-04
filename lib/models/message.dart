@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 
 class Message {
   final String message;
@@ -7,6 +8,7 @@ class Message {
   final String receiverID;
   final String chatID;
   final String messageType;
+  final String messageID;
 
   Message({
     @required this.message,
@@ -15,6 +17,7 @@ class Message {
     @required this.chatID,
     this.receiverID,
     @required this.messageType,
+    @required this.messageID,
   });
 
   Map<String, dynamic> toMap() {
@@ -25,15 +28,17 @@ class Message {
       "receiverID": receiverID,
       "chatID": chatID,
       "messagetype": messageType,
+      "messageID": messageID,
     };
   }
 
   Message.fromMap(Map<String, dynamic> map)
       : message = map["message"],
         receiverID = map["receiverID"],
-        senderID = map["receiverID"],
-        timeOfMessage = map["timeOfMessage"],
+        senderID = map["senderID"],
+        timeOfMessage = DateTime.parse(map["timeSent"] as String),
         chatID = map["chatID"],
+        messageID = map["messageID"],
         messageType = map["messagetype"];
 
   @override

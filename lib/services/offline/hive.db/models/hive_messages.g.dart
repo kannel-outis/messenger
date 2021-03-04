@@ -23,6 +23,7 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
       dateTime: fields[3] as DateTime,
       senderID: fields[4] as String,
       receiverID: fields[5] as String,
+      messageID: fields[6] as String,
     );
   }
 
@@ -41,7 +42,9 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
       ..writeByte(4)
       ..write(obj.senderID)
       ..writeByte(5)
-      ..write(obj.receiverID);
+      ..write(obj.receiverID)
+      ..writeByte(6)
+      ..write(obj.messageID);
   }
 
   @override

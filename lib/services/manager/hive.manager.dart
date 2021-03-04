@@ -29,12 +29,17 @@ class HiveManager extends Manager {
       _users.add(User.fromMap(element));
     });
     final _hiveChat = HiveChat(chatId: chat.chatID, participants: _users);
-    if (checkIfChatExist(_hiveChat)) return;
+    if (checkIfChatExists(_hiveChat)) return;
     await _chatBox.add(_hiveChat);
   }
 
   Future<void> saveMessages(HiveMessages message) async {
-    await _messageBox.add(message);
+    if (checkIfMessageExists(message)) return;
+    try {
+      await _messageBox.add(message);
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   List<HiveMessages> getMessagesFromDB(String chatID) {
@@ -43,9 +48,30 @@ class HiveManager extends Manager {
         .toList();
   }
 
-  bool checkIfChatExist(HiveChat chat) {
+  // bool checkIfExistObjExist(Object obj) {
+  //   if (obj is HiveChat) {
+  //     print('this is a Hive chat object');
+  // return _chatBox.values
+  //     .where((element) => obj.chatId == element.chatId)
+  //     .isNotEmpty;
+  //   } else if (obj is HiveMessages) {
+  //     return _messageBox.values
+  //         .where((element) => obj.messageID == element.messageID)
+  //         .isNotEmpty;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
+  bool checkIfChatExists(HiveChat hiveChat) {
     return _chatBox.values
-        .where((element) => chat.chatId == element.chatId)
+        .where((element) => hiveChat.chatId == element.chatId)
+        .isNotEmpty;
+  }
+
+  bool checkIfMessageExists(HiveMessages message) {
+    return _messageBox.values
+        .where((element) => message.messageID == element.messageID)
         .isNotEmpty;
   }
 
@@ -76,8 +102,6 @@ class HiveManager extends Manager {
   }
 
   void updateUserOnContactsListInHive(User user, int index) {
-    // assert(index < 2);
-
     _hiveContactsList.values
         .where(
           (element) {
@@ -108,7 +132,6 @@ class HiveManager extends Manager {
 
   Future<void> saveContactsListToDB(
       List<List<PhoneContacts>> phoneContact) async {
-    // to List<Map<String, dynamic>>
     List<Map<String, Map<String, dynamic>>> _registered = [];
     List<Map<String, Map<String, dynamic>>> _unRegistered = [];
     phoneContact.forEach((element) {
