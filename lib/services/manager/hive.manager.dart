@@ -75,6 +75,16 @@ class HiveManager extends Manager {
         .isNotEmpty;
   }
 
+  void updateMessageIsRead(HiveMessages message) {
+    var messagesList = _messageBox.values
+        .where((element) => element.chatID == message.chatID)
+        .toList();
+    messagesList.forEach((element) {
+      element.isRead = true;
+      element.save();
+    });
+  }
+
   List<HiveChat> loadChatsFromLocalDB() {
     return _chatBox.values.toList();
   }
@@ -95,6 +105,7 @@ class HiveManager extends Manager {
             if (element.participants[index] != user) {
               print(element.chatId);
               element.participants[index] = user;
+              // not Working here
               element.save();
             }
           },

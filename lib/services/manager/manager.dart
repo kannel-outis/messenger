@@ -55,6 +55,7 @@ abstract class ManagerHandler<T extends Manager> {
 // hive manager
   Future<void> saveChatToDB(Chat chat) => throw UnimplementedError();
   Future<void> saveMessages(Message message) => throw UnimplementedError();
+  void updateMessageIsRead(HiveMessages message) => throw UnimplementedError();
   List<HiveMessages> getMessagesFromDB(String chatID) =>
       throw UnimplementedError();
   List<HiveChat> loadChatsFromDB() => throw UnimplementedError();

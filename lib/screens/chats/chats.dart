@@ -21,7 +21,6 @@ class ChatsScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var valueListener = useState<String>();
-    Utils.getBlockHeightAndWidth(context);
     final _textController = useTextEditingController();
     final _chatsProvider = Provider.of<ChatsProvider>(context);
     print(hiveChat.chatId);
@@ -58,6 +57,7 @@ class ChatsScreen extends HookWidget {
                     bool isMe = hiveMessages[index].senderID ==
                         hiveChat.participants[0].id;
                     // box.clear();
+                    _chatsProvider.updateMessageIsRead(hiveMessages[index]);
                     return Row(
                       mainAxisAlignment: isMe
                           ? MainAxisAlignment.end

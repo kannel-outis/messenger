@@ -71,36 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               ],
             ),
-            // ValueListenableBuilder<Box<HiveChat>>(
-            //   valueListenable:
-            //       Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
-            //   builder: (context, box, child) {
-            // final List<HiveChat> hiveChats = box.values
-            //     .where((element) =>
-            //         _homeProvider.isme(element.participants[0].id))
-            //     .toList();
-            // return ListView.builder(
-            //   shrinkWrap: true,
-            //   itemCount: hiveChats.length,
-            //   itemBuilder: (context, index) {
-            //     return ListTile(
-            //       title: Text(hiveChats[index]
-            //               .participants[1]
-            //               .userName
-            //               .capitalize() ??
-            //           'Null'),
-            //       onTap: () {
-            //         Navigator.of(context).push(
-            //           MaterialPageRoute(
-            //             builder: (_) => ChatsScreen(hiveChats[index]),
-            //           ),
-            //         );
-            //           },
-            //         );
-            //       },
-            //     );
-            //   },
-            // )
             DoubleListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
               valueListenable:
                   Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
@@ -122,17 +92,60 @@ class _HomeScreenState extends State<HomeScreen> {
                         .toList()
                         .reversed
                         .toList();
-                    print(hiveMessages.length);
-                    print(hiveChats.length);
+                    final List<HiveMessages> isReadMessages = hiveMessages
+                        .where((element) => element.isRead == false)
+                        .toList();
                     return ListTile(
-                      title: Text(hiveChats[index]
-                              .participants[1]
-                              .userName
-                              .capitalize() ??
-                          'Null'),
+                      title: Text(
+                        hiveChats[index]
+                                .participants[1]
+                                .userName
+                                .capitalize() ??
+                            'Null',
+                        style: TextStyle(fontSize: 18),
+                      ),
                       subtitle: hiveMessages.isNotEmpty
-                          ? Text(hiveMessages.first.msg ?? "emir")
+                          ? Text(
+                              hiveMessages[0].msg ?? "cannot load this message",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: hiveMessages[0].isRead == false
+                                    ? FontWeight.w900
+                                    : FontWeight.normal,
+                                color: hiveMessages[0].isRead == false
+                                    ? Colors.black
+                                    : Colors.grey,
+                                fontSize: 16,
+                              ),
+                            )
                           : null,
+                      trailing: hiveMessages.isNotEmpty
+                          ? Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                color: hiveMessages[0].isRead == false
+                                    ? Colors.yellow
+                                    : Colors.white,
+                                borderRadius: hiveMessages[0].isRead == false
+                                    ? BorderRadius.circular(50)
+                                    : null,
+                              ),
+                              child: Center(
+                                child: hiveMessages[0].isRead == false
+                                    ? Text(
+                                        "${isReadMessages.length}",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      )
+                                    : SizedBox(),
+                              ),
+                            )
+                          : SizedBox(),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

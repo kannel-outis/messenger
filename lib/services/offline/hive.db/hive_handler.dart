@@ -53,8 +53,14 @@ class HiveHandler extends ManagerHandler<HiveManager> {
     manager.updateUserOnContactsListInHive(user, index);
   }
 
+  @override
   List<HiveMessages> getMessagesFromDB(String chatID) {
     return manager.getMessagesFromDB(chatID);
+  }
+
+  @override
+  void updateMessageIsRead(HiveMessages message) {
+    manager.updateMessageIsRead(message);
   }
 
   @override
@@ -68,6 +74,7 @@ class HiveHandler extends ManagerHandler<HiveManager> {
         receiverID: message.receiverID,
         senderID: message.senderID,
         messageID: message.messageID,
+        isRead: false,
       ),
     );
   }

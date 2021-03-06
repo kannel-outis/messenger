@@ -38,6 +38,7 @@ class _DoubleListenableBuilderState<T, E>
     value = widget.valueListenable.value;
     value2 = widget.valueListenable2.value;
     widget.valueListenable.addListener(_valueChanged);
+    widget.valueListenable2.addListener(_valueChanged2);
   }
 
   @override
@@ -45,11 +46,11 @@ class _DoubleListenableBuilderState<T, E>
     if (oldWidget.valueListenable != widget.valueListenable ||
         oldWidget.valueListenable2 != widget.valueListenable2) {
       oldWidget.valueListenable.removeListener(_valueChanged);
-      oldWidget.valueListenable2.removeListener(_valueChanged);
+      oldWidget.valueListenable2.removeListener(_valueChanged2);
       value = widget.valueListenable.value;
       value2 = widget.valueListenable2.value;
       widget.valueListenable.addListener(_valueChanged);
-      widget.valueListenable2.addListener(_valueChanged);
+      widget.valueListenable2.addListener(_valueChanged2);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -57,13 +58,18 @@ class _DoubleListenableBuilderState<T, E>
   @override
   void dispose() {
     widget.valueListenable.removeListener(_valueChanged);
-    widget.valueListenable2.removeListener(_valueChanged);
+    widget.valueListenable2.removeListener(_valueChanged2);
     super.dispose();
   }
 
   void _valueChanged() {
     setState(() {
       value = widget.valueListenable.value;
+    });
+  }
+
+  void _valueChanged2() {
+    setState(() {
       value2 = widget.valueListenable2.value;
     });
   }
