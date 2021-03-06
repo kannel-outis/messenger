@@ -34,7 +34,7 @@ class HiveManager extends Manager {
   }
 
   Future<void> saveMessages(HiveMessages message) async {
-    if (checkIfMessageExists(message)) return;
+    if (_checkIfMessageExists(message)) return;
     try {
       await _messageBox.add(message);
     } catch (e) {
@@ -69,7 +69,7 @@ class HiveManager extends Manager {
         .isNotEmpty;
   }
 
-  bool checkIfMessageExists(HiveMessages message) {
+  bool _checkIfMessageExists(HiveMessages message) {
     return _messageBox.values
         .where((element) => message.messageID == element.messageID)
         .isNotEmpty;
@@ -77,11 +77,12 @@ class HiveManager extends Manager {
 
   void updateMessageIsRead(HiveMessages message) {
     var messagesList = _messageBox.values
-        .where((element) => element.chatID == message.chatID)
+        .where((element) =>
+            element.chatID == message.chatID && message.isRead == false)
         .toList();
     messagesList.forEach((element) {
-      element.isRead = true;
-      element.save();
+      final newElement = element.copyWith(isRead: true);
+      _messageBox.put(element.key, newElement);
     });
   }
 
