@@ -27,6 +27,9 @@ class ChatsProvider extends ChangeNotifier {
 
   Stream<Map<String, dynamic>> get stream => _mqttHandler.messageController;
 
+  void updateMessageIsRead(HiveMessages message) =>
+      _hiveHandler.updateMessageIsRead(message);
+
   List<HiveMessages> getMessagesFromDB(String chatID) {
     return _hiveHandler.getMessagesFromDB(chatID);
   }

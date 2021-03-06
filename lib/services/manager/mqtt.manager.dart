@@ -59,6 +59,16 @@ class MQTTManager implements Manager {
           } else {
             print("Connected");
             _client.onConnected = () => isConnected = true;
+            _client.published.listen((event) {
+              print("delivered");
+            });
+            // _client.published.listen((event) {
+            //   // event.payload.message
+            //   String data = MqttPublishPayload.bytesToStringAsString(
+            //       event.payload.message);
+            //   Map<String, dynamic> dataPayload = json.decode(data);
+            //   print("$dataPayload" + "this is recieved and delivered");
+            // });
             _client.updates.listen((event) {
               final MqttPublishMessage payLoad = event[0].payload;
               String data = MqttPublishPayload.bytesToStringAsString(

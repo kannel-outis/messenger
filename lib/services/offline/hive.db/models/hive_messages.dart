@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'hive_messages.g.dart';
 
 @HiveType(typeId: 0)
-class HiveMessages {
+class HiveMessages extends HiveObject {
   @HiveField(0)
   final String chatID;
   @HiveField(1)
@@ -19,6 +19,10 @@ class HiveMessages {
   @HiveField(6)
   final String messageID;
 
+  ///  messsage if is read or not
+  @HiveField(7)
+  bool isRead;
+
   HiveMessages({
     this.chatID,
     this.msg,
@@ -27,6 +31,7 @@ class HiveMessages {
     this.senderID,
     this.receiverID,
     @required this.messageID,
+    @required this.isRead,
   });
 
   @override

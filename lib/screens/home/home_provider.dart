@@ -42,6 +42,7 @@ class HomeProvider extends ChangeNotifier {
           } else {
             for (var user in hiveChat.participants) {
               print(user.userName);
+              // not Working
               _hiveHandler
                 ..updateUserInHive(user, 1)
                 ..updateUserOnContactsListInHive(user, 1);

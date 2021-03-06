@@ -59,7 +59,7 @@ class SharedPrefs extends Offline {
   @override
   User getUserData() {
     final rawUserString = _prefs.getString(OfflineConstants.MY_DATA);
-    if (rawUserString == null) return User();
+    if (rawUserString == null) return null;
     Map<String, dynamic> rawUserDecode = json.decode(rawUserString);
     return User.fromMap(rawUserDecode);
   }

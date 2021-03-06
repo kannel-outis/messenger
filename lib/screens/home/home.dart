@@ -4,8 +4,10 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messenger/screens/contacts/first_launch_contact.dart';
 import 'package:messenger/screens/home/home_provider.dart';
+import 'package:messenger/customs/double_listenable.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import '../../screens/chats/chats.dart';
 import 'package:provider/provider.dart';
@@ -69,24 +71,81 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               ],
             ),
-            ValueListenableBuilder<Box<HiveChat>>(
+            DoubleListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
               valueListenable:
                   Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
-              builder: (context, box, child) {
-                final List<HiveChat> hiveChats = box.values
+              valueListenable2:
+                  Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
+              builder: (context, hiveChat, hiveMessage, child) {
+                final List<HiveChat> hiveChats = hiveChat.values
                     .where((element) =>
                         _homeProvider.isme(element.participants[0].id))
                     .toList();
+
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: hiveChats.length,
                   itemBuilder: (context, index) {
+                    final List<HiveMessages> hiveMessages = hiveMessage.values
+                        .where((element) =>
+                            element.chatID == hiveChats[index].chatId)
+                        .toList()
+                        .reversed
+                        .toList();
+                    final List<HiveMessages> isReadMessages = hiveMessages
+                        .where((element) => element.isRead == false)
+                        .toList();
                     return ListTile(
-                      title: Text(hiveChats[index]
-                              .participants[1]
-                              .userName
-                              .capitalize() ??
-                          'Null'),
+                      title: Text(
+                        hiveChats[index]
+                                .participants[1]
+                                .userName
+                                .capitalize() ??
+                            'Null',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      subtitle: hiveMessages.isNotEmpty
+                          ? Text(
+                              hiveMessages[0].msg ?? "cannot load this message",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: hiveMessages[0].isRead == false
+                                    ? FontWeight.w900
+                                    : FontWeight.normal,
+                                color: hiveMessages[0].isRead == false
+                                    ? Colors.black
+                                    : Colors.grey,
+                                fontSize: 16,
+                              ),
+                            )
+                          : null,
+                      trailing: hiveMessages.isNotEmpty
+                          ? Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                color: hiveMessages[0].isRead == false
+                                    ? Colors.yellow
+                                    : Colors.white,
+                                borderRadius: hiveMessages[0].isRead == false
+                                    ? BorderRadius.circular(50)
+                                    : null,
+                              ),
+                              child: Center(
+                                child: hiveMessages[0].isRead == false
+                                    ? Text(
+                                        "${isReadMessages.length}",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      )
+                                    : SizedBox(),
+                              ),
+                            )
+                          : SizedBox(),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -98,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 );
               },
-            )
+            ),
           ],
         ),
       ),
