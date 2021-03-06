@@ -21,7 +21,7 @@ class HiveMessages extends HiveObject {
 
   ///  messsage if is read or not
   @HiveField(7)
-  bool isRead;
+  final bool isRead;
 
   HiveMessages({
     this.chatID,
@@ -33,6 +33,28 @@ class HiveMessages extends HiveObject {
     @required this.messageID,
     @required this.isRead,
   });
+
+  HiveMessages copyWith({
+    String chatID,
+    String msg,
+    String messageType,
+    DateTime dateTime,
+    String senderID,
+    String receiverID,
+    String messageID,
+    bool isRead,
+  }) {
+    return HiveMessages(
+      chatID: chatID ?? this.chatID,
+      dateTime: dateTime ?? this.dateTime,
+      messageType: messageType ?? this.messageType,
+      msg: msg ?? this.msg,
+      receiverID: receiverID ?? this.receiverID,
+      senderID: senderID ?? this.senderID,
+      messageID: messageID ?? this.messageID,
+      isRead: isRead ?? this.isRead,
+    );
+  }
 
   @override
   String toString() {

@@ -8,7 +8,6 @@ import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:provider/provider.dart';
 import '../../customs/widgets/custom_appbar.dart';
 import '../../utils/utils.dart';
-import '../../utils/_extensions_.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'chats_provider.dart';
@@ -38,7 +37,6 @@ class ChatsScreen extends HookWidget {
               valueListenable:
                   Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
               builder: (context, box, child) {
-                // DateTime().toLocal();
                 final List<HiveMessages> hiveMessages = box.values
                     .where((element) => element.chatID == hiveChat.chatId)
                     .toList()
@@ -56,7 +54,6 @@ class ChatsScreen extends HookWidget {
                   itemBuilder: (context, index) {
                     bool isMe = hiveMessages[index].senderID ==
                         hiveChat.participants[0].id;
-                    // box.clear();
                     _chatsProvider.updateMessageIsRead(hiveMessages[index]);
                     return Row(
                       mainAxisAlignment: isMe

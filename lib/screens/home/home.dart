@@ -95,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final List<HiveMessages> isReadMessages = hiveMessages
                         .where((element) => element.isRead == false)
                         .toList();
+
                     return ListTile(
                       title: Text(
                         hiveChats[index]

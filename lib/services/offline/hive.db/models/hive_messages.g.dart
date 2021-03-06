@@ -31,7 +31,7 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
   @override
   void write(BinaryWriter writer, HiveMessages obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.chatID)
       ..writeByte(1)
