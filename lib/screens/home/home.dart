@@ -19,19 +19,26 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    // MQTThandler().login().then((value) {
+    //   context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
+    // });
+    context.read<HomeProvider>().iniState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    MQTThandler().login().then((value) {
-      context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
-    });
   }
+
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   super.didChangeAppLifecycleState(state);
+  // }
 
   @override
   void dispose() {
@@ -71,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               ],
             ),
-            DoubleListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
+            DoubleValueListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
               valueListenable:
                   Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
               valueListenable2:

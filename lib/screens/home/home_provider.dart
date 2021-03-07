@@ -65,6 +65,12 @@ class HomeProvider extends ChangeNotifier {
     });
   }
 
+  void iniState() {
+    _mqttHandler.login().then((value) {
+      listenTocloudStreamAndSubscribeTopic();
+    });
+  }
+
   User get user {
     return SharedPrefs.instance.getUserData();
   }

@@ -41,6 +41,8 @@ class MQTTManager implements Manager {
         .withWillQos(MqttQos.exactlyOnce);
     _client.connectionMessage = connMess;
     _client.autoReconnect = true;
+    _client.resubscribeOnAutoReconnect = true;
+
     _client.onAutoReconnect = () {
       print(":::::::::::::::::::::::Reconnecting ::::::::::::::::::::::::");
     };
@@ -61,10 +63,7 @@ class MQTTManager implements Manager {
         await _client.connect(username, password).then((value) {
           if (value.state != MqttConnectionState.connected) {
             disconnectMQTTClient();
-            // _client.autoReconnect = true;
-            _client.resubscribeOnAutoReconnect = true;
-            _client.onAutoReconnect = () => print('Reconnecting');
-            _client.onAutoReconnected = () => print('Reconnected');
+
             _client.onDisconnected = () {
               print('discconnected');
               // _client.
