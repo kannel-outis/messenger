@@ -17,7 +17,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   /// return a User object on pop adn compare it to the user from settings page then update
   @override
   Widget build(BuildContext context) {
-    var user = context.read<HomeProvider>().user;
+    User? user = context.read<HomeProvider>().user;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
@@ -28,7 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _ProfileTopSec(user: user),
             InkWell(
               onTap: () async {
-                User returnUserValue = await Navigator.of(context).push(
+                User? returnUserValue = await Navigator.of(context).push(
                   CustomRoute(
                     builder: (_) => ProfileScreen(user: user),
                   ),
@@ -89,9 +89,9 @@ class _TopAppBar extends StatelessWidget {
 }
 
 class _ProfileTopSec extends StatelessWidget {
-  final User user;
+  final User? user;
 
-  const _ProfileTopSec({Key key, this.user}) : super(key: key);
+  const _ProfileTopSec({Key? key, this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class _ProfileTopSec extends StatelessWidget {
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: CachedNetworkImageProvider(
-                      user.photoUrl ?? GeneralConstants.DEFAULT_PHOTOURL,
+                      user!.photoUrl ?? GeneralConstants.DEFAULT_PHOTOURL,
                     ),
                   ),
                 ),
@@ -127,14 +127,14 @@ class _ProfileTopSec extends StatelessWidget {
                 SizedBox(height: 15),
                 Container(
                   child: Text(
-                    user.userName ?? "username",
+                    user!.userName ?? "username",
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
                 SizedBox(height: 5),
                 Container(
                   child: Text(
-                    user.phoneNumbers[0] ?? "phoneNumber",
+                    user!.phoneNumbers![0] ?? "phoneNumber",
                     style: TextStyle(fontSize: 15, color: Colors.grey),
                   ),
                 ),

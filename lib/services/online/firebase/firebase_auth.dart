@@ -18,11 +18,11 @@ class FirebaseMAuth extends Online {
       try {
         await _auth.signInWithCredential(_).then((value) {
           fireBaseUserOnChanged().listen((user) {
-            setFirebaseUser(user);
+            setFirebaseUser!(user);
           });
         }).then((value) {
-          voidCallBack();
-        });
+          voidCallBack!();
+        } as FutureOr<_> Function(Null));
       } catch (e) {
         print(e.toString());
       }
@@ -34,17 +34,17 @@ class FirebaseMAuth extends Online {
     };
 
     PhoneCodeSent _phoneCodeSent =
-        (String verificationId, [int forceResendingToken]) async {
+        (String verificationId, [int? forceResendingToken]) async {
       print("::::::::::::::::" + forceResendingToken.toString());
       print('VerifyId::::::::::::::::::: $verificationId');
-      setVerificationId(verificationId);
+      setVerificationId!(verificationId);
     };
 
     PhoneCodeAutoRetrievalTimeout _phoneCodeAutoRetrievalTimeout =
         (String verificationId) {
       print('auto Verification Timed Out');
-      timeOutFunction();
-      setPhoneAutoRetrieval(verificationId);
+      timeOutFunction!();
+      setPhoneAutoRetrieval!(verificationId);
     };
     try {
       await _auth.verifyPhoneNumber(
@@ -66,10 +66,10 @@ class FirebaseMAuth extends Online {
   }
 
   @override
-  Future<void> verifyOTP({String verificationID, int otp}) async {
+  Future<void> verifyOTP({String? verificationID, int? otp}) async {
     try {
       final AuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationID,
+        verificationId: verificationID!,
         smsCode: otp.toString(),
       );
       await _auth.signInWithCredential(credential);

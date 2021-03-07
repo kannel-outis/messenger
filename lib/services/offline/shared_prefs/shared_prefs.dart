@@ -11,15 +11,15 @@ class SharedPrefs extends Offline {
     return _instance;
   }
 
-  static SharedPreferences _prefs;
+  static SharedPreferences? _prefs;
 
-  static Future<SharedPreferences> getInstance() async {
+  static Future<SharedPreferences?> getInstance() async {
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
-      if (!_prefs.containsKey(OfflineConstants.FIRST_TIME)) {
-        await _prefs.setBool(OfflineConstants.FIRST_TIME, false);
+      if (!_prefs!.containsKey(OfflineConstants.FIRST_TIME)) {
+        await _prefs!.setBool(OfflineConstants.FIRST_TIME, false);
       } else {
-        print(_prefs.getString(OfflineConstants.MY_DATA));
+        print(_prefs!.getString(OfflineConstants.MY_DATA));
       }
     }
     return _prefs;
@@ -27,38 +27,38 @@ class SharedPrefs extends Offline {
 
   @override
   String getString(String key) {
-    return _prefs.getString(key);
+    return _prefs!.getString(key);
   }
 
   @override
   bool getBool(String key) {
-    return _prefs.getBool(key);
+    return _prefs!.getBool(key);
   }
 
   @override
   Future<bool> setBool(String key, bool value) async {
     _prefs = await SharedPreferences.getInstance();
-    return _prefs.setBool(key, value);
+    return _prefs!.setBool(key, value);
   }
 
   @override
   Future<bool> setString(String key, String value) async {
     _prefs = await SharedPreferences.getInstance();
-    return _prefs.setString(key, value);
+    return _prefs!.setString(key, value);
   }
 
   @override
   Future<bool> setUserData(User user) async {
     final String value = json.encode(user.toMap());
-    return _prefs.setString(OfflineConstants.MY_DATA, value).then((value) {
-      _prefs.reload();
+    return _prefs!.setString(OfflineConstants.MY_DATA, value).then((value) {
+      _prefs!.reload();
       return value;
     });
   }
 
   @override
   User getUserData() {
-    final rawUserString = _prefs.getString(OfflineConstants.MY_DATA);
+    final rawUserString = _prefs!.getString(OfflineConstants.MY_DATA);
     if (rawUserString == null) return null;
     Map<String, dynamic> rawUserDecode = json.decode(rawUserString);
     return User.fromMap(rawUserDecode);

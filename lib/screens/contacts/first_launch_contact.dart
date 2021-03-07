@@ -56,7 +56,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
 
       return ListTile(
         title: Text("${e.contact?.givenName ?? e.contact?.displayName}"),
-        subtitle: Text(e.contact.phones.length == 0
+        subtitle: Text(e.contact!.phones.length == 0
             ? ""
             : "${e.contact?.phones?.toList()[0]?.value}"),
         trailing: InkWell(

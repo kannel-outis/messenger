@@ -17,8 +17,8 @@ class HiveChatAdapter extends TypeAdapter<HiveChat> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return HiveChat(
-      chatId: fields[0] as String,
-      participants: (fields[1] as List)?.cast<User>(),
+      chatId: fields[0] as String?,
+      participants: (fields[1] as List?)?.cast<User>(),
     );
   }
 

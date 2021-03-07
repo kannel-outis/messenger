@@ -9,10 +9,10 @@ import 'package:messenger/utils/_extensions_.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final BuildContext context;
-  final String photoUrl;
-  final String friendContactName;
+  final String? photoUrl;
+  final String? friendContactName;
   const CustomAppBar(
-      {@required this.context, this.friendContactName, this.photoUrl});
+      {required this.context, this.friendContactName, this.photoUrl});
 
   @override
   Widget build(BuildContext context) {

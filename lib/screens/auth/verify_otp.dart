@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class VerifyOTPScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final _otpController = useTextEditingController();
+    final TextEditingController? _otpController = useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
@@ -57,7 +57,7 @@ class VerifyOTPScreen extends HookWidget {
                   child: GestureDetector(
                     onTap: () {
                       _authProvider.verifyOTP(
-                        int.parse(_otpController.text),
+                        int.parse(_otpController!.text),
                         () {
                           Navigator.of(context).push(
                             MaterialPageRoute(

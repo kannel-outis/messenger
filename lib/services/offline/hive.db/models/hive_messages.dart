@@ -5,23 +5,23 @@ part 'hive_messages.g.dart';
 @HiveType(typeId: 0)
 class HiveMessages extends HiveObject {
   @HiveField(0)
-  final String chatID;
+  final String? chatID;
   @HiveField(1)
-  final String msg;
+  final String? msg;
   @HiveField(2)
-  final String messageType;
+  final String? messageType;
   @HiveField(3)
-  final DateTime dateTime;
+  final DateTime? dateTime;
   @HiveField(4)
-  final String senderID;
+  final String? senderID;
   @HiveField(5)
-  final String receiverID;
+  final String? receiverID;
   @HiveField(6)
-  final String messageID;
+  final String? messageID;
 
   ///  messsage if is read or not
   @HiveField(7)
-  final bool isRead;
+  final bool? isRead;
 
   HiveMessages({
     this.chatID,
@@ -30,19 +30,19 @@ class HiveMessages extends HiveObject {
     this.dateTime,
     this.senderID,
     this.receiverID,
-    @required this.messageID,
-    @required this.isRead,
+    required this.messageID,
+    required this.isRead,
   });
 
   HiveMessages copyWith({
-    String chatID,
-    String msg,
-    String messageType,
-    DateTime dateTime,
-    String senderID,
-    String receiverID,
-    String messageID,
-    bool isRead,
+    String? chatID,
+    String? msg,
+    String? messageType,
+    DateTime? dateTime,
+    String? senderID,
+    String? receiverID,
+    String? messageID,
+    bool? isRead,
   }) {
     return HiveMessages(
       chatID: chatID ?? this.chatID,

@@ -10,13 +10,13 @@ import 'auth_provider.dart';
 
 class RegistrationScreen extends HookWidget {
   void _checkPlatformAndExecute(AuthProvider _authProvider,
-      BuildContext context, TextEditingController _phoneController) {
+      BuildContext context, TextEditingController? _phoneController) {
     if (Platform.isAndroid) {
-      _authProvider.verifyPhoneNumber("${_phoneController.text.toString()}",
+      _authProvider.verifyPhoneNumber("${_phoneController!.text.toString()}",
           navigate: () async {
         if (await Future.delayed(
             Duration(seconds: 2), () => _authProvider.firebaseUser != null)) {
-          print(_authProvider.firebaseUser.phoneNumber);
+          print(_authProvider.firebaseUser!.phoneNumber);
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (_) => SetNameScreen()));
         } else {
@@ -34,7 +34,7 @@ class RegistrationScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _phoneController = useTextEditingController();
+    final TextEditingController? _phoneController = useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
@@ -87,9 +87,9 @@ class RegistrationScreen extends HookWidget {
                                   MaxLengthEnforcement.enforced,
                               buildCounter: (
                                 context, {
-                                int currentLength,
-                                int maxLength,
-                                bool isFocused,
+                                int? currentLength,
+                                int? maxLength,
+                                bool? isFocused,
                               }) {
                                 return SizedBox();
                               },
@@ -113,7 +113,7 @@ class RegistrationScreen extends HookWidget {
                       // print(
                       //     _authProvider.firebaseUser?.uid ?? "Null from print");
                       print(
-                          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
+                          "${_authProvider.countrycode.dialCode}${_phoneController!.text.toString()}");
                     },
                     child: Container(
                       height: MediaQuery.of(context).size.width / 9,

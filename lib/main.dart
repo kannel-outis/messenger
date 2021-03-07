@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
             : RegistrationScreen(),
         builder: (context, child) {
           Utils.getBlockHeightAndWidth(context);
-          return child;
+          return child!;
         },
       ),
     );

@@ -7,7 +7,7 @@ abstract class Offline {
 
   // SharedPReferences: User Personal info and app Data
 
-  String getString(String key) {
+  String? getString(String key) {
     return null;
   }
 

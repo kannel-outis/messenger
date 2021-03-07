@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
 class Utils {
-  static double blockHeight;
-  static double blockWidth;
+  static double? blockHeight;
+  static late double blockWidth;
 
   static getBlockHeightAndWidth(BuildContext context) {
     blockHeight = MediaQuery.of(context).size.height / 100;

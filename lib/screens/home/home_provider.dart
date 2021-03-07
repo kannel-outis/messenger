@@ -16,8 +16,8 @@ class HomeProvider extends ChangeNotifier {
   Online _storeService = FireStoreService();
   MQTThandler _mqttHandler = MQTThandler();
   HiveHandler _hiveHandler = HiveHandler();
-  List<Map<String, dynamic>> _list = [];
-  bool isme(String userID) {
+  List<Map<String, dynamic>?> _list = [];
+  bool isme(String? userID) {
     final User prefUser = User.fromMap(
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)));
     return prefUser.id == userID;
@@ -33,14 +33,14 @@ class HomeProvider extends ChangeNotifier {
           HiveChat hiveChat = HiveChat(
             chatId: chat.chatID,
             participants:
-                chat.participants.map((e) => User.fromMap(e)).toList(),
+                chat.participants!.map((e) => User.fromMap(e!)).toList(),
           );
           bool exists = _hiveHandler.checkIfchatExists(hiveChat);
 
           if (exists == false) {
             _hiveHandler.saveChatToDB(chat);
           } else {
-            for (var user in hiveChat.participants) {
+            for (var user in hiveChat.participants!) {
               _hiveHandler
                 ..updateUserInHive(user, 1)
                 ..updateUserOnContactsListInHive(user, 1);
@@ -58,7 +58,7 @@ class HomeProvider extends ChangeNotifier {
       _list.add(event);
       print(_list.length);
       try {
-        _hiveHandler.saveMessages(Message.fromMap(_list.last));
+        _hiveHandler.saveMessages(Message.fromMap(_list.last!));
       } catch (e) {
         print(e.toString());
       }

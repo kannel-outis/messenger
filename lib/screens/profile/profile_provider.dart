@@ -15,9 +15,9 @@ class ProfileProvider extends ChangeNotifier {
   Offline _sharedPrefs = SharedPrefs.instance;
   HiveHandler _hiveHandler = HiveHandler();
   bool _isDone = false;
-  String _imageUrl;
+  String? _imageUrl;
 
-  Future<void> updateAllDataInCloud({String username, String status}) async {
+  Future<void> updateAllDataInCloud({String? username, String? status}) async {
     final User user = User(
       id: userPrefData.id,
       phoneNumbers: userPrefData.phoneNumbers,
@@ -35,10 +35,10 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> pickeImageAndSaveToCloudStorage(User user) async {
+  Future<void> pickeImageAndSaveToCloudStorage(User? user) async {
     await MessengerImagePicker.pickeImage().then(
       (value) async {
-        _firebaseStorage.saveImageToFireStore(user.id, value).then(
+        _firebaseStorage.saveImageToFireStore(user!.id, value).then(
           (value) {
             _imageUrl = value;
             print(_imageUrl);
@@ -51,5 +51,5 @@ class ProfileProvider extends ChangeNotifier {
 
   User get userPrefData => _sharedPrefs.getUserData();
   bool get isDone => _isDone;
-  String get imageUrl => _imageUrl;
+  String? get imageUrl => _imageUrl;
 }

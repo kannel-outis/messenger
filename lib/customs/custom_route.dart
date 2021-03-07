@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomRoute<T> extends PageRoute<T> {
-  final WidgetBuilder builder;
+  final WidgetBuilder? builder;
 
   CustomRoute({this.builder});
 
@@ -18,7 +18,7 @@ class CustomRoute<T> extends PageRoute<T> {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
-    return builder(context);
+    return builder!(context);
   }
 
   @override

@@ -20,15 +20,15 @@ abstract class Manager {
   }
 }
 
-abstract class ManagerHandler<T extends Manager> {
-  T _manager;
+abstract class ManagerHandler<T extends Manager?> {
+  T? _manager;
 
   @protected
-  T get manager => _manager;
+  T? get manager => _manager;
 
   @protected
   @mustCallSuper
-  T setManager(T newManager) {
+  T? setManager(T newManager) {
     if (_manager == null) {
       _manager = newManager;
     }
@@ -37,7 +37,7 @@ abstract class ManagerHandler<T extends Manager> {
 
   @mustCallSuper
   void dispose() {
-    _manager.dispose();
+    _manager!.dispose();
   }
 
   User get user {
@@ -45,7 +45,7 @@ abstract class ManagerHandler<T extends Manager> {
     return User.fromMap(json.decode(_rawData));
   }
 
-  Future<MqttClient> login() => throw UnimplementedError();
+  Future<MqttClient?> login() => throw UnimplementedError();
   Future<void> connectToClient() => throw UnimplementedError();
   void disconnectClient() => throw UnimplementedError();
   Future<bool> subscribe(String topic) => throw UnimplementedError();

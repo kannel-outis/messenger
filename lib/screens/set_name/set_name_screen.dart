@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class SetNameScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final _userNameController = useTextEditingController();
+    final TextEditingController? _userNameController = useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
@@ -63,14 +63,14 @@ class SetNameScreen extends HookWidget {
                                       color: Colors.blue),
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: auth.imageUrl == null &&
+                                    image: (auth.imageUrl == null &&
                                             auth.photoUrlFromUserDataPref ==
                                                 null
                                         ? AssetImage('assets/person.png')
                                         : CachedNetworkImageProvider(
                                             auth.imageUrl ??
-                                                auth.photoUrlFromUserDataPref,
-                                          ),
+                                                auth.photoUrlFromUserDataPref!,
+                                          )) as ImageProvider<Object>,
                                   ),
                                 ),
                               ),
@@ -117,7 +117,7 @@ class SetNameScreen extends HookWidget {
                     onTap: () {
                       _authProvider
                           .saveNewUserToCloudAndSetPrefs(
-                              _userNameController.text)
+                              _userNameController!.text)
                           .then(
                         (value) {
                           Navigator.of(context).push(

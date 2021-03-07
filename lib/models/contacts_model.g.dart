@@ -17,11 +17,11 @@ class HivePhoneContactsListAdapter extends TypeAdapter<HivePhoneContactsList> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return HivePhoneContactsList(
-      phoneContacts: (fields[0] as List)
+      (phoneContacts: (fields[0] as List?)
           ?.map((dynamic e) => (e as List)
               ?.map((dynamic e) => (e as Map)?.cast<String, dynamic>())
               ?.toList())
-          ?.toList(),
+          ?.toList())!,
     );
   }
 

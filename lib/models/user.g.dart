@@ -17,11 +17,11 @@ class UserAdapter extends TypeAdapter<User> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return User(
-      id: fields[0] as String,
-      userName: fields[1] as String,
-      phoneNumbers: (fields[2] as List)?.cast<dynamic>(),
-      photoUrl: fields[3] as String,
-      status: fields[4] as String,
+      id: fields[0] as String?,
+      userName: fields[1] as String?,
+      phoneNumbers: (fields[2] as List?)?.cast<dynamic>(),
+      photoUrl: fields[3] as String?,
+      status: fields[4] as String?,
     );
   }
 

@@ -6,27 +6,27 @@ import 'package:messenger/screens/profile/profile_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends HookWidget {
-  final User user;
+  final User? user;
 
-  const ProfileScreen({Key key, @required this.user}) : super(key: key);
+  const ProfileScreen({required Key key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var _phoneTextController =
-        useTextEditingController(text: user.phoneNumbers[0]);
-    var _userNameTextController = useTextEditingController(text: user.userName);
-    var _statusTextController = useTextEditingController(text: user.status);
+    TextEditingController? _phoneTextController =
+        useTextEditingController(text: user!.phoneNumbers![0]);
+    TextEditingController? _userNameTextController = useTextEditingController(text: user!.userName!);
+    TextEditingController? _statusTextController = useTextEditingController(text: user!.status!);
     var _profileProvider = Provider.of<ProfileProvider>(context);
 
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pop(
           User(
-            id: user.id,
-            phoneNumbers: user.phoneNumbers,
-            photoUrl: _profileProvider.imageUrl ?? user.photoUrl,
-            status: _statusTextController.text,
-            userName: _userNameTextController.text,
+            id: user!.id,
+            phoneNumbers: user!.phoneNumbers,
+            photoUrl: _profileProvider.imageUrl ?? user!.photoUrl,
+            status: _statusTextController!.text,
+            userName: _userNameTextController!.text,
           ),
         );
         return true;
@@ -39,7 +39,7 @@ class ProfileScreen extends HookWidget {
                 child: Consumer<ProfileProvider>(
                     builder: (context, provider, child) {
                   return _ProfileImageBuilder(
-                    profileUrl: provider.imageUrl ?? user.photoUrl,
+                    profileUrl: provider.imageUrl ?? user!.photoUrl,
                     profileProvider: provider,
                     user: user,
                   );
@@ -69,12 +69,12 @@ class ProfileScreen extends HookWidget {
 }
 
 class _ProfileImageBuilder extends StatelessWidget {
-  final String profileUrl;
-  final ProfileProvider profileProvider;
-  final User user;
+  final String? profileUrl;
+  final ProfileProvider? profileProvider;
+  final User? user;
 
   const _ProfileImageBuilder({
-    Key key,
+    Key? key,
     this.profileUrl,
     this.profileProvider,
     this.user,
@@ -92,7 +92,7 @@ class _ProfileImageBuilder extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: CachedNetworkImageProvider(profileUrl),
+                  image: CachedNetworkImageProvider(profileUrl!),
                 ),
               ),
             ),
@@ -103,7 +103,7 @@ class _ProfileImageBuilder extends StatelessWidget {
               child: IconButton(
                 icon: Icon(Icons.camera_alt),
                 onPressed: () {
-                  profileProvider.pickeImageAndSaveToCloudStorage(user);
+                  profileProvider!.pickeImageAndSaveToCloudStorage(user);
                 },
               ),
             ),
@@ -115,13 +115,13 @@ class _ProfileImageBuilder extends StatelessWidget {
 }
 
 class _Bottom extends StatelessWidget {
-  final List<TextEditingController> controllers;
-  final bool enabled;
-  final ProfileProvider profileProvider;
+  final List<TextEditingController?>? controllers;
+  final bool? enabled;
+  final ProfileProvider? profileProvider;
 
-  const _Bottom({Key key, this.controllers, this.enabled, this.profileProvider})
+  const _Bottom({Key? key, this.controllers, this.enabled, this.profileProvider})
       : super(key: key);
-  Widget _buildTextField(TextEditingController controller, {bool enabled}) {
+  Widget _buildTextField(TextEditingController? controller, {bool? enabled}) {
     return Expanded(
       child: TextFormField(
         controller: controller,
@@ -135,14 +135,14 @@ class _Bottom extends StatelessWidget {
     return Container(
       child: Column(
         children: [
-          _buildTextField(controllers[0], enabled: enabled),
-          _buildTextField(controllers[1]),
-          _buildTextField(controllers[2]),
+          _buildTextField(controllers![0], enabled: enabled),
+          _buildTextField(controllers![1]),
+          _buildTextField(controllers![2]),
           InkWell(
             onTap: () {
-              profileProvider.updateAllDataInCloud(
-                status: controllers[2].text,
-                username: controllers[1].text,
+              profileProvider!.updateAllDataInCloud(
+                status: controllers![2]!.text,
+                username: controllers![1]!.text,
               );
             },
             child: Padding(
