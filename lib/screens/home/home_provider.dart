@@ -41,8 +41,6 @@ class HomeProvider extends ChangeNotifier {
             _hiveHandler.saveChatToDB(chat);
           } else {
             for (var user in hiveChat.participants) {
-              print(user.userName);
-              // not Working
               _hiveHandler
                 ..updateUserInHive(user, 1)
                 ..updateUserOnContactsListInHive(user, 1);
@@ -57,7 +55,6 @@ class HomeProvider extends ChangeNotifier {
       }
     });
     _mqttHandler.messageController.listen((event) {
-      print("$event  :::::::::::::::::::");
       _list.add(event);
       print(_list.length);
       try {

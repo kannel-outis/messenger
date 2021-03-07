@@ -21,6 +21,7 @@ class ChatsScreen extends HookWidget {
   Widget build(BuildContext context) {
     var valueListener = useState<String>();
     final _textController = useTextEditingController();
+    final _scrollController = useScrollController();
     final _chatsProvider = Provider.of<ChatsProvider>(context);
     print(hiveChat.chatId);
     return Scaffold(
@@ -45,6 +46,7 @@ class ChatsScreen extends HookWidget {
                 return ListView.builder(
                   itemCount: hiveMessages.length,
                   reverse: true,
+                  controller: _scrollController,
                   padding: const EdgeInsets.only(
                     bottom: 30,
                     top: 30,
@@ -52,6 +54,7 @@ class ChatsScreen extends HookWidget {
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   itemBuilder: (context, index) {
+                    // _scrollController.position
                     bool isMe = hiveMessages[index].senderID ==
                         hiveChat.participants[0].id;
                     _chatsProvider.updateMessageIsRead(hiveMessages[index]);
