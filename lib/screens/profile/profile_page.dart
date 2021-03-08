@@ -8,14 +8,16 @@ import 'package:provider/provider.dart';
 class ProfileScreen extends HookWidget {
   final User? user;
 
-  const ProfileScreen({required Key key, required this.user}) : super(key: key);
+  const ProfileScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     TextEditingController? _phoneTextController =
         useTextEditingController(text: user!.phoneNumbers![0]);
-    TextEditingController? _userNameTextController = useTextEditingController(text: user!.userName!);
-    TextEditingController? _statusTextController = useTextEditingController(text: user!.status!);
+    TextEditingController? _userNameTextController =
+        useTextEditingController(text: user!.userName!);
+    TextEditingController? _statusTextController =
+        useTextEditingController(text: user!.status!);
     var _profileProvider = Provider.of<ProfileProvider>(context);
 
     return WillPopScope(
@@ -25,8 +27,8 @@ class ProfileScreen extends HookWidget {
             id: user!.id,
             phoneNumbers: user!.phoneNumbers,
             photoUrl: _profileProvider.imageUrl ?? user!.photoUrl,
-            status: _statusTextController!.text,
-            userName: _userNameTextController!.text,
+            status: _statusTextController.text,
+            userName: _userNameTextController.text,
           ),
         );
         return true;
@@ -119,7 +121,8 @@ class _Bottom extends StatelessWidget {
   final bool? enabled;
   final ProfileProvider? profileProvider;
 
-  const _Bottom({Key? key, this.controllers, this.enabled, this.profileProvider})
+  const _Bottom(
+      {Key? key, this.controllers, this.enabled, this.profileProvider})
       : super(key: key);
   Widget _buildTextField(TextEditingController? controller, {bool? enabled}) {
     return Expanded(

@@ -19,7 +19,7 @@ class HomeProvider extends ChangeNotifier {
   List<Map<String, dynamic>?> _list = [];
   bool isme(String? userID) {
     final User prefUser = User.fromMap(
-        json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)));
+        json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
     return prefUser.id == userID;
   }
 
@@ -29,7 +29,7 @@ class HomeProvider extends ChangeNotifier {
         .listen((event) {
       if (event.docChanges.isNotEmpty) {
         event.docChanges.forEach((element) {
-          Chat chat = Chat.froMap(element.doc.data());
+          Chat chat = Chat.froMap(element.doc.data()!);
           HiveChat hiveChat = HiveChat(
             chatId: chat.chatID,
             participants:

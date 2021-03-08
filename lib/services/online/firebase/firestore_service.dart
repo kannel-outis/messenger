@@ -18,8 +18,8 @@ class FireStoreService extends Online {
     User _newUser = User(
       id: user?.uid,
       phoneNumbers: [user?.phoneNumber, phoneNumberWithoutCC],
-      photoUrl: user?.uid == userDataPref?.id && newPhotoUrlString == null
-          ? userDataPref?.photoUrl
+      photoUrl: user?.uid == userDataPref.id && newPhotoUrlString == null
+          ? userDataPref.photoUrl
           : user?.photoURL ??
               newPhotoUrlString ??
               GeneralConstants.DEFAULT_PHOTOURL,
@@ -30,7 +30,7 @@ class FireStoreService extends Online {
 
     await _cloud
         .collection(OnlineConstants.FIRESTORE_USER_REF)
-        .doc(_newUser?.id!)
+        .doc(_newUser.id!)
         .set(_newUser.toMap());
     return _newUser;
   }
@@ -41,7 +41,7 @@ class FireStoreService extends Online {
         .collection(OnlineConstants.FIRESTORE_USER_REF)
         .doc(user.uid)
         .get();
-    return User.fromMap(_docSnapshot.data());
+    return User.fromMap(_docSnapshot.data()!);
   }
 
   @override
@@ -112,7 +112,7 @@ class FireStoreService extends Online {
           (value) async {
             value.docs.forEach(
               (element) async {
-                final Chat chat = Chat.froMap(element?.data());
+                final Chat chat = Chat.froMap(element.data()!);
 
                 ///checks if second user is equal to my user....incase of savedChats with self
                 final Map<String, dynamic>? secondUserMap =

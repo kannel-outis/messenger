@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               valueListenable2:
                   Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
               builder: (context, hiveChat, hiveMessage, child) {
-                final List<HiveChat> hiveChats = hiveChat.values
+                final List<HiveChat> hiveChats = hiveChat!.values
                     .where((element) =>
                         _homeProvider.isme(element.participants![0].id))
                     .toList();
@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   shrinkWrap: true,
                   itemCount: hiveChats.length,
                   itemBuilder: (context, index) {
-                    final List<HiveMessages> hiveMessages = hiveMessage.values
+                    final List<HiveMessages> hiveMessages = hiveMessage!.values
                         .where((element) =>
                             element.chatID == hiveChats[index].chatId)
                         .toList()

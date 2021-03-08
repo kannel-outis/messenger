@@ -8,10 +8,10 @@ abstract class Offline {
   // SharedPReferences: User Personal info and app Data
 
   String? getString(String key) {
-    return null;
+    throw UnimplementedError();
   }
 
-  bool getBool(String key) {
+  bool? getBool(String key) {
     return false;
   }
 

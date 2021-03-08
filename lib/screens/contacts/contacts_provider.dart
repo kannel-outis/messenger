@@ -48,7 +48,7 @@ class ContactProvider extends ChangeNotifier {
         friendUser.toMap(),
       ],
     );
-    if (await (_checkIfChatExistAlready(participants: _chat.participantsIDs) as FutureOr<bool>)) {
+    if (await (_checkIfChatExistAlready(participants: _chat.participantsIDs))) {
       await _fireStoreService.createNewChat(_chat).then((value) {
         _hiveHandler.saveChatToDB(_chat).then((value) {
           navigate!();
@@ -59,13 +59,13 @@ class ContactProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool?> _checkIfChatExistAlready({List<String?>? participants}) async {
-    bool? exists;
+  Future<bool> _checkIfChatExistAlready({List<String?>? participants}) async {
+    late bool exists;
     await _fireStoreService.queryInfo(participants).then((value) {
       bool _contains = value.docChanges.isNotEmpty;
 
       if (_contains &&
-          value.docChanges[0].doc.data()['participantsIDs'][0] ==
+          value.docChanges[0].doc.data()!['participantsIDs'][0] ==
               participants![0]) {
         exists = false;
       } else {
@@ -77,7 +77,7 @@ class ContactProvider extends ChangeNotifier {
 
   User getUserPref() {
     final User _user = User.fromMap(
-        json.decode(sharedPrefs.getString(OfflineConstants.MY_DATA)));
+        json.decode(sharedPrefs.getString(OfflineConstants.MY_DATA)!));
     return _user;
   }
 

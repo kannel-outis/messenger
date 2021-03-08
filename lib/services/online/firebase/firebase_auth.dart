@@ -18,11 +18,11 @@ class FirebaseMAuth extends Online {
       try {
         await _auth.signInWithCredential(_).then((value) {
           fireBaseUserOnChanged().listen((user) {
-            setFirebaseUser!(user);
+            setFirebaseUser!(user!);
           });
         }).then((value) {
           voidCallBack!();
-        } as FutureOr<_> Function(Null));
+        });
       } catch (e) {
         print(e.toString());
       }

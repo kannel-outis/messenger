@@ -24,7 +24,7 @@ class AuthProvider extends ChangeNotifier {
   final Online _firebaseStorage = MessengerFirebaseStorage();
   firebaseAuth.User? _firebaseUser;
 
-  void dropDownOnChanged(CountryCode c) {
+  void dropDownOnChanged(CountryCode? c) {
     _countryCode = c;
     notifyListeners();
   }
@@ -56,14 +56,14 @@ class AuthProvider extends ChangeNotifier {
     )
         .then((value) {
       _auth.firebaseUser.listen((newUser) {
-        _setFirebaseUser(newUser);
+        _setFirebaseUser(newUser!);
       });
     }).then((value) async {
       if (await Future.delayed(Duration(seconds: 2), () => _firebaseUser) !=
           null) {
         voidCallBack();
       }
-    } as FutureOr<_> Function(Null));
+    });
   }
 
   Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
@@ -88,7 +88,8 @@ class AuthProvider extends ChangeNotifier {
 
   void _setFirebaseUser(firebaseAuth.User newUser) {
     _firebaseUser = newUser;
-    print(" from _setFirebaseUser method" + _firebaseUser?.uid ?? 'Null ');
+    print(" from _setFirebaseUser method" +
+        (_firebaseUser == null ? "Null" : _firebaseUser!.uid));
     notifyListeners();
   }
 
@@ -116,7 +117,7 @@ class AuthProvider extends ChangeNotifier {
   String? get phoneNumberWithoutCC => _phoneNumberWithoutCC;
   String? get imageUrl => _imageUrl;
   String? get photoUrlFromUserDataPref =>
-      _offline.getUserData()?.id == _firebaseUser?.uid
+      _offline.getUserData().id == _firebaseUser?.uid
           ? _offline.getUserData().photoUrl
           : null;
 }

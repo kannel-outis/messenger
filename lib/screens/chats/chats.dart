@@ -19,7 +19,7 @@ class ChatsScreen extends HookWidget {
   ChatsScreen(this.hiveChat);
   @override
   Widget build(BuildContext context) {
-    var valueListener = useState<String?>();
+    var valueListener = useState<String?>("");
     final TextEditingController? _textController = useTextEditingController();
     final _scrollController = useScrollController();
     final _chatsProvider = Provider.of<ChatsProvider>(context);
@@ -104,26 +104,19 @@ class ChatsScreen extends HookWidget {
                                 width: Utils.blockWidth * 45,
                                 child: Text(
                                   DateFormat('HH:mm a').format(DateTime(
-                                              hiveMessages[index].dateTime!.year,
-                                              hiveMessages[index]
-                                                  .dateTime!
-                                                  .month,
-                                              hiveMessages[index].dateTime!.day,
-                                              hiveMessages[index].dateTime!.hour,
-                                              hiveMessages[index]
-                                                  .dateTime!
-                                                  .minute,
-                                              hiveMessages[index]
-                                                  .dateTime!
-                                                  .second,
-                                              hiveMessages[index]
-                                                  .dateTime!
-                                                  .millisecond,
-                                              hiveMessages[index]
-                                                  .dateTime!
-                                                  .microsecond)
-                                          .toLocal()) ??
-                                      "non",
+                                          hiveMessages[index].dateTime!.year,
+                                          hiveMessages[index].dateTime!.month,
+                                          hiveMessages[index].dateTime!.day,
+                                          hiveMessages[index].dateTime!.hour,
+                                          hiveMessages[index].dateTime!.minute,
+                                          hiveMessages[index].dateTime!.second,
+                                          hiveMessages[index]
+                                              .dateTime!
+                                              .millisecond,
+                                          hiveMessages[index]
+                                              .dateTime!
+                                              .microsecond)
+                                      .toLocal()),
                                   textAlign:
                                       isMe ? TextAlign.right : TextAlign.left,
                                   style: TextStyle(
@@ -166,13 +159,13 @@ class ChatsScreen extends HookWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: valueListener.value != null
+                  onTap: valueListener.value!.length > 0
                       ? () {
                           String? msg = valueListener.value;
                           _chatsProvider.sendMessage(
                               hiveChat: hiveChat, msg: msg);
                           _textController!.clear();
-                          valueListener.value = null;
+                          valueListener.value = "";
                         }
                       : () {
                           print(_textController!.text.length);

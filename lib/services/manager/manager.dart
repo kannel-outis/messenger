@@ -42,7 +42,7 @@ abstract class ManagerHandler<T extends Manager?> {
 
   User get user {
     final _rawData = SharedPrefs.instance.getString(OfflineConstants.MY_DATA);
-    return User.fromMap(json.decode(_rawData));
+    return User.fromMap(json.decode(_rawData!));
   }
 
   Future<MqttClient?> login() => throw UnimplementedError();

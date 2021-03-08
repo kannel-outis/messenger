@@ -16,19 +16,19 @@ abstract class Online {
     String phoneNumber, {
     VoidStringCallBack? setVerificationId,
     VoidStringCallBack? setPhoneAutoRetrieval,
-    required VoidUserCallBack setFirebaseUser,
+    required VoidUserCallBack? setFirebaseUser,
     required VoidCallback? voidCallBack,
     required VoidCallback? timeOutFunction,
   }) async {}
 
   @protected
-  Stream<firebaseAuth.User> fireBaseUserOnChanged() =>
+  Stream<firebaseAuth.User?> fireBaseUserOnChanged() =>
       firebaseAuth.FirebaseAuth.instance.authStateChanges();
 
   Future<void> signOut() async {}
   Future<void> verifyOTP({String? verificationID, int? otp}) =>
       throw UnimplementedError();
-  Stream<firebaseAuth.User> get firebaseUser => fireBaseUserOnChanged();
+  Stream<firebaseAuth.User?> get firebaseUser => fireBaseUserOnChanged();
 
   ///////////////////////////
 
@@ -46,6 +46,7 @@ abstract class Online {
   // ignore: missing_return
   Future<bool> updateUserInCloud({User? user}) async {
     if (firebaseAuth.User == null) throw MessengerError('User is Null');
+    return false;
   }
 
   Future<QuerySnapshot> queryMobileNumberORUsername(

@@ -52,7 +52,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          '$friendContactName'.capitalize(),
+                          friendContactName != null
+                              ? "${friendContactName!.capitalize()}"
+                              : "Null",
                           style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w600,

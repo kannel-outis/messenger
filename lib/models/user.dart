@@ -49,6 +49,13 @@ class User {
     };
   }
 
+  User.empty()
+      : id = null,
+        phoneNumbers = null,
+        photoUrl = null,
+        status = null,
+        userName = null;
+
   User.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         userName = map['userName'],
