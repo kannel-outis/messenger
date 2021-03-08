@@ -10,16 +10,16 @@ class FireStoreService extends Online {
   final _cloud = FirebaseFirestore.instance;
   @override
   Future<User> saveNewUserToCloud(
-      {String userName,
-      @required String phoneNumberWithoutCC,
-      firebaseAuth.User user,
-      @required User userDataPref,
-      @required String newPhotoUrlString}) async {
+      {String? userName,
+      required String? phoneNumberWithoutCC,
+      firebaseAuth.User? user,
+      required User userDataPref,
+      required String? newPhotoUrlString}) async {
     User _newUser = User(
       id: user?.uid,
       phoneNumbers: [user?.phoneNumber, phoneNumberWithoutCC],
-      photoUrl: user?.uid == userDataPref?.id && newPhotoUrlString == null
-          ? userDataPref?.photoUrl
+      photoUrl: user?.uid == userDataPref.id && newPhotoUrlString == null
+          ? userDataPref.photoUrl
           : user?.photoURL ??
               newPhotoUrlString ??
               GeneralConstants.DEFAULT_PHOTOURL,
@@ -30,7 +30,7 @@ class FireStoreService extends Online {
 
     await _cloud
         .collection(OnlineConstants.FIRESTORE_USER_REF)
-        .doc(_newUser?.id)
+        .doc(_newUser.id!)
         .set(_newUser.toMap());
     return _newUser;
   }
@@ -41,7 +41,7 @@ class FireStoreService extends Online {
         .collection(OnlineConstants.FIRESTORE_USER_REF)
         .doc(user.uid)
         .get();
-    return User.fromMap(_docSnapshot.data());
+    return User.fromMap(_docSnapshot.data()!);
   }
 
   @override
@@ -75,7 +75,7 @@ class FireStoreService extends Online {
   Future<void> createNewChat(Chat newChat) async {
     return _cloud
         .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .doc(newChat.chatID)
+        .doc(newChat.chatID!)
         .set(newChat.toMap());
   }
 
@@ -95,12 +95,12 @@ class FireStoreService extends Online {
   }
 
   @override
-  Future<bool> updateUserInCloud({User user}) async {
+  Future<bool> updateUserInCloud({User? user}) async {
     bool success = false;
     super.updateUserInCloud(user: user);
     await _cloud
         .collection(OnlineConstants.FIRESTORE_USER_REF)
-        .doc(user.id)
+        .doc(user!.id!)
         .update(user.toMap())
         .then(
       (value) async {
@@ -112,11 +112,11 @@ class FireStoreService extends Online {
           (value) async {
             value.docs.forEach(
               (element) async {
-                final Chat chat = Chat.froMap(element?.data());
+                final Chat chat = Chat.froMap(element.data()!);
 
                 ///checks if second user is equal to my user....incase of savedChats with self
-                final Map<String, dynamic> secondUserMap =
-                    chat.participants?.last["id"] == user.toMap()['id']
+                final Map<String, dynamic>? secondUserMap =
+                    chat.participants?.last!["id"] == user.toMap()['id']
                         ? user.toMap()
                         : chat.participants?.last;
                 final Chat newChat = Chat(

@@ -6,30 +6,30 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.0
-  provider: ^4.3.3
-  flutter_hooks: ^0.15.0
-  cloud_firestore: ^0.16.0
-  firebase_core: ^0.7.0
-  firebase_auth: ^0.20.0+1
-  shared_preferences: ^0.5.12+4
-  contacts_service: ^0.4.6
-  permission_handler: ^5.0.1+1
-  mqtt_client: ^8.2.0
-  uuid: ^2.2.2
-  hive_flutter: ^0.3.1
-  hive: ^1.4.4+1
-  path_provider: ^1.6.27
-  firebase_storage: ^7.0.0
-  image_picker: ^0.6.7+22
-  flutter_image_compress: ^0.7.0
-  cached_network_image: ^2.5.0
-  intl: ^0.16.1
+  cupertino_icons: ^1.0.2
+  provider: ^5.0.0
+  flutter_hooks: ^0.16.0
+  cloud_firestore: ^1.0.0
+  firebase_core: ^1.0.0
+  firebase_auth: ^1.0.0
+  shared_preferences: ^2.0.3
+  contacts_service: ^0.5.0-nullsafety.0
+  permission_handler: ^6.0.1
+  mqtt_client: ^9.0.0
+  uuid: ^3.0.1
+  hive_flutter: ^1.0.0
+  hive: ^2.0.0
+  path_provider: ^2.0.1
+  firebase_storage: ^8.0.0
+  image_picker: ^0.7.2
+  # flutter_image_compress: ^1.0.0-nullsafety
+  cached_network_image: ^3.0.0-nullsafety
+  intl: ^0.17.0
   connectivity: ^3.0.2
 
 dev_dependencies:

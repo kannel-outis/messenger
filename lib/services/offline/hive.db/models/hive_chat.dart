@@ -8,9 +8,9 @@ part 'hive_chat.g.dart';
 @HiveType(typeId: 1)
 class HiveChat extends HiveObject {
   @HiveField(0)
-  final String chatId;
+  final String? chatId;
   @HiveField(1)
-  final List<u.User> participants;
+  final List<u.User>? participants;
 
   HiveChat({
     this.chatId,

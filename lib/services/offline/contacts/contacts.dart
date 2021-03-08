@@ -23,28 +23,29 @@ class Contacts extends Offline {
         List<Contact> _listOfAllContacts = _getAllContacts.toList();
 
         for (var _contact in _listOfAllContacts) {
-          final String _cleanContactNumber = _contact.phones.toList().isNotEmpty
-              ? _contact.phones?.toList()[0].value
-              : "";
+          final String _cleanContactNumber =
+              _contact.phones!.toList().isNotEmpty
+                  ? _contact.phones?.toList()[0].value as String
+                  : "";
           final QuerySnapshot _result =
               await _cloud.queryMobileNumberORUsername(
                   _cleanNumber(_cleanContactNumber), 'phoneNumbers');
           // final User _cloudUser = User.fromMap(
           //     _result.docs.isNotEmpty ? _result.docs[0]?.data() : {});
-          final bool _isClean = _contact.phones.toList().isNotEmpty &&
+          final bool _isClean = _contact.phones!.toList().isNotEmpty &&
               _result.docs.isNotEmpty &&
               _result.docs[0]
-                  ?.data()['phoneNumbers']
-                  .contains(_contact.phones.toList()[0]?.value);
+                  .data()!['phoneNumbers']
+                  .contains(_contact.phones!.toList()[0].value);
           if (_isClean) {
             print('Found Something');
-            _registeredContacts?.add(RegisteredPhoneContacts(
+            _registeredContacts.add(RegisteredPhoneContacts(
               contact: _contact,
-              user: User.fromMap(_result.docs[0]?.data()),
+              user: User.fromMap(_result.docs[0].data()!),
             ));
           } else {
             print('Found Nothing');
-            _unRegisteredContacts?.add(UnRegisteredPhoneContacts(
+            _unRegisteredContacts.add(UnRegisteredPhoneContacts(
               contact: _contact,
             ));
           }

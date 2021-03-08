@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 class Chat {
-  final String chatID;
-  final List<String> participantsIDs;
-  final List<Map<String, dynamic>> participants;
+  final String? chatID;
+  final List<String?> participantsIDs;
+  final List<Map<String, dynamic>?>? participants;
 
   Chat({
     this.chatID,
     this.participants,
-    @required this.participantsIDs,
+    required this.participantsIDs,
   });
 
   Map<String, dynamic> toMap() {

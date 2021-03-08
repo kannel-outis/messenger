@@ -8,7 +8,7 @@ class AppConnectionState {
   final HomeProvider _homeProvider;
   AppConnectionState(this._connectivity, this._homeProvider);
 
-  StreamSubscription<ConnectivityResult> _subscription;
+  StreamSubscription<ConnectivityResult>? _subscription;
 
   void iniState() {
     _subscription = _connectivity.onConnectivityChanged.listen((event) {

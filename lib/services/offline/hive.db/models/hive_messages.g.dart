@@ -17,14 +17,14 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return HiveMessages(
-      chatID: fields[0] as String,
-      msg: fields[1] as String,
-      messageType: fields[2] as String,
-      dateTime: fields[3] as DateTime,
-      senderID: fields[4] as String,
-      receiverID: fields[5] as String,
-      messageID: fields[6] as String,
-      isRead: fields[7] as bool,
+      chatID: fields[0] as String?,
+      msg: fields[1] as String?,
+      messageType: fields[2] as String?,
+      dateTime: fields[3] as DateTime?,
+      senderID: fields[4] as String?,
+      receiverID: fields[5] as String?,
+      messageID: fields[6] as String?,
+      isRead: fields[7] as bool?,
     );
   }
 

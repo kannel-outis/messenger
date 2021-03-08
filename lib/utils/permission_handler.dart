@@ -5,7 +5,7 @@ class PermissionHandler {
   static Future<PermissionStatus> checkContactsPermission() async {
     var contactsPermissionStatus = await Permission.contacts.status;
     PermissionStatus _finalStatus;
-    if (contactsPermissionStatus.isUndetermined) {
+    if (!contactsPermissionStatus.isGranted) {
       _finalStatus = await Permission.contacts.request();
     } else if (contactsPermissionStatus.isDenied ||
         contactsPermissionStatus.isPermanentlyDenied) {

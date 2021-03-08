@@ -10,8 +10,8 @@ import 'manager.dart';
 
 class HiveManager extends Manager {
   HiveManager._();
-  static HiveManager _instance;
-  static HiveManager get instance {
+  static HiveManager? _instance;
+  static HiveManager? get instance {
     if (_instance == null) {
       _instance = HiveManager._();
     }
@@ -25,8 +25,8 @@ class HiveManager extends Manager {
 
   Future<void> saveChatToDB(Chat chat) async {
     List<User> _users = [];
-    chat.participants.forEach((element) {
-      _users.add(User.fromMap(element));
+    chat.participants!.forEach((element) {
+      _users.add(User.fromMap(element!));
     });
     final _hiveChat = HiveChat(chatId: chat.chatID, participants: _users);
     if (checkIfChatExists(_hiveChat)) return;
@@ -98,14 +98,14 @@ class HiveManager extends Manager {
     assert(index < 2);
     _chatBox.values
         .where((element) {
-          return element.participants[index].id == user.id;
+          return element.participants![index].id == user.id;
         })
         .toList()
         .forEach(
           (element) {
-            if (element.participants[index] != user) {
+            if (element.participants![index] != user) {
               print(element.chatId);
-              element.participants[index] = user;
+              element.participants![index] = user;
               // not Working here
               element.save();
             }
@@ -117,7 +117,7 @@ class HiveManager extends Manager {
     _hiveContactsList.values
         .where(
           (element) {
-            bool isEqualToId;
+            late bool isEqualToId;
             element.phoneContacts[0].forEach(
               (element) {
                 isEqualToId = element['user']['id'] == user.id;

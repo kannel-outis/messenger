@@ -8,31 +8,31 @@ import 'manager.dart';
 
 class MQTTManager implements Manager {
   final String broker;
-  final String clientIdentifier;
+  final String? clientIdentifier;
   final String username;
-  final String password;
+  final String? password;
 
   MQTTManager._(
       this.broker, this.clientIdentifier, this.password, this.username);
-  static MQTTManager _instance;
-  static MQTTManager getInstance(String broker, String clientIdentifier,
-      String username, String password) {
+  static MQTTManager? _instance;
+  static MQTTManager? getInstance(String broker, String? clientIdentifier,
+      String username, String? password) {
     if (_instance == null) {
       _instance = MQTTManager._(broker, clientIdentifier, password, username);
     }
     return _instance;
   }
 
-  MqttServerClient _client;
-  bool isConnected;
-  StreamController<Map<String, dynamic>> _streamController =
-      StreamController<Map<String, dynamic>>.broadcast();
+  late MqttServerClient _client;
+  bool? isConnected;
+  StreamController<Map<String, dynamic>?> _streamController =
+      StreamController<Map<String, dynamic>?>.broadcast();
 
   Future<MqttClient> login() async {
-    _client = MqttServerClient(broker, clientIdentifier);
+    _client = MqttServerClient(broker, clientIdentifier!);
     // _client.logging(on: true);
     final MqttConnectMessage connMess = MqttConnectMessage()
-        .withClientIdentifier(clientIdentifier)
+        .withClientIdentifier(clientIdentifier!)
         .keepAliveFor(60)
         .withWillTopic('willtopic')
         .withWillMessage('My Will message')
@@ -59,9 +59,9 @@ class MQTTManager implements Manager {
 
   Future<void> connectMQTTClient() async {
     try {
-      if (_client.connectionStatus.state != MqttConnectionState.connected) {
-        await _client.connect(username, password).then((value) {
-          if (value.state != MqttConnectionState.connected) {
+      if (_client.connectionStatus!.state != MqttConnectionState.connected) {
+        await _client.connect(username, password!).then((value) {
+          if (value!.state != MqttConnectionState.connected) {
             disconnectMQTTClient();
 
             _client.onDisconnected = () {
@@ -71,7 +71,7 @@ class MQTTManager implements Manager {
           } else {
             print("Connected");
             _client.onConnected = () => isConnected = true;
-            _client.published.listen((event) {
+            _client.published!.listen((event) {
               print("delivered");
             });
             // _client.published.listen((event) {
@@ -81,11 +81,12 @@ class MQTTManager implements Manager {
             //   Map<String, dynamic> dataPayload = json.decode(data);
             //   print("$dataPayload" + "this is recieved and delivered");
             // });
-            _client.updates.listen((event) {
-              final MqttPublishMessage payLoad = event[0].payload;
+            _client.updates!.listen((event) {
+              final MqttPublishMessage payLoad =
+                  event[0].payload as MqttPublishMessage;
               String data = MqttPublishPayload.bytesToStringAsString(
-                  payLoad.payload.message);
-              Map<String, dynamic> dataPayload = json.decode(data);
+                  payLoad.payload.message!);
+              Map<String, dynamic>? dataPayload = json.decode(data);
               print(dataPayload);
               _streamController.add(dataPayload);
             });
@@ -115,8 +116,8 @@ class MQTTManager implements Manager {
   //   return isConnected;
   // }
 
-  bool subscribe(String topic) {
-    if (_client.connectionStatus.state == MqttConnectionState.connected) {
+  bool subscribe(String? topic) {
+    if (_client.connectionStatus!.state == MqttConnectionState.connected) {
       _client.onConnected = () {
         print('connected');
       };
@@ -125,7 +126,7 @@ class MQTTManager implements Manager {
       };
       _client.onSubscribed = (topic) => print(topic);
 
-      _client.subscribe(topic, MqttQos.exactlyOnce);
+      _client.subscribe(topic!, MqttQos.exactlyOnce);
       return true;
     } else {
       return false;
@@ -142,8 +143,8 @@ class MQTTManager implements Manager {
     print(_client.connectionStatus.toString());
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addString(json.encode(message));
-    _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload);
+    _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
   }
 
-  Stream<Map<String, dynamic>> get messageStream => _streamController.stream;
+  Stream<Map<String, dynamic>?> get messageStream => _streamController.stream;
 }

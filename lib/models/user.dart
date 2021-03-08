@@ -7,15 +7,15 @@ part 'user.g.dart';
 @HiveType(typeId: 3)
 class User {
   @HiveField(0)
-  final String id;
+  final String? id;
   @HiveField(1)
-  final String userName;
+  final String? userName;
   @HiveField(2)
-  final List<dynamic> phoneNumbers;
+  final List<dynamic>? phoneNumbers;
   @HiveField(3)
-  final String photoUrl;
+  final String? photoUrl;
   @HiveField(4)
-  final String status;
+  final String? status;
 
   User({
     this.id,
@@ -48,6 +48,13 @@ class User {
       "status": status,
     };
   }
+
+  User.empty()
+      : id = null,
+        phoneNumbers = null,
+        photoUrl = null,
+        status = null,
+        userName = null;
 
   User.fromMap(Map<String, dynamic> map)
       : id = map['id'],

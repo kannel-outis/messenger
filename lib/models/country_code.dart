@@ -1,8 +1,8 @@
 class CountryCode {
-  final String name;
-  final String flagUri;
-  final String code;
-  final String dialCode;
+  final String? name;
+  final String? flagUri;
+  final String? code;
+  final String? dialCode;
 
   CountryCode({
     this.name,

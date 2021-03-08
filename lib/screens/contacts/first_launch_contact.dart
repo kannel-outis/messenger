@@ -12,10 +12,10 @@ class FirstLaunchContactScreen extends StatelessWidget {
       var e = element;
 
       return ListTile(
-        title: Text("${e.contact?.givenName ?? e.contact?.displayName}"),
-        subtitle: Text(e.contact.phones.length == 0
+        title: Text("${e.contact.givenName ?? e.contact.displayName}"),
+        subtitle: Text(e.contact.phones!.length == 0
             ? ""
-            : "${e.contact?.phones?.toList()[0]?.value}"),
+            : "${e.contact.phones?.toList()[0].value}"),
         trailing: InkWell(
           onTap: () {
             _contactModel.messageUser(
@@ -56,9 +56,9 @@ class FirstLaunchContactScreen extends StatelessWidget {
 
       return ListTile(
         title: Text("${e.contact?.givenName ?? e.contact?.displayName}"),
-        subtitle: Text(e.contact.phones.length == 0
+        subtitle: Text(e.contact!.phones!.length == 0
             ? ""
-            : "${e.contact?.phones?.toList()[0]?.value}"),
+            : "${e.contact?.phones?.toList()[0].value}"),
         trailing: InkWell(
           onTap: () {},
           child: Container(
@@ -119,7 +119,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _listOfContacts == null
+      body: _listOfContacts.length <= 0
           ? Center(
               child: CircularProgressIndicator(),
             )

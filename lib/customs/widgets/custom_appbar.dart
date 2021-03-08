@@ -9,10 +9,10 @@ import 'package:messenger/utils/_extensions_.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final BuildContext context;
-  final String photoUrl;
-  final String friendContactName;
+  final String? photoUrl;
+  final String? friendContactName;
   const CustomAppBar(
-      {@required this.context, this.friendContactName, this.photoUrl});
+      {required this.context, this.friendContactName, this.photoUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          '$friendContactName'.capitalize(),
+                          friendContactName != null
+                              ? "${friendContactName!.capitalize()}"
+                              : "Null",
                           style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w600,

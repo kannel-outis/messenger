@@ -11,27 +11,27 @@ class SharedPrefs extends Offline {
     return _instance;
   }
 
-  static SharedPreferences _prefs;
+  static late SharedPreferences _prefs;
 
-  static Future<SharedPreferences> getInstance() async {
-    if (_prefs == null) {
-      _prefs = await SharedPreferences.getInstance();
-      if (!_prefs.containsKey(OfflineConstants.FIRST_TIME)) {
-        await _prefs.setBool(OfflineConstants.FIRST_TIME, false);
-      } else {
-        print(_prefs.getString(OfflineConstants.MY_DATA));
-      }
+  static Future<SharedPreferences?> getInstance() async {
+    // if (_prefs == null) {
+    _prefs = await SharedPreferences.getInstance();
+    if (!_prefs.containsKey(OfflineConstants.FIRST_TIME)) {
+      await _prefs.setBool(OfflineConstants.FIRST_TIME, false);
+    } else {
+      print(_prefs.getString(OfflineConstants.MY_DATA));
+      // }
     }
     return _prefs;
   }
 
   @override
-  String getString(String key) {
+  String? getString(String key) {
     return _prefs.getString(key);
   }
 
   @override
-  bool getBool(String key) {
+  bool? getBool(String key) {
     return _prefs.getBool(key);
   }
 
@@ -59,7 +59,7 @@ class SharedPrefs extends Offline {
   @override
   User getUserData() {
     final rawUserString = _prefs.getString(OfflineConstants.MY_DATA);
-    if (rawUserString == null) return null;
+    if (rawUserString == null) return User.empty(); //initialy null
     Map<String, dynamic> rawUserDecode = json.decode(rawUserString);
     return User.fromMap(rawUserDecode);
   }

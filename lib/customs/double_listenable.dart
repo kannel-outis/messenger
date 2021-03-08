@@ -4,10 +4,10 @@ import 'package:messenger/utils/typedef.dart';
 
 class DoubleValueListenableBuilder<T, E> extends StatefulWidget {
   const DoubleValueListenableBuilder({
-    Key key,
-    @required this.valueListenable,
-    @required this.builder,
-    @required this.valueListenable2,
+    Key? key,
+    required this.valueListenable,
+    required this.builder,
+    required this.valueListenable2,
     this.child,
   })  : assert(valueListenable != null),
         assert(valueListenable2 != null),
@@ -19,7 +19,7 @@ class DoubleValueListenableBuilder<T, E> extends StatefulWidget {
 
   final DoubleValueListenableWidgetBuilder<T, E> builder;
 
-  final Widget child;
+  final Widget? child;
 
   @override
   State<StatefulWidget> createState() =>
@@ -27,9 +27,9 @@ class DoubleValueListenableBuilder<T, E> extends StatefulWidget {
 }
 
 class _DoubleValueListenableBuilderState<T, E>
-    extends State<DoubleValueListenableBuilder<T, E>> {
-  T value;
-  E value2;
+    extends State<DoubleValueListenableBuilder<T?, E?>> {
+  T? value;
+  E? value2;
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _DoubleValueListenableBuilderState<T, E>
   }
 
   @override
-  void didUpdateWidget(DoubleValueListenableBuilder<T, E> oldWidget) {
+  void didUpdateWidget(DoubleValueListenableBuilder<T?, E?> oldWidget) {
     if (oldWidget.valueListenable != widget.valueListenable ||
         oldWidget.valueListenable2 != widget.valueListenable2) {
       oldWidget.valueListenable.removeListener(_valueChanged);

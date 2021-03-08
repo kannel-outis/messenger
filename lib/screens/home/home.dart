@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     //   context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
     // });
     context.read<HomeProvider>().iniState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
@@ -84,16 +84,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               valueListenable2:
                   Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
               builder: (context, hiveChat, hiveMessage, child) {
-                final List<HiveChat> hiveChats = hiveChat.values
+                final List<HiveChat> hiveChats = hiveChat!.values
                     .where((element) =>
-                        _homeProvider.isme(element.participants[0].id))
+                        _homeProvider.isme(element.participants![0].id))
                     .toList();
 
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: hiveChats.length,
                   itemBuilder: (context, index) {
-                    final List<HiveMessages> hiveMessages = hiveMessage.values
+                    final List<HiveMessages> hiveMessages = hiveMessage!.values
                         .where((element) =>
                             element.chatID == hiveChats[index].chatId)
                         .toList()
@@ -106,8 +106,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     return ListTile(
                       title: Text(
                         hiveChats[index]
-                                .participants[1]
-                                .userName
+                                .participants![1]
+                                .userName!
                                 .capitalize() ??
                             'Null',
                         style: TextStyle(fontSize: 18),

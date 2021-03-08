@@ -14,38 +14,39 @@ abstract class Online {
   //firebaseAuth
   Future<void> verifyPhoneNumber(
     String phoneNumber, {
-    VoidStringCallBack setVerificationId,
-    VoidStringCallBack setPhoneAutoRetrieval,
-    @required VoidUserCallBack setFirebaseUser,
-    @required VoidCallback voidCallBack,
-    @required VoidCallback timeOutFunction,
+    VoidStringCallBack? setVerificationId,
+    VoidStringCallBack? setPhoneAutoRetrieval,
+    required VoidUserCallBack? setFirebaseUser,
+    required VoidCallback? voidCallBack,
+    required VoidCallback? timeOutFunction,
   }) async {}
 
   @protected
-  Stream<firebaseAuth.User> fireBaseUserOnChanged() =>
+  Stream<firebaseAuth.User?> fireBaseUserOnChanged() =>
       firebaseAuth.FirebaseAuth.instance.authStateChanges();
 
   Future<void> signOut() async {}
-  Future<void> verifyOTP({String verificationID, int otp}) =>
+  Future<void> verifyOTP({String? verificationID, int? otp}) =>
       throw UnimplementedError();
-  Stream<firebaseAuth.User> get firebaseUser => fireBaseUserOnChanged();
+  Stream<firebaseAuth.User?> get firebaseUser => fireBaseUserOnChanged();
 
   ///////////////////////////
 
   // fireStore
   Future<User> saveNewUserToCloud(
-          {String userName,
-          @required String phoneNumberWithoutCC,
-          firebaseAuth.User user,
-          @required User userDataPref,
-          @required String newPhotoUrlString}) async =>
+          {String? userName,
+          required String? phoneNumberWithoutCC,
+          firebaseAuth.User? user,
+          required User userDataPref,
+          required String? newPhotoUrlString}) async =>
       throw UnimplementedError();
   Future<User> getUserFromCloud(firebaseAuth.User user) async =>
       throw UnimplementedError();
   @mustCallSuper
   // ignore: missing_return
-  Future<bool> updateUserInCloud({User user}) async {
+  Future<bool> updateUserInCloud({User? user}) async {
     if (firebaseAuth.User == null) throw MessengerError('User is Null');
+    return false;
   }
 
   Future<QuerySnapshot> queryMobileNumberORUsername(
@@ -61,7 +62,7 @@ abstract class Online {
       throw UnimplementedError();
 
   ///firebase Storage for profile pics setUp
-  Future<String> saveImageToFireStore(String uid, File file) =>
+  Future<String> saveImageToFireStore(String? uid, File? file) =>
       throw UnimplementedError();
 }
 

@@ -14,28 +14,28 @@ import 'package:messenger/services/online/firebase/firebase_auth.dart';
 class AuthProvider extends ChangeNotifier {
   List<CountryCode> _listOfCCs =
       Codes.codes.map((e) => CountryCode.fromJson(e)).toList();
-  CountryCode _countryCode;
-  String _verificationId;
-  String _phoneNumberWithoutCC;
-  String _imageUrl;
+  CountryCode? _countryCode;
+  String? _verificationId;
+  String? _phoneNumberWithoutCC;
+  String? _imageUrl;
   final Online _auth = FirebaseMAuth();
   final Online _fireStoreService = FireStoreService();
   final Offline _offline = SharedPrefs.instance;
   final Online _firebaseStorage = MessengerFirebaseStorage();
-  firebaseAuth.User _firebaseUser;
+  firebaseAuth.User? _firebaseUser;
 
-  void dropDownOnChanged(CountryCode c) {
+  void dropDownOnChanged(CountryCode? c) {
     _countryCode = c;
     notifyListeners();
   }
 
   Future<void> verifyPhoneNumber(String phoneNumber,
-      {VoidCallback navigate, VoidCallback timeOutFunction}) async {
+      {VoidCallback? navigate, VoidCallback? timeOutFunction}) async {
     _countryCode =
         listOfCCs.where((element) => element.dialCode == "+234").first;
     try {
       await _auth.verifyPhoneNumber(
-        _countryCode.dialCode + phoneNumber,
+        _countryCode!.dialCode! + phoneNumber,
         setVerificationId: _setVerificationId,
         setPhoneAutoRetrieval: _setVerificationId,
         setFirebaseUser: _setFirebaseUser,
@@ -56,7 +56,7 @@ class AuthProvider extends ChangeNotifier {
     )
         .then((value) {
       _auth.firebaseUser.listen((newUser) {
-        _setFirebaseUser(newUser);
+        _setFirebaseUser(newUser!);
       });
     }).then((value) async {
       if (await Future.delayed(Duration(seconds: 2), () => _firebaseUser) !=
@@ -88,14 +88,15 @@ class AuthProvider extends ChangeNotifier {
 
   void _setFirebaseUser(firebaseAuth.User newUser) {
     _firebaseUser = newUser;
-    print(" from _setFirebaseUser method" + _firebaseUser?.uid ?? 'Null ');
+    print(" from _setFirebaseUser method" +
+        (_firebaseUser == null ? "Null" : _firebaseUser!.uid));
     notifyListeners();
   }
 
   Future<void> pickeImageAndSaveToCloudStorage() async {
     await MessengerImagePicker.pickeImage().then(
       (value) async {
-        _firebaseStorage.saveImageToFireStore(_firebaseUser.uid, value).then(
+        _firebaseStorage.saveImageToFireStore(_firebaseUser!.uid, value).then(
           (value) {
             _imageUrl = value;
             print(_imageUrl);
@@ -110,13 +111,13 @@ class AuthProvider extends ChangeNotifier {
   CountryCode get countrycode =>
       _countryCode ??
       listOfCCs.where((element) => element.dialCode == "+234").first;
-  String get verificationId => _verificationId;
+  String? get verificationId => _verificationId;
   void get signOut => _auth.signOut();
-  firebaseAuth.User get firebaseUser => _firebaseUser;
-  String get phoneNumberWithoutCC => _phoneNumberWithoutCC;
-  String get imageUrl => _imageUrl;
-  String get photoUrlFromUserDataPref =>
-      _offline.getUserData()?.id == _firebaseUser?.uid
+  firebaseAuth.User? get firebaseUser => _firebaseUser;
+  String? get phoneNumberWithoutCC => _phoneNumberWithoutCC;
+  String? get imageUrl => _imageUrl;
+  String? get photoUrlFromUserDataPref =>
+      _offline.getUserData().id == _firebaseUser?.uid
           ? _offline.getUserData().photoUrl
           : null;
 }

@@ -10,22 +10,22 @@ import 'package:uuid/uuid.dart';
 class ChatsProvider extends ChangeNotifier {
   MQTThandler _mqttHandler = MQTThandler();
   HiveHandler _hiveHandler = HiveHandler();
-  void sendMessage({@required HiveChat hiveChat, @required String msg}) {
+  void sendMessage({required HiveChat hiveChat, required String? msg}) {
     print(SharedPrefs.instance.getUserData().id);
     // return;
     final Message message = Message(
       chatID: hiveChat.chatId,
       message: msg,
       messageType: 'text',
-      senderID: hiveChat.participants[0].id,
-      receiverID: hiveChat.participants[1].id,
+      senderID: hiveChat.participants![0].id,
+      receiverID: hiveChat.participants![1].id,
       timeOfMessage: DateTime.now(),
       messageID: Uuid().v4(),
     );
-    _mqttHandler.publish(hiveChat.chatId, message);
+    _mqttHandler.publish(hiveChat.chatId!, message);
   }
 
-  Stream<Map<String, dynamic>> get stream => _mqttHandler.messageController;
+  Stream<Map<String, dynamic>?> get stream => _mqttHandler.messageController;
 
   void updateMessageIsRead(HiveMessages message) =>
       _hiveHandler.updateMessageIsRead(message);
