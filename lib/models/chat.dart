@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class Chat {
   final String? chatID;
   final List<String?> participantsIDs;

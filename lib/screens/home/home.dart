@@ -8,7 +8,6 @@ import 'package:messenger/customs/double_listenable.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
-import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import '../../screens/chats/chats.dart';
 import 'package:provider/provider.dart';
 import '../../screens/settings/settings.dart';
@@ -23,9 +22,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    // MQTThandler().login().then((value) {
-    //   context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
-    // });
     context.read<HomeProvider>().iniState();
     WidgetsBinding.instance!.addObserver(this);
   }
@@ -34,11 +30,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   super.didChangeAppLifecycleState(state);
-  // }
 
   @override
   void dispose() {

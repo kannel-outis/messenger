@@ -23,6 +23,8 @@ class AuthProvider extends ChangeNotifier {
   final Offline _offline = SharedPrefs.instance;
   final Online _firebaseStorage = MessengerFirebaseStorage();
   firebaseAuth.User? _firebaseUser;
+  bool? _isLoading;
+  bool? _isTryingToVerify;
 
   void dropDownOnChanged(CountryCode? c) {
     _countryCode = c;
@@ -34,13 +36,25 @@ class AuthProvider extends ChangeNotifier {
     _countryCode =
         listOfCCs.where((element) => element.dialCode == "+234").first;
     try {
+      _isLoading = true;
+      notifyListeners();
       await _auth.verifyPhoneNumber(
         _countryCode!.dialCode! + phoneNumber,
         setVerificationId: _setVerificationId,
         setPhoneAutoRetrieval: _setVerificationId,
         setFirebaseUser: _setFirebaseUser,
-        voidCallBack: navigate,
-        timeOutFunction: timeOutFunction,
+        voidCallBack: () {
+          navigate!();
+          _isTryingToVerify = false;
+          _isLoading = false;
+
+          notifyListeners();
+        },
+        timeOutFunction: () {
+          timeOutFunction!();
+          _isTryingToVerify = false;
+          notifyListeners();
+        },
       );
       _phoneNumberWithoutCC = phoneNumber;
     } on MessengerError catch (e) {
@@ -49,6 +63,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> verifyOTP(int otp, VoidCallback voidCallBack) async {
+    _isTryingToVerify = true;
+    notifyListeners();
+
     await _auth
         .verifyOTP(
       otp: otp,
@@ -59,6 +76,8 @@ class AuthProvider extends ChangeNotifier {
         _setFirebaseUser(newUser!);
       });
     }).then((value) async {
+      _isTryingToVerify = true;
+      notifyListeners();
       if (await Future.delayed(Duration(seconds: 2), () => _firebaseUser) !=
           null) {
         voidCallBack();
@@ -83,6 +102,7 @@ class AuthProvider extends ChangeNotifier {
 
   void _setVerificationId(String newVerificationId) {
     _verificationId = newVerificationId;
+    _isTryingToVerify = true;
     notifyListeners();
   }
 
@@ -120,4 +140,6 @@ class AuthProvider extends ChangeNotifier {
       _offline.getUserData().id == _firebaseUser?.uid
           ? _offline.getUserData().photoUrl
           : null;
+  bool? get isTryingToVerify => _isTryingToVerify;
+  bool? get isLoading => _isLoading;
 }

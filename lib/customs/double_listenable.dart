@@ -9,10 +9,7 @@ class DoubleValueListenableBuilder<T, E> extends StatefulWidget {
     required this.builder,
     required this.valueListenable2,
     this.child,
-  })  : assert(valueListenable != null),
-        assert(valueListenable2 != null),
-        assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   final ValueListenable<T> valueListenable;
   final ValueListenable<E> valueListenable2;

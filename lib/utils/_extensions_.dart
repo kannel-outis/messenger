@@ -2,7 +2,6 @@ extension dateFormat on String {
   String getTime() {
     final String rawDateTimeString = this;
     var dateAndTime = rawDateTimeString.split(" ");
-    final String date = dateAndTime.first;
     final String time = dateAndTime.last;
     var splitTime = time.split(":").sublist(0, 2);
     int.parse(splitTime.first) > 12

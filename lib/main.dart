@@ -24,17 +24,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  // Widget get getLaunchRoute {
-  //   if (SharedPrefs.instance.getUserData() != null) {
-  //     print("emir");
-  //     return HomeScreen();
-  //   } else {
-  //     print("Register");
-
-  //     return RegistrationScreen();
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -48,16 +37,9 @@ class MyApp extends StatelessWidget {
           initialData: [],
           create: (_) => ContactProvider().registeredAndUnregisteredContacts(),
           catchError: (context, error) {
-            // MessengerError _messengerError = error as MessengerError;
-            // return [];
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //     SnackBar(content: Text('Error fetching Contacts')));
             print(error.toString());
             // return ;
             throw MessengerError(error.toString());
-          },
-          builder: (context, widget) {
-            return widget ?? Container();
           },
         ),
         ChangeNotifierProvider<HomeProvider>(create: (_) => HomeProvider()),

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class Utils {
-  static double? blockHeight;
+  static late double blockHeight;
   static late double blockWidth;
 
   static getBlockHeightAndWidth(BuildContext context) {

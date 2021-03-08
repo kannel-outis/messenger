@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
-import 'package:flutter/foundation.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/models/chat.dart';
 import 'package:messenger/services/online/online.dart';

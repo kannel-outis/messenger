@@ -45,7 +45,7 @@ abstract class Online {
   @mustCallSuper
   // ignore: missing_return
   Future<bool> updateUserInCloud({User? user}) async {
-    if (firebaseAuth.User == null) throw MessengerError('User is Null');
+    if (user == null) throw MessengerError('User is Null');
     return false;
   }
 
@@ -65,5 +65,3 @@ abstract class Online {
   Future<String> saveImageToFireStore(String? uid, File? file) =>
       throw UnimplementedError();
 }
-
-///Do listen for friend data change in firebase and apply changes to friend's data in hive db

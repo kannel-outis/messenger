@@ -32,6 +32,16 @@ class RegistrationScreen extends HookWidget {
     }
   }
 
+  String? isloadinState(bool isLoading, bool isTryingToverify) {
+    if (isLoading == true) {
+      return "Loading...";
+    } else if (isTryingToverify == true) {
+      return "Trying to Verify...";
+    } else {
+      return "Send SMS";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController? _phoneController = useTextEditingController();
@@ -109,9 +119,7 @@ class RegistrationScreen extends HookWidget {
                     onTap: () {
                       _checkPlatformAndExecute(
                           _authProvider, context, _phoneController);
-                      // _authProvider.signOut;
-                      // print(
-                      //     _authProvider.firebaseUser?.uid ?? "Null from print");
+
                       print(
                           "${_authProvider.countrycode.dialCode}${_phoneController!.text.toString()}");
                     },
@@ -120,10 +128,16 @@ class RegistrationScreen extends HookWidget {
                       width: MediaQuery.of(context).size.width / 3,
                       color: Colors.blue,
                       child: Center(
-                        child: Text(
-                          'Send SMS',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: Consumer<AuthProvider>(
+                            builder: (context, provider, child) {
+                          String _label = isloadinState(
+                              provider.isLoading ?? false,
+                              provider.isTryingToVerify ?? false)!;
+                          return Text(
+                            _label,
+                            style: TextStyle(color: Colors.white),
+                          );
+                        }),
                       ),
                     ),
                   ),
