@@ -86,6 +86,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
+    _isLoading = true;
+    notifyListeners();
     await _fireStoreService
         .saveNewUserToCloud(
       user: _firebaseUser,
@@ -95,6 +97,8 @@ class AuthProvider extends ChangeNotifier {
       newPhotoUrlString: _imageUrl,
     )
         .then((value) {
+      _isLoading = false;
+      notifyListeners();
       _offline.setUserData(value);
       _fireStoreService.updateUserInCloud(user: value);
     });
@@ -102,6 +106,7 @@ class AuthProvider extends ChangeNotifier {
 
   void _setVerificationId(String newVerificationId) {
     _verificationId = newVerificationId;
+    _isLoading = false;
     _isTryingToVerify = true;
     notifyListeners();
   }

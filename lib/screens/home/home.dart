@@ -62,7 +62,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => FirstLaunchContactScreen(),
+                        builder: (_) =>
+                            FirstLaunchContactScreen(fromHome: true),
                       ),
                     );
                   },

@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 class SetNameScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final TextEditingController? _userNameController = useTextEditingController();
+    final TextEditingController? _userNameController =
+        useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
@@ -134,9 +135,22 @@ class SetNameScreen extends HookWidget {
                       width: MediaQuery.of(context).size.width / 3,
                       color: Colors.blue,
                       child: Center(
-                        child: Text(
-                          'Save',
-                          style: TextStyle(color: Colors.white),
+                        child: Consumer<AuthProvider>(
+                          builder: (context, provider, child) {
+                            final bool? isLoading = provider.isLoading;
+                            return isLoading != true
+                                ? Text(
+                                    'Save',
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                : CircularProgressIndicator(
+                                    backgroundColor: Colors.blue,
+                                    strokeWidth: 1.5,
+                                    value: 1.2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  );
+                          },
                         ),
                       ),
                     ),

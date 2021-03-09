@@ -6,6 +6,9 @@ import 'package:provider/provider.dart';
 import 'contacts_provider.dart';
 
 class FirstLaunchContactScreen extends StatelessWidget {
+  final bool? fromHome;
+
+  const FirstLaunchContactScreen({Key? key, this.fromHome}) : super(key: key);
   Widget _buildContactTile(ContactProvider _contactModel, PhoneContacts element,
       BuildContext context) {
     if (element is RegisteredPhoneContacts) {
@@ -22,11 +25,13 @@ class FirstLaunchContactScreen extends StatelessWidget {
               _contactModel.getUserPref(),
               e.user,
               navigate: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => HomeScreen(),
-                  ),
-                );
+                fromHome != true
+                    ? Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => HomeScreen(),
+                        ),
+                      )
+                    : Navigator.pop(context);
               },
             );
           },
@@ -106,15 +111,20 @@ class FirstLaunchContactScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => HomeScreen())),
+            onPressed: () => fromHome != true
+                ? Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => HomeScreen(),
+                    ),
+                  )
+                : Navigator.pop(context),
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all<TextStyle>(
                 TextStyle(fontSize: 18),
               ),
             ),
             child: Center(
-              child: Text('Skip'),
+              child: fromHome != true ? Text('Skip') : Text('Go Back'),
             ),
           ),
         ],
