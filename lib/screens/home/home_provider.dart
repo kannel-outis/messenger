@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -64,6 +65,10 @@ class HomeProvider extends ChangeNotifier {
       }
     });
   }
+
+  // Future<void> updateConnectionStatus(String userId) async {
+
+  // }
 
   void iniState() {
     _mqttHandler.login().then((value) {

@@ -30,8 +30,7 @@ class Contacts extends Offline {
           final QuerySnapshot _result =
               await _cloud.queryMobileNumberORUsername(
                   _cleanNumber(_cleanContactNumber), 'phoneNumbers');
-          // final User _cloudUser = User.fromMap(
-          //     _result.docs.isNotEmpty ? _result.docs[0]?.data() : {});
+
           final bool _isClean = _contact.phones!.toList().isNotEmpty &&
               _result.docs.isNotEmpty &&
               _result.docs[0]

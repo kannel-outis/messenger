@@ -33,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    // MQTThandler().dispose();
     super.dispose();
   }
 
@@ -94,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     final List<HiveMessages> isReadMessages = hiveMessages
                         .where((element) => element.isRead == false)
                         .toList();
-
+                    print(hiveChats[index].participants![1].connectionStatus);
                     return ListTile(
                       title: Text(
                         hiveChats[index]

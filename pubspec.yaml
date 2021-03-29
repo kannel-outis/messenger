@@ -31,6 +31,7 @@ dependencies:
   cached_network_image: ^3.0.0-nullsafety
   intl: ^0.17.0
   connectivity: ^3.0.2
+  indexed_list_view: ^2.0.0
 
 dev_dependencies:
   flutter_test:

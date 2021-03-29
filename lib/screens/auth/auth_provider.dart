@@ -25,6 +25,7 @@ class AuthProvider extends ChangeNotifier {
   firebaseAuth.User? _firebaseUser;
   bool? _isLoading;
   bool? _isTryingToVerify;
+  bool? _uploadingImageToStore;
 
   void dropDownOnChanged(CountryCode? c) {
     _countryCode = c;
@@ -104,10 +105,10 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  void _setVerificationId(String newVerificationId) {
+  void _setVerificationId(String newVerificationId, {bool? codeSent}) {
     _verificationId = newVerificationId;
     _isLoading = false;
-    _isTryingToVerify = true;
+    if (codeSent == true) _isTryingToVerify = true;
     notifyListeners();
   }
 
@@ -121,10 +122,12 @@ class AuthProvider extends ChangeNotifier {
   Future<void> pickeImageAndSaveToCloudStorage() async {
     await MessengerImagePicker.pickeImage().then(
       (value) async {
+        _uploadingImageToStore = true;
+        notifyListeners();
         _firebaseStorage.saveImageToFireStore(_firebaseUser!.uid, value).then(
           (value) {
             _imageUrl = value;
-            print(_imageUrl);
+            _uploadingImageToStore = false;
             notifyListeners();
           },
         );
@@ -147,4 +150,5 @@ class AuthProvider extends ChangeNotifier {
           : null;
   bool? get isTryingToVerify => _isTryingToVerify;
   bool? get isLoading => _isLoading;
+  bool? get uploadingImageToStore => _uploadingImageToStore;
 }

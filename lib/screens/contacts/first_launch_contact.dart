@@ -9,10 +9,111 @@ class FirstLaunchContactScreen extends StatelessWidget {
   final bool? fromHome;
 
   const FirstLaunchContactScreen({Key? key, this.fromHome}) : super(key: key);
-  Widget _buildContactTile(ContactProvider _contactModel, PhoneContacts element,
-      BuildContext context) {
+
+  @override
+  Widget build(BuildContext context) {
+    var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
+    final _contactModel = Provider.of<ContactProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 100,
+        textTheme: TextTheme(
+          headline6: TextStyle(
+            color: Colors.black,
+            fontSize: 25,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        title: Text('Contacts'),
+        automaticallyImplyLeading: false,
+        actions: [
+          TextButton(
+            onPressed: () => fromHome != true
+                ? Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => HomeScreen(),
+                    ),
+                  )
+                : Navigator.pop(context),
+            style: ButtonStyle(
+              textStyle: MaterialStateProperty.all<TextStyle>(
+                TextStyle(fontSize: 18),
+              ),
+            ),
+            child: Center(
+              child: fromHome != true ? Text('Skip') : Text('Go Back'),
+            ),
+          ),
+        ],
+      ),
+      body: _listOfContacts.length <= 0
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              itemCount: _listOfContacts.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                bool _isRegistered =
+                    _listOfContacts[index] == _listOfContacts.first;
+                return Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        alignment: Alignment.bottomLeft,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
+                        width: double.infinity,
+                        color: Colors.grey.shade600,
+                        child: Text(
+                          _isRegistered ? 'Registered' : 'UnRegistered',
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      ..._listOfContacts[index].map((e) {
+                        return BuildContactTile(
+                            fromHome: fromHome,
+                            contactModel: _contactModel,
+                            element: e,
+                            context: context);
+                      }).toList(),
+                    ],
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
+
+class BuildContactTile extends StatelessWidget {
+  const BuildContactTile({
+    Key? key,
+    required this.fromHome,
+    required ContactProvider contactModel,
+    required this.element,
+    required this.context,
+  })   : _contactModel = contactModel,
+        super(key: key);
+
+  final bool? fromHome;
+  final ContactProvider _contactModel;
+  final PhoneContacts element;
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
     if (element is RegisteredPhoneContacts) {
-      var e = element;
+      var e = element as RegisteredPhoneContacts;
 
       return ListTile(
         title: Text("${e.contact.givenName ?? e.contact.displayName}"),
@@ -88,85 +189,5 @@ class FirstLaunchContactScreen extends StatelessWidget {
         ),
       );
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
-    final _contactModel = Provider.of<ContactProvider>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 100,
-        textTheme: TextTheme(
-          headline6: TextStyle(
-            color: Colors.black,
-            fontSize: 25,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        title: Text('Contacts'),
-        automaticallyImplyLeading: false,
-        actions: [
-          TextButton(
-            onPressed: () => fromHome != true
-                ? Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => HomeScreen(),
-                    ),
-                  )
-                : Navigator.pop(context),
-            style: ButtonStyle(
-              textStyle: MaterialStateProperty.all<TextStyle>(
-                TextStyle(fontSize: 18),
-              ),
-            ),
-            child: Center(
-              child: fromHome != true ? Text('Skip') : Text('Go Back'),
-            ),
-          ),
-        ],
-      ),
-      body: _listOfContacts.length <= 0
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemCount: _listOfContacts.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                bool _isRegistered =
-                    _listOfContacts[index] == _listOfContacts.first;
-                return Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 50,
-                        alignment: Alignment.bottomLeft,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
-                        width: double.infinity,
-                        color: Colors.grey.shade600,
-                        child: Text(
-                          _isRegistered ? 'Registered' : 'UnRegistered',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      ..._listOfContacts[index].map((e) {
-                        return _buildContactTile(_contactModel, e, context);
-                      }).toList(),
-                    ],
-                  ),
-                );
-              },
-            ),
-    );
   }
 }

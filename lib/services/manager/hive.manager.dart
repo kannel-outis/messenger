@@ -34,6 +34,7 @@ class HiveManager extends Manager {
   }
 
   Future<void> saveMessages(HiveMessages message) async {
+    print("OdeBi");
     if (_checkIfMessageExists(message)) return;
     try {
       await _messageBox.add(message);

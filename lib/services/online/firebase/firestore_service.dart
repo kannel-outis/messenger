@@ -78,12 +78,12 @@ class FireStoreService extends Online {
         .set(newChat.toMap());
   }
 
-  @override
-  Stream<QuerySnapshot> getAllOnGoingchats() {
-    return _cloud
-        .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .snapshots();
-  }
+  // @override
+  // Stream<QuerySnapshot> getAllOnGoingchats() {
+  //   return _cloud
+  //       .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
+  //       .snapshots();
+  // }
 
   @override
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) {
@@ -92,6 +92,15 @@ class FireStoreService extends Online {
         .where('participantsIDs', arrayContains: user.id)
         .snapshots();
   }
+
+  // @override
+  // Stream<DocumentSnapshot> listenToUserConnectionUpdate(String userId) {
+  //   // return super.listenToUserConnectionUpdate(user);
+  //   return _cloud
+  //       .collection(OnlineConstants.FIRESTORE_USER_REF)
+  //       .doc(userId)
+  //       .snapshots();
+  // }
 
   @override
   Future<bool> updateUserInCloud({User? user}) async {
@@ -134,3 +143,4 @@ class FireStoreService extends Online {
     return success;
   }
 }
+// TODO: implement user online and offline status ...create a stream to user listen to changes from firestore

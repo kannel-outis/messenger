@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:messenger/screens/auth/verify_otp.dart';
 import 'package:messenger/screens/set_name/set_name_screen.dart';
+import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 import '../../customs/widgets/country_drop_down.dart';
@@ -74,6 +75,7 @@ class RegistrationScreen extends HookWidget {
                 Center(
                   child: Container(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Consumer<AuthProvider>(
                           builder: (context, provider, _) {
@@ -103,9 +105,9 @@ class RegistrationScreen extends HookWidget {
                               }) {
                                 return SizedBox();
                               },
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(bottom: 15),
-                              ),
+                              // decoration: InputDecoration(
+                              //   contentPadding: EdgeInsets.only(bottom: 15),
+                              // ),
                             ),
                           ),
                         ),
@@ -124,9 +126,17 @@ class RegistrationScreen extends HookWidget {
                           "${_authProvider.countrycode.dialCode}${_phoneController!.text.toString()}");
                     },
                     child: Container(
-                      height: MediaQuery.of(context).size.width / 9,
-                      width: MediaQuery.of(context).size.width / 3,
-                      color: Colors.blue,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                      ),
+                      constraints: BoxConstraints(
+                        maxHeight: 70,
+                        maxWidth: 200,
+                        minHeight: 50,
+                        minWidth: 70,
+                      ),
+                      height: Utils.blockHeight * 5,
+                      width: Utils.blockWidth * 25,
                       child: Center(
                         child: Consumer<AuthProvider>(
                             builder: (context, provider, child) {
