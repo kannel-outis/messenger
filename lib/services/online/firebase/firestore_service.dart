@@ -78,12 +78,12 @@ class FireStoreService extends Online {
         .set(newChat.toMap());
   }
 
-  @override
-  Stream<QuerySnapshot> getAllOnGoingchats() {
-    return _cloud
-        .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-        .snapshots();
-  }
+  // @override
+  // Stream<QuerySnapshot> getAllOnGoingchats() {
+  //   return _cloud
+  //       .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
+  //       .snapshots();
+  // }
 
   @override
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) {
@@ -92,6 +92,15 @@ class FireStoreService extends Online {
         .where('participantsIDs', arrayContains: user.id)
         .snapshots();
   }
+
+  // @override
+  // Stream<DocumentSnapshot> listenToUserConnectionUpdate(String userId) {
+  //   // return super.listenToUserConnectionUpdate(user);
+  //   return _cloud
+  //       .collection(OnlineConstants.FIRESTORE_USER_REF)
+  //       .doc(userId)
+  //       .snapshots();
+  // }
 
   @override
   Future<bool> updateUserInCloud({User? user}) async {
@@ -112,16 +121,29 @@ class FireStoreService extends Online {
             value.docs.forEach(
               (element) async {
                 final Chat chat = Chat.froMap(element.data()!);
+                late Chat newChat;
 
-                ///checks if second user is equal to my user....incase of savedChats with self
                 final Map<String, dynamic>? secondUserMap =
-                    chat.participants?.last!["id"] == user.toMap()['id']
-                        ? user.toMap()
-                        : chat.participants?.last;
-                final Chat newChat = Chat(
-                    chatID: chat.chatID,
-                    participantsIDs: chat.participantsIDs,
-                    participants: [user.toMap(), secondUserMap]);
+                    chat.participants?.last!;
+
+                if (chat.participants![1]!['id'] == user.id) {
+                  newChat = Chat(
+                      chatID: chat.chatID,
+                      participantsIDs: chat.participantsIDs,
+                      participants: [chat.participants?.first!, user.toMap()]);
+                } else if (chat.participants![1]!['id'] == user.id &&
+                    chat.participants![0]!['id'] == user.id) {
+                  newChat = Chat(
+                      chatID: chat.chatID,
+                      participantsIDs: chat.participantsIDs,
+                      participants: [user.toMap(), user.toMap()]);
+                } else {
+                  newChat = Chat(
+                      chatID: chat.chatID,
+                      participantsIDs: chat.participantsIDs,
+                      participants: [user.toMap(), secondUserMap]);
+                }
+
                 await element.reference.update(newChat.toMap()).then((value) {
                   return success = true;
                 });
@@ -134,3 +156,4 @@ class FireStoreService extends Online {
     return success;
   }
 }
+// TODO: implement user online and offline status ...create a stream to user listen to changes from firestore

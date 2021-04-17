@@ -57,11 +57,13 @@ abstract class Online {
   Future<QuerySnapshot> queryInfo(dynamic query) => throw UnimplementedError();
 
   Future<void> createNewChat(Chat chat) => throw UnimplementedError();
-  Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
+  // Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) =>
       throw UnimplementedError();
 
   ///firebase Storage for profile pics setUp
   Future<String> saveImageToFireStore(String? uid, File? file) =>
       throw UnimplementedError();
+  // Stream<DocumentSnapshot> listenToUserConnectionUpdate(String userId) =>
+  //     throw UnimplementedError();
 }

@@ -17,7 +17,9 @@ class Contacts extends Offline {
       listOfRegisteredAndUnregisteredUsers() async {
     Set<PhoneContacts> _registeredContacts = {};
     Set<PhoneContacts> _unRegisteredContacts = {};
-    await PermissionHandler.checkContactsPermission().then((value) async {
+    await PermissionHandler.checkContactsPermission(
+            permission: Permission.contacts)
+        .then((value) async {
       if (value.isGranted) {
         Iterable<Contact> _getAllContacts = await ContactsService.getContacts();
         List<Contact> _listOfAllContacts = _getAllContacts.toList();
@@ -30,8 +32,7 @@ class Contacts extends Offline {
           final QuerySnapshot _result =
               await _cloud.queryMobileNumberORUsername(
                   _cleanNumber(_cleanContactNumber), 'phoneNumbers');
-          // final User _cloudUser = User.fromMap(
-          //     _result.docs.isNotEmpty ? _result.docs[0]?.data() : {});
+
           final bool _isClean = _contact.phones!.toList().isNotEmpty &&
               _result.docs.isNotEmpty &&
               _result.docs[0]
@@ -56,5 +57,7 @@ class Contacts extends Offline {
     return [_registeredContacts.toList(), _unRegisteredContacts.toList()];
   }
 
-  String _cleanNumber(String number) => number.replaceAll(" ", "");
+  String _cleanNumber(String number) {
+    return number.replaceAll(" ", "")..replaceAll("-", "");
+  }
 }

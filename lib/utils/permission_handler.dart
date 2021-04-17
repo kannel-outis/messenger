@@ -1,12 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionHandler {
-  static Future<PermissionStatus> checkContactsPermission() async {
-    var contactsPermissionStatus = await Permission.contacts.status;
+  static Future<PermissionStatus> checkContactsPermission(
+      {@required Permission? permission}) async {
+    var contactsPermissionStatus = await permission!.status;
     PermissionStatus _finalStatus;
     if (!contactsPermissionStatus.isGranted) {
-      _finalStatus = await Permission.contacts.request();
+      _finalStatus = await permission.request();
     } else if (contactsPermissionStatus.isDenied ||
         contactsPermissionStatus.isPermanentlyDenied) {
       _finalStatus = PermissionStatus.denied;

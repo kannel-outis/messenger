@@ -17,15 +17,16 @@ class ContactProvider extends ChangeNotifier {
   final Online _fireStoreService = FireStoreService();
   final SharedPrefs sharedPrefs = SharedPrefs.instance;
   final _hiveHandler = HiveHandler();
-  List<List<PhoneContacts>> _listOfContact = [];
+  List<List<PhoneContacts>>? _listOfContact;
   Future<List<List<PhoneContacts>>> registeredAndUnregisteredContacts() async {
     var _contacts = Contacts(_fireStoreService);
+    if (_listOfContact != null) return _listOfContact!;
     try {
-      if (!_hiveHandler.checkIfChatBoxExistAlready) {
+      if (_hiveHandler.checkIfChatBoxExistAlready != true) {
         await _contacts.listOfRegisteredAndUnregisteredUsers().then((value) {
           _listOfContact = value;
           notifyListeners();
-          _hiveHandler.saveContactsListToDB(_listOfContact);
+          _hiveHandler.saveContactsListToDB(_listOfContact!);
         });
       } else {
         _listOfContact = _getPhoneContactsFromHiveDB();
@@ -35,7 +36,7 @@ class ContactProvider extends ChangeNotifier {
       print(s.toString());
       throw MessengerError(e.toString());
     }
-    return _listOfContact;
+    return _listOfContact!;
   }
 
   Future<void> messageUser(User myUser, User friendUser,
@@ -86,10 +87,19 @@ class ContactProvider extends ChangeNotifier {
     List<UnRegisteredPhoneContacts> unRegistered = [];
     final _contactListFromHiveDB = _hiveHandler.getContactsListFromDB();
     if (_contactListFromHiveDB.length > 0) {
+      // // change to map for better iteration
+      // _contactListFromHiveDB[0].map(
+      //   (e) => registered.add(
+      //     RegisteredPhoneContacts.fromMap(e),
+      //   ),
+      // );
+      // _contactListFromHiveDB[1].map(
+      //   (e) => unRegistered.add(
+      //     UnRegisteredPhoneContacts.fromMap(e),
+      //   ),
+      // );
       _contactListFromHiveDB[0].forEach(
         (element) {
-          print(element);
-
           registered.add(
             RegisteredPhoneContacts.fromMap(element),
           );
@@ -113,5 +123,5 @@ class ContactProvider extends ChangeNotifier {
     return _chatID;
   }
 
-  List<List<PhoneContacts>> get listOfContact => _listOfContact;
+  List<List<PhoneContacts>> get listOfContact => _listOfContact!;
 }

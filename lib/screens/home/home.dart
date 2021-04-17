@@ -22,18 +22,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    context.read<HomeProvider>().iniState();
+    // context.read<HomeProvider>().iniState();
     WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    context.read<HomeProvider>().iniState();
   }
 
   @override
   void dispose() {
-    // MQTThandler().dispose();
     super.dispose();
   }
 
@@ -94,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     final List<HiveMessages> isReadMessages = hiveMessages
                         .where((element) => element.isRead == false)
                         .toList();
-
                     return ListTile(
                       title: Text(
                         hiveChats[index]
@@ -152,6 +151,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             builder: (_) => ChatsScreen(hiveChats[index]),
                           ),
                         );
+                      },
+                      onLongPress: () {
+                        _homeProvider
+                            .deleteChatAndRemovePrintsFromDB(hiveChats[index]);
                       },
                     );
                   },

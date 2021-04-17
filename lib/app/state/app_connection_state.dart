@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:messenger/screens/home/home_provider.dart';
+import 'package:messenger/services/online/online.dart';
 
 class AppConnectionState {
   final Connectivity _connectivity;
-  final HomeProvider _homeProvider;
-  AppConnectionState(this._connectivity, this._homeProvider);
+  final Online _online;
+  AppConnectionState(this._connectivity, this._online);
 
   StreamSubscription<ConnectivityResult>? _subscription;
 
@@ -14,7 +15,8 @@ class AppConnectionState {
     _subscription = _connectivity.onConnectivityChanged.listen((event) {
       if (event != ConnectivityResult.wifi &&
           event != ConnectivityResult.mobile) {
-        _homeProvider.iniState();
+        // _homeProvider.iniState();
+
       }
     });
   }

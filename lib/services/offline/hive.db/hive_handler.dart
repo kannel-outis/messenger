@@ -64,6 +64,11 @@ class HiveHandler extends ManagerHandler<HiveManager?> {
   }
 
   @override
+  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {
+    return await manager!.deleteChatAndMessagesFromLocalStorage(hiveChat);
+  }
+
+  @override
   Future<void> saveMessages(Message message) {
     return manager!.saveMessages(
       HiveMessages(

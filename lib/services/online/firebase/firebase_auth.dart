@@ -4,6 +4,7 @@ import '../../../customs/error/error.dart';
 
 class FirebaseMAuth extends Online {
   FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Future<void> verifyPhoneNumber(
     phoneNumber, {
@@ -37,7 +38,7 @@ class FirebaseMAuth extends Online {
         (String verificationId, [int? forceResendingToken]) async {
       print("::::::::::::::::" + forceResendingToken.toString());
       print('VerifyId::::::::::::::::::: $verificationId');
-      setVerificationId!(verificationId);
+      setVerificationId!(verificationId, codeSent: true);
     };
 
     PhoneCodeAutoRetrievalTimeout _phoneCodeAutoRetrievalTimeout =

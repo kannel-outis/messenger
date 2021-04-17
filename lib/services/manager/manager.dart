@@ -67,6 +67,8 @@ abstract class ManagerHandler<T extends Manager?> {
   void updateUserInHive(User user, int index) => throw UnimplementedError();
   void updateUserOnContactsListInHive(User user, int index) =>
       throw UnimplementedError();
+  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async =>
+      throw UnimplementedError();
   bool get checkIfChatBoxExistAlready {
     if (_manager is HiveManager) {
       var _hiveManager = _manager as HiveManager;

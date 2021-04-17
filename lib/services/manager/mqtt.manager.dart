@@ -23,12 +23,14 @@ class MQTTManager implements Manager {
     return _instance;
   }
 
-  late MqttServerClient _client;
+  ///change late
+  MqttServerClient? _client;
   bool? isConnected;
   StreamController<Map<String, dynamic>?> _streamController =
       StreamController<Map<String, dynamic>?>.broadcast();
 
   Future<MqttClient> login() async {
+    if (_client != null) return _client!;
     _client = MqttServerClient(broker, clientIdentifier!);
     // _client.logging(on: true);
     final MqttConnectMessage connMess = MqttConnectMessage()
@@ -39,39 +41,39 @@ class MQTTManager implements Manager {
         .withWillRetain()
         // .startClean()
         .withWillQos(MqttQos.exactlyOnce);
-    _client.connectionMessage = connMess;
-    _client.autoReconnect = true;
-    _client.resubscribeOnAutoReconnect = true;
+    _client!.connectionMessage = connMess;
+    _client!.autoReconnect = true;
+    _client!.resubscribeOnAutoReconnect = true;
 
-    _client.onAutoReconnect = () {
+    _client!.onAutoReconnect = () {
       print(":::::::::::::::::::::::Reconnecting ::::::::::::::::::::::::");
     };
-    _client.onAutoReconnected = () {
+    _client!.onAutoReconnected = () {
       print("Reconnected ");
     };
 
     await connectMQTTClient().then((value) {
-      _client.onDisconnected = () => print(":::::::disconnected ::::::::");
+      _client!.onDisconnected = () => print(":::::::disconnected ::::::::");
     });
 
-    return _client;
+    return _client!;
   }
 
   Future<void> connectMQTTClient() async {
     try {
-      if (_client.connectionStatus!.state != MqttConnectionState.connected) {
-        await _client.connect(username, password!).then((value) {
+      if (_client!.connectionStatus!.state != MqttConnectionState.connected) {
+        await _client!.connect(username, password!).then((value) {
           if (value!.state != MqttConnectionState.connected) {
             disconnectMQTTClient();
 
-            _client.onDisconnected = () {
+            _client!.onDisconnected = () {
               print('discconnected');
               // _client.
             };
           } else {
             print("Connected");
-            _client.onConnected = () => isConnected = true;
-            _client.published!.listen((event) {
+            _client!.onConnected = () => isConnected = true;
+            _client!.published!.listen((event) {
               print("delivered");
             });
             // _client.published.listen((event) {
@@ -81,7 +83,7 @@ class MQTTManager implements Manager {
             //   Map<String, dynamic> dataPayload = json.decode(data);
             //   print("$dataPayload" + "this is recieved and delivered");
             // });
-            _client.updates!.listen((event) {
+            _client!.updates!.listen((event) {
               final MqttPublishMessage payLoad =
                   event[0].payload as MqttPublishMessage;
               String data = MqttPublishPayload.bytesToStringAsString(
@@ -102,7 +104,7 @@ class MQTTManager implements Manager {
   }
 
   void disconnectMQTTClient() {
-    _client.disconnect();
+    _client!.disconnect();
   }
 
   // Future<bool> _checkConnection() async {
@@ -117,16 +119,16 @@ class MQTTManager implements Manager {
   // }
 
   bool subscribe(String? topic) {
-    if (_client.connectionStatus!.state == MqttConnectionState.connected) {
-      _client.onConnected = () {
+    if (_client!.connectionStatus!.state == MqttConnectionState.connected) {
+      _client!.onConnected = () {
         print('connected');
       };
-      _client.onDisconnected = () {
+      _client!.onDisconnected = () {
         print('Disconnected');
       };
-      _client.onSubscribed = (topic) => print(topic);
+      _client!.onSubscribed = (topic) => print(topic);
 
-      _client.subscribe(topic!, MqttQos.exactlyOnce);
+      _client!.subscribe(topic!, MqttQos.exactlyOnce);
       return true;
     } else {
       return false;
@@ -140,10 +142,10 @@ class MQTTManager implements Manager {
   }
 
   Future<void> publish(String topic, Map<String, dynamic> message) async {
-    print(_client.connectionStatus.toString());
+    print(_client!.connectionStatus.toString());
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addString(json.encode(message));
-    _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+    _client!.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
   }
 
   Stream<Map<String, dynamic>?> get messageStream => _streamController.stream;

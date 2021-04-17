@@ -8,12 +8,14 @@ import 'package:mqtt_client/mqtt_client.dart';
 class MQTThandler extends ManagerHandler<MQTTManager?> {
   MQTThandler() {
     MQTTManager? _newManager = MQTTManager.getInstance(
-        "broker.emqx.io",
+        // "broker.emqx.io",
+        "broker.hivemq.com",
         user.id,
         user.id!.substring(0, 10),
         user.phoneNumbers![0].substring(0, 7));
     setManager(_newManager);
   }
+  // late MqttClient? _client;
   @override
   MQTTManager? setManager(MQTTManager? newManager) {
     return super.setManager(newManager);
@@ -31,7 +33,9 @@ class MQTThandler extends ManagerHandler<MQTTManager?> {
 
   @override
   Future<MqttClient> login() async {
+    // if (_client != null) return _client!;
     return await manager!.login();
+    // return _client!;
   }
 
   @override

@@ -112,24 +112,34 @@ class SetNameScreen extends HookWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 25),
+                Consumer<AuthProvider>(
+                  builder: (context, auth, child) {
+                    return auth.uploadingImageToStore != true
+                        ? SizedBox()
+                        : Text("Uploading to Store.Please wait.....");
+                  },
+                ),
+                SizedBox(height: 15),
                 Center(
                   child: GestureDetector(
-                    onTap: () {
-                      _authProvider
-                          .saveNewUserToCloudAndSetPrefs(
-                              _userNameController!.text)
-                          .then(
-                        (value) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => FirstLaunchContactScreen(),
-                            ),
-                          );
-                        },
-                      );
-                      // _authProvider.signOut;
-                    },
+                    onTap: _authProvider.uploadingImageToStore != true
+                        ? () {
+                            _authProvider
+                                .saveNewUserToCloudAndSetPrefs(
+                                    _userNameController!.text)
+                                .then(
+                              (value) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => FirstLaunchContactScreen(),
+                                  ),
+                                );
+                              },
+                            );
+                            // _authProvider.signOut;
+                          }
+                        : null,
                     child: Container(
                       height: MediaQuery.of(context).size.width / 9,
                       width: MediaQuery.of(context).size.width / 3,
@@ -144,11 +154,11 @@ class SetNameScreen extends HookWidget {
                                     style: TextStyle(color: Colors.white),
                                   )
                                 : CircularProgressIndicator(
-                                    backgroundColor: Colors.blue,
+                                    backgroundColor: Colors.white,
                                     strokeWidth: 1.5,
                                     value: 1.2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white),
+                                    // valueColor: AlwaysStoppedAnimation<Color>(
+                                    //     Colors.blue),
                                   );
                           },
                         ),
