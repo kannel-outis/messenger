@@ -16,8 +16,6 @@ class User {
   final String? photoUrl;
   @HiveField(4)
   final String? status;
-  @HiveField(5)
-  final bool? connectionStatus;
 
   User({
     this.id,
@@ -25,7 +23,6 @@ class User {
     this.phoneNumbers,
     this.photoUrl,
     this.status,
-    this.connectionStatus,
   });
 
   @override
@@ -49,7 +46,6 @@ class User {
       "phoneNumbers": phoneNumbers,
       "photoUrl": photoUrl,
       "status": status,
-      "connectionStatus": connectionStatus,
     };
   }
 
@@ -58,14 +54,12 @@ class User {
         phoneNumbers = null,
         photoUrl = null,
         status = null,
-        userName = null,
-        connectionStatus = null;
+        userName = null;
 
   User.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         userName = map['userName'],
         phoneNumbers = List<String>.from(map['phoneNumbers']),
         photoUrl = map['photoUrl'],
-        status = map['status'],
-        connectionStatus = map['connectionStatus'];
+        status = map['status'];
 }

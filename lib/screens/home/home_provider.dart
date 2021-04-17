@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -41,10 +40,10 @@ class HomeProvider extends ChangeNotifier {
           if (exists == false) {
             _hiveHandler.saveChatToDB(chat);
           } else {
-            for (var user in hiveChat.participants!) {
+            for (var i = 0; i < hiveChat.participants!.length; i++) {
               _hiveHandler
-                ..updateUserInHive(user, 1)
-                ..updateUserOnContactsListInHive(user, 1);
+                ..updateUserInHive(hiveChat.participants![i], i)
+                ..updateUserOnContactsListInHive(hiveChat.participants![i], i);
             }
           }
           _mqttHandler
@@ -69,6 +68,10 @@ class HomeProvider extends ChangeNotifier {
   // Future<void> updateConnectionStatus(String userId) async {
 
   // }
+
+  Future<void> deleteChatAndRemovePrintsFromDB(HiveChat hiveChat) async {
+    await _hiveHandler.deleteChatAndMessagesFromLocalStorage(hiveChat);
+  }
 
   void iniState() {
     _mqttHandler.login().then((value) {

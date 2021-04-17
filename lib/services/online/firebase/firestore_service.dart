@@ -121,16 +121,29 @@ class FireStoreService extends Online {
             value.docs.forEach(
               (element) async {
                 final Chat chat = Chat.froMap(element.data()!);
+                late Chat newChat;
 
-                ///checks if second user is equal to my user....incase of savedChats with self
                 final Map<String, dynamic>? secondUserMap =
-                    chat.participants?.last!["id"] == user.toMap()['id']
-                        ? user.toMap()
-                        : chat.participants?.last;
-                final Chat newChat = Chat(
-                    chatID: chat.chatID,
-                    participantsIDs: chat.participantsIDs,
-                    participants: [user.toMap(), secondUserMap]);
+                    chat.participants?.last!;
+
+                if (chat.participants![1]!['id'] == user.id) {
+                  newChat = Chat(
+                      chatID: chat.chatID,
+                      participantsIDs: chat.participantsIDs,
+                      participants: [chat.participants?.first!, user.toMap()]);
+                } else if (chat.participants![1]!['id'] == user.id &&
+                    chat.participants![0]!['id'] == user.id) {
+                  newChat = Chat(
+                      chatID: chat.chatID,
+                      participantsIDs: chat.participantsIDs,
+                      participants: [user.toMap(), user.toMap()]);
+                } else {
+                  newChat = Chat(
+                      chatID: chat.chatID,
+                      participantsIDs: chat.participantsIDs,
+                      participants: [user.toMap(), secondUserMap]);
+                }
+
                 await element.reference.update(newChat.toMap()).then((value) {
                   return success = true;
                 });

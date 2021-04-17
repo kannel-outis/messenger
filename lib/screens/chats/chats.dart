@@ -23,7 +23,7 @@ class ChatsScreen extends HookWidget {
     final TextEditingController? _textController = useTextEditingController();
     final _scrollController = useScrollController();
     final _chatsProvider = Provider.of<ChatsProvider>(context);
-    print(hiveChat.chatId);
+    print(hiveChat.toString());
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(
@@ -45,7 +45,6 @@ class ChatsScreen extends HookWidget {
                       .toList()
                       .reversed
                       .toList();
-                  print(hiveMessages.first);
                   return ListView.builder(
                     itemCount: hiveMessages.length,
                     reverse: true,

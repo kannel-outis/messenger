@@ -26,5 +26,10 @@ class HiveChat extends HiveObject {
   }
 
   @override
+  String toString() {
+    return "${this.chatId} ..... ${this.participants![0].id} .....${this.participants![1].id}";
+  }
+
+  @override
   int get hashCode => hashValues(chatId, hashList(participants));
 }

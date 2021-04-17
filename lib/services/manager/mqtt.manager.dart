@@ -24,7 +24,7 @@ class MQTTManager implements Manager {
   }
 
   ///change late
-  late MqttServerClient? _client;
+  MqttServerClient? _client;
   bool? isConnected;
   StreamController<Map<String, dynamic>?> _streamController =
       StreamController<Map<String, dynamic>?>.broadcast();

@@ -24,11 +24,10 @@ class HiveManager extends Manager {
       Hive.box<HivePhoneContactsList>(HiveInit.hiveContactsList);
 
   Future<void> saveChatToDB(Chat chat) async {
-    List<User> _users = [];
-    chat.participants!.forEach((element) {
-      _users.add(User.fromMap(element!));
-    });
-    final _hiveChat = HiveChat(chatId: chat.chatID, participants: _users);
+    // List<User> _users = ;
+    final _hiveChat = HiveChat(
+        chatId: chat.chatID,
+        participants: chat.participants!.map((e) => User.fromMap(e!)).toList());
     if (checkIfChatExists(_hiveChat)) return;
     await _chatBox.add(_hiveChat);
   }
@@ -63,6 +62,17 @@ class HiveManager extends Manager {
   //     return false;
   //   }
   // }
+
+  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {
+    await _chatBox.delete(hiveChat.key).then((value) {
+      _messageBox.values
+          .where((element) => hiveChat.chatId == element.chatID)
+          .toList()
+          .forEach((element) async {
+        await _messageBox.delete(element.key);
+      });
+    });
+  }
 
   bool checkIfChatExists(HiveChat hiveChat) {
     return _chatBox.values
