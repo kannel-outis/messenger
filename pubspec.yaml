@@ -32,6 +32,11 @@ dependencies:
   intl: ^0.17.0
   connectivity: ^3.0.2
   indexed_list_view: ^2.0.0
+  pointycastle: ^3.0.1
+  rsa_encrypt:
+    git:
+      url: https://github.com/kannel-outis/rsa_encrypt.git
+      ref: null-safety
 
 dev_dependencies:
   flutter_test:

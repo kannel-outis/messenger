@@ -20,3 +20,8 @@ class PermissionError extends MessengerError {
     return 'PermissionError::::::::::::::::::: $message';
   }
 }
+
+class EncryptionError extends MessengerError {
+  final String message;
+  const EncryptionError(this.message) : super(message);
+}

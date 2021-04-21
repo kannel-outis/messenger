@@ -29,6 +29,7 @@ class ProfileScreen extends HookWidget {
             photoUrl: _profileProvider.imageUrl ?? user!.photoUrl,
             status: _statusTextController.text,
             userName: _userNameTextController.text,
+            publicKey: user!.publicKey,
           ),
         );
         return true;

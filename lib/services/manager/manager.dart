@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:messenger/models/chat.dart';
@@ -8,9 +10,11 @@ import 'package:messenger/models/user.dart';
 import 'package:messenger/services/manager/hive.manager.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
+import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:pointycastle/export.dart';
 
 abstract class Manager {
   void dispose() {}
@@ -76,5 +80,29 @@ abstract class ManagerHandler<T extends Manager?> {
     } else {
       return false;
     }
+  }
+
+  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) =>
+      throw UnimplementedError();
+
+  //EncryptClass
+  Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt) =>
+      throw UnimplementedError();
+  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText) =>
+      throw UnimplementedError();
+  AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateKeyPairs(
+          {SecureRandom? secureRandom, int bitLength = 2048}) =>
+      throw UnimplementedError();
+  SecureRandom exampleSecureRandom() {
+    final secureRandom = FortunaRandom();
+
+    final seedSource = Random.secure();
+    final seeds = <int>[];
+    for (int i = 0; i < 32; i++) {
+      seeds.add(seedSource.nextInt(255));
+    }
+    secureRandom.seed(KeyParameter(Uint8List.fromList(seeds)));
+
+    return secureRandom;
   }
 }

@@ -13,6 +13,7 @@ class FireStoreService extends Online {
       required String? phoneNumberWithoutCC,
       firebaseAuth.User? user,
       required User userDataPref,
+      required String? publicKey,
       required String? newPhotoUrlString}) async {
     User _newUser = User(
       id: user?.uid,
@@ -24,6 +25,7 @@ class FireStoreService extends Online {
               GeneralConstants.DEFAULT_PHOTOURL,
       userName: userName,
       status: GeneralConstants.DEFAULT_STATUS,
+      publicKey: publicKey,
     );
     print(_newUser.photoUrl);
 

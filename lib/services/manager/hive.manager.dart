@@ -5,7 +5,9 @@ import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
+import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
 
+import 'encrypt.manager.dart';
 import 'manager.dart';
 
 class HiveManager extends Manager {
@@ -22,6 +24,7 @@ class HiveManager extends Manager {
   final _messageBox = Hive.box<HiveMessages>(HiveInit.messagesBoxName);
   final _hiveContactsList =
       Hive.box<HivePhoneContactsList>(HiveInit.hiveContactsList);
+  final _hiveKeyPairsBox = Hive.box<HiveKeyPair>(HiveInit.keyPairs);
 
   Future<void> saveChatToDB(Chat chat) async {
     // List<User> _users = ;
@@ -46,6 +49,13 @@ class HiveManager extends Manager {
     return _messageBox.values
         .where((element) => element.chatID == chatID)
         .toList();
+  }
+
+  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) async {
+    // TODO: check if this is the user is a first timer and generate a public and private key else do Nothing
+    final _hiveKeyPairs = hiveKeyPairs;
+    await _hiveKeyPairsBox.add(_hiveKeyPairs);
+    return _hiveKeyPairs;
   }
 
   // bool checkIfExistObjExist(Object obj) {

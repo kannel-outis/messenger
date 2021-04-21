@@ -7,6 +7,7 @@ import 'package:messenger/services/manager/manager.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 
 import 'models/hive_chat.dart';
+import 'models/keypairs.dart';
 
 class HiveHandler extends ManagerHandler<HiveManager?> {
   HiveHandler() {
@@ -82,5 +83,10 @@ class HiveHandler extends ManagerHandler<HiveManager?> {
         isRead: false,
       ),
     );
+  }
+
+  @override
+  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) async {
+    return await manager!.saveKeyPairs(hiveKeyPairs);
   }
 }

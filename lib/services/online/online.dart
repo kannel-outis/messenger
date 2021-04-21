@@ -38,6 +38,7 @@ abstract class Online {
           required String? phoneNumberWithoutCC,
           firebaseAuth.User? user,
           required User userDataPref,
+          required String publicKey,
           required String? newPhotoUrlString}) async =>
       throw UnimplementedError();
   Future<User> getUserFromCloud(firebaseAuth.User user) async =>

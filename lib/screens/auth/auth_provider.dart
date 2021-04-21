@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
+import 'package:messenger/app/e2e/encryption_class.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/country_code.dart';
+import 'package:messenger/services/offline/hive.db/hive_handler.dart';
+import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
 import 'package:messenger/services/offline/image_picker.dart';
 import 'package:messenger/services/offline/offline.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
@@ -10,6 +13,7 @@ import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/codes.dart';
 import 'package:messenger/services/online/firebase/firebase_auth.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
 
 class AuthProvider extends ChangeNotifier {
   List<CountryCode> _listOfCCs =
@@ -20,8 +24,11 @@ class AuthProvider extends ChangeNotifier {
   String? _imageUrl;
   final Online _auth = FirebaseMAuth();
   final Online _fireStoreService = FireStoreService();
-  final Offline _offline = SharedPrefs.instance;
+  final Offline _prefs = SharedPrefs.instance;
   final Online _firebaseStorage = MessengerFirebaseStorage();
+  final _c = EncryptClassHandler();
+  final _hiveHandler = HiveHandler();
+  final _keyHelper = RsaKeyHelper();
   firebaseAuth.User? _firebaseUser;
   bool? _isLoading;
   bool? _isTryingToVerify;
@@ -89,18 +96,28 @@ class AuthProvider extends ChangeNotifier {
   Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
     _isLoading = true;
     notifyListeners();
+    var keyPair = _c.generateKeyPairs();
+    HiveKeyPair _hiveKeyPair = HiveKeyPair(
+        privateKey: keyPair.privateKey, publicKey: keyPair.publicKey);
+    String _publicKey = _keyHelper.removePemHeaderAndFooter(
+        _keyHelper.encodePublicKeyToPemPKCS1(_hiveKeyPair.publicKey!));
+    _hiveHandler.saveKeyPairs(_hiveKeyPair);
+    // Change the keys to Strings and save it to cloud
     await _fireStoreService
         .saveNewUserToCloud(
       user: _firebaseUser,
       userName: username,
       phoneNumberWithoutCC: _phoneNumberWithoutCC,
-      userDataPref: _offline.getUserData(),
+      userDataPref: _prefs.getUserData(),
       newPhotoUrlString: _imageUrl,
+      publicKey: _publicKey,
     )
         .then((value) {
       _isLoading = false;
       notifyListeners();
-      _offline.setUserData(value);
+      // if (_prefs.getBool(OfflineConstants.FIRST_TIME) != true) {
+      _prefs.setUserData(value);
+
       _fireStoreService.updateUserInCloud(user: value);
     });
   }
@@ -145,8 +162,8 @@ class AuthProvider extends ChangeNotifier {
   String? get phoneNumberWithoutCC => _phoneNumberWithoutCC;
   String? get imageUrl => _imageUrl;
   String? get photoUrlFromUserDataPref =>
-      _offline.getUserData().id == _firebaseUser?.uid
-          ? _offline.getUserData().photoUrl
+      _prefs.getUserData().id == _firebaseUser?.uid
+          ? _prefs.getUserData().photoUrl
           : null;
   bool? get isTryingToVerify => _isTryingToVerify;
   bool? get isLoading => _isLoading;
