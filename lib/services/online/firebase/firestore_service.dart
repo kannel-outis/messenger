@@ -67,7 +67,7 @@ class FireStoreService extends Online {
         .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
         .where(
           'participantsIDs',
-          isEqualTo: query,
+          arrayContains: query,
         )
         .get();
   }

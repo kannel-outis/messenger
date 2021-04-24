@@ -1,11 +1,13 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:messenger/app/e2e/encryption_class.dart';
+import 'package:messenger/services/offline/hive.db/models/keys.dart';
+import 'package:messenger/services/encryption_class.dart';
 import 'package:messenger/services/manager/manager.dart';
 import 'package:pointycastle/export.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
 
-class EncryptClass extends EncryptionC {
+class EncryptClass extends Manager implements EncryptionC {
   static EncryptClass? _instance;
   EncryptClass._();
 
@@ -17,8 +19,9 @@ class EncryptClass extends EncryptionC {
   }
 
   @override
-  AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateKeyPairs(
+  AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
       {SecureRandom? secureRandom, int bitLength = 2048}) {
+    print("Start");
     final keyGen = RSAKeyGenerator()
       ..init(ParametersWithRandom(
           RSAKeyGeneratorParameters(BigInt.parse('65537'), bitLength, 64),
@@ -28,8 +31,14 @@ class EncryptClass extends EncryptionC {
     final RSAPublicKey _publicKey = keyPair.publicKey as RSAPublicKey;
     final RSAPrivateKey _privateKey = keyPair.privateKey as RSAPrivateKey;
 
-    return AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>(
-        _publicKey, _privateKey);
+    return AsymmetricKeyPair<MyPublicKey, MyPrivateKey>(
+        MyPublicKey(
+            modulus: _publicKey.modulus!, exponent: _publicKey.exponent!),
+        MyPrivateKey(
+            modulus: _privateKey.modulus!,
+            privateExponent: _privateKey.privateExponent!,
+            p: _privateKey.p,
+            q: _privateKey.q));
   }
 
   @override
@@ -71,5 +80,18 @@ class EncryptClass extends EncryptionC {
     return (output.length == outputOffset)
         ? output
         : output.sublist(0, outputOffset);
+  }
+
+  @override
+  String? keyToString({RSAAsymmetricKey? key}) {
+    final _keyHelper = RsaKeyHelper();
+    if (key is RSAPrivateKey) {
+      return _keyHelper
+          .removePemHeaderAndFooter(_keyHelper.encodePrivateKeyToPemPKCS1(key));
+    } else if (key is RSAPublicKey) {
+      return _keyHelper
+          .removePemHeaderAndFooter(_keyHelper.encodePublicKeyToPemPKCS1(key));
+    }
+    return null;
   }
 }

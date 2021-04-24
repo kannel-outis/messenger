@@ -41,6 +41,8 @@ class ContactProvider extends ChangeNotifier {
 
   Future<void> messageUser(User myUser, User friendUser,
       {VoidCallback? navigate}) async {
+    print(myUser.phoneNumbers![0]);
+    print(friendUser.phoneNumbers![0]);
     Chat _chat = Chat(
       chatID: _chatID(),
       participantsIDs: [myUser.id, friendUser.id],
@@ -62,15 +64,21 @@ class ContactProvider extends ChangeNotifier {
 
   Future<bool> _checkIfChatExistAlready({List<String?>? participants}) async {
     late bool exists;
-    await _fireStoreService.queryInfo(participants).then((value) {
+    await _fireStoreService.queryInfo(participants![0]).then((value) {
       bool _contains = value.docChanges.isNotEmpty;
+      if (_contains) print(value.docChanges[0].doc.data());
 
       if (_contains &&
-          value.docChanges[0].doc.data()!['participantsIDs'][0] ==
-              participants![0]) {
+              value.docChanges[0].doc.data()!['participantsIDs'][0] ==
+                  participants[0] ||
+          _contains &&
+              value.docChanges[0].doc.data()!['participantsIDs'][0] ==
+                  participants[1]) {
         exists = false;
+        print("Already Exist");
       } else {
         exists = true;
+        print("Does Not Exist");
       }
     });
     return exists;

@@ -31,7 +31,10 @@ class HiveManager extends Manager {
     final _hiveChat = HiveChat(
         chatId: chat.chatID,
         participants: chat.participants!.map((e) => User.fromMap(e!)).toList());
-    if (checkIfChatExists(_hiveChat)) return;
+    if (checkIfChatExists(_hiveChat)) {
+      print("It Didnt work");
+      return;
+    }
     await _chatBox.add(_hiveChat);
   }
 
@@ -52,7 +55,6 @@ class HiveManager extends Manager {
   }
 
   Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) async {
-    // TODO: check if this is the user is a first timer and generate a public and private key else do Nothing
     final _hiveKeyPairs = hiveKeyPairs;
     await _hiveKeyPairsBox.add(_hiveKeyPairs);
     return _hiveKeyPairs;
@@ -87,7 +89,7 @@ class HiveManager extends Manager {
   bool checkIfChatExists(HiveChat hiveChat) {
     return _chatBox.values
         .where((element) => hiveChat.chatId == element.chatId)
-        .isNotEmpty;
+        .isEmpty;
   }
 
   bool _checkIfMessageExists(HiveMessages message) {

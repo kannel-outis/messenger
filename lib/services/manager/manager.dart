@@ -93,16 +93,6 @@ abstract class ManagerHandler<T extends Manager?> {
   AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> generateKeyPairs(
           {SecureRandom? secureRandom, int bitLength = 2048}) =>
       throw UnimplementedError();
-  SecureRandom exampleSecureRandom() {
-    final secureRandom = FortunaRandom();
 
-    final seedSource = Random.secure();
-    final seeds = <int>[];
-    for (int i = 0; i < 32; i++) {
-      seeds.add(seedSource.nextInt(255));
-    }
-    secureRandom.seed(KeyParameter(Uint8List.fromList(seeds)));
-
-    return secureRandom;
-  }
+  String? keyToString({RSAAsymmetricKey? key}) => throw UnimplementedError();
 }

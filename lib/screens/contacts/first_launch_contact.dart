@@ -80,7 +80,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
                         ),
                       ),
                       ..._listOfContacts[index].map((e) {
-                        return BuildContactTile(
+                        return _BuildContactTile(
                             fromHome: fromHome,
                             contactModel: _contactModel,
                             element: e,
@@ -95,8 +95,8 @@ class FirstLaunchContactScreen extends StatelessWidget {
   }
 }
 
-class BuildContactTile extends StatelessWidget {
-  const BuildContactTile({
+class _BuildContactTile extends StatelessWidget {
+  const _BuildContactTile({
     Key? key,
     required this.fromHome,
     required ContactProvider contactModel,
@@ -122,19 +122,20 @@ class BuildContactTile extends StatelessWidget {
             : "${e.contact.phones?.toList()[0].value}"),
         trailing: InkWell(
           onTap: () {
-            _contactModel.messageUser(
-              _contactModel.getUserPref(),
-              e.user,
-              navigate: () {
-                fromHome != true
-                    ? Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => HomeScreen(),
-                        ),
-                      )
-                    : Navigator.pop(context);
-              },
-            );
+            // _contactModel.messageUser(
+            //   _contactModel.getUserPref(),
+            //   e.user,
+            //   navigate: () {
+            //     fromHome != true
+            //         ? Navigator.of(context).push(
+            //             MaterialPageRoute(
+            //               builder: (_) => HomeScreen(),
+            //             ),
+            //           )
+            //         : Navigator.pop(context);
+            //   },
+            // );
+            print(e.user.userName);
           },
           child: Container(
             height: 50,

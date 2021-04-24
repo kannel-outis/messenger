@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/foundation.dart';
-import 'package:messenger/app/e2e/encryption_class.dart';
+import 'package:messenger/services/encryption_class.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/country_code.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
@@ -96,12 +96,12 @@ class AuthProvider extends ChangeNotifier {
   Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
     _isLoading = true;
     notifyListeners();
-    var keyPair = _c.generateKeyPairs();
+    final keyPair = _c.generateKeyPairs();
     HiveKeyPair _hiveKeyPair = HiveKeyPair(
         privateKey: keyPair.privateKey, publicKey: keyPair.publicKey);
-    String _publicKey = _keyHelper.removePemHeaderAndFooter(
-        _keyHelper.encodePublicKeyToPemPKCS1(_hiveKeyPair.publicKey!));
+    String? _publicKey = _c.keyToString(key: keyPair.publicKey);
     _hiveHandler.saveKeyPairs(_hiveKeyPair);
+    print(_publicKey);
     // Change the keys to Strings and save it to cloud
     await _fireStoreService
         .saveNewUserToCloud(
@@ -110,7 +110,7 @@ class AuthProvider extends ChangeNotifier {
       phoneNumberWithoutCC: _phoneNumberWithoutCC,
       userDataPref: _prefs.getUserData(),
       newPhotoUrlString: _imageUrl,
-      publicKey: _publicKey,
+      publicKey: _publicKey!,
     )
         .then((value) {
       _isLoading = false;
