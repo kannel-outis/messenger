@@ -5,9 +5,9 @@ import 'package:messenger/services/manager/mqtt.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
-class MQTThandler extends ManagerHandler<MQTTManager> {
+class MQTThandler extends ManagerHandler<MQTTManager?> {
   MQTThandler() {
-    Manager? _newManager = MQTTManager.getInstance(
+    MQTTManager? _newManager = MQTTManager.getInstance(
         // "broker.emqx.io",
         "broker.hivemq.com",
         user.id,
@@ -17,30 +17,35 @@ class MQTThandler extends ManagerHandler<MQTTManager> {
   }
   // late MqttClient? _client;
   @override
-  Manager? setManager(newManager) {
+  MQTTManager? setManager(MQTTManager? newManager) {
     return super.setManager(newManager);
   }
 
+  @override
   Future<void> connectToClient() async {
     await manager!.connectMQTTClient();
   }
 
+  @override
   void disconnectClient() {
     manager!.disconnectMQTTClient();
   }
 
-  Future<MqttClient?> login() async {
+  @override
+  Future<MqttClient> login() async {
     // if (_client != null) return _client!;
     return await manager!.login();
     // return _client!;
   }
 
+  @override
   Future<void> publish(String topic, Message message) async {
     manager!.publish(topic, message.toMap());
   }
 
+  @override
   Future<bool> subscribe(String? topic) async {
-    return manager!.subscribe(topic!);
+    return manager!.subscribe(topic);
   }
 
   @override
@@ -48,6 +53,5 @@ class MQTThandler extends ManagerHandler<MQTTManager> {
     super.dispose();
   }
 
-  Stream<Map<String, dynamic>?> get messageController =>
-      (manager! as MQTTManager).messageStream;
+  Stream<Map<String, dynamic>?> get messageController => manager!.messageStream;
 }

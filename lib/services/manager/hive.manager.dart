@@ -25,7 +25,7 @@ class HiveManager extends Manager {
   final _hiveContactsList =
       Hive.box<HivePhoneContactsList>(HiveInit.hiveContactsList);
   final _hiveKeyPairsBox = Hive.box<HiveKeyPair>(HiveInit.keyPairs);
-  @override
+
   Future<void> saveChatToDB(Chat chat) async {
     // List<User> _users = ;
     final _hiveChat = HiveChat(
@@ -37,7 +37,6 @@ class HiveManager extends Manager {
     await _chatBox.add(_hiveChat);
   }
 
-  @override
   Future<void> saveMessages(HiveMessages message) async {
     print("OdeBi");
     if (_checkIfMessageExists(message)) return;
@@ -48,14 +47,12 @@ class HiveManager extends Manager {
     }
   }
 
-  @override
   List<HiveMessages> getMessagesFromDB(String chatID) {
     return _messageBox.values
         .where((element) => element.chatID == chatID)
         .toList();
   }
 
-  @override
   Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) async {
     final _hiveKeyPairs = hiveKeyPairs;
     await _hiveKeyPairsBox.add(_hiveKeyPairs);
@@ -76,7 +73,7 @@ class HiveManager extends Manager {
   //     return false;
   //   }
   // }
-  @override
+
   Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {
     await _chatBox.delete(hiveChat.key).then((value) {
       _messageBox.values
@@ -88,7 +85,6 @@ class HiveManager extends Manager {
     });
   }
 
-  @override
   bool checkIfChatExists(HiveChat hiveChat) {
     return _chatBox.values
         .where((element) => hiveChat.chatId == element.chatId)
@@ -101,7 +97,6 @@ class HiveManager extends Manager {
         .isNotEmpty;
   }
 
-  @override
   void updateMessageIsRead(HiveMessages message) {
     var messagesList = _messageBox.values
         .where((element) =>
@@ -113,17 +108,14 @@ class HiveManager extends Manager {
     });
   }
 
-  @override
   List<HiveChat> loadChatsFromLocalDB() {
     return _chatBox.values.toList();
   }
 
-  @override
   List<List<Map<String, dynamic>>> getContactsListFromDB() {
     return _hiveContactsList.values.toList().single.phoneContacts;
   }
 
-  @override
   void updateUserInHive(User user, int index) {
     assert(index < 2);
     _chatBox.values
@@ -143,7 +135,6 @@ class HiveManager extends Manager {
         );
   }
 
-  @override
   void updateUserOnContactsListInHive(User user, int index) {
     // print("Happen shele");
     // _hiveContactsList.values
@@ -173,7 +164,7 @@ class HiveManager extends Manager {
     //       },
     //     );
   }
-  @override
+
   Future<void> saveContactsListToDB(
       List<List<PhoneContacts>> phoneContact) async {
     List<Map<String, Map<String, dynamic>>> _registered = [];
