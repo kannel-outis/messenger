@@ -1,13 +1,11 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
-import 'package:messenger/services/encryption_class.dart';
 import 'package:messenger/services/manager/manager.dart';
 import 'package:pointycastle/export.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 
-class EncryptClass extends Manager implements EncryptionC {
+class EncryptClass extends Manager {
   static EncryptClass? _instance;
   EncryptClass._();
 
