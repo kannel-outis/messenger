@@ -4,6 +4,7 @@ import 'package:messenger/screens/home/home.dart';
 import 'package:provider/provider.dart';
 
 import 'contacts_provider.dart';
+import "dart:developer";
 
 class FirstLaunchContactScreen extends StatelessWidget {
   final bool? fromHome;
@@ -14,7 +15,12 @@ class FirstLaunchContactScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
     final _contactModel = Provider.of<ContactProvider>(context);
-
+    if (_listOfContacts.length != 0) {
+      for (var i = 0; i < _listOfContacts[0].length; i++) {
+        print((_listOfContacts[0][i] as RegisteredPhoneContacts).user.userName);
+        print("wait");
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -122,20 +128,21 @@ class _BuildContactTile extends StatelessWidget {
             : "${e.contact.phones?.toList()[0].value}"),
         trailing: InkWell(
           onTap: () {
-            // _contactModel.messageUser(
-            //   _contactModel.getUserPref(),
-            //   e.user,
-            //   navigate: () {
-            //     fromHome != true
-            //         ? Navigator.of(context).push(
-            //             MaterialPageRoute(
-            //               builder: (_) => HomeScreen(),
-            //             ),
-            //           )
-            //         : Navigator.pop(context);
-            //   },
-            // );
+            _contactModel.messageUser(
+              _contactModel.getUserPref(),
+              e.user,
+              navigate: () {
+                fromHome != true
+                    ? Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => HomeScreen(),
+                        ),
+                      )
+                    : Navigator.pop(context);
+              },
+            );
             print(e.user.userName);
+            log(e.contact.displayName!);
           },
           child: Container(
             height: 50,
@@ -167,7 +174,9 @@ class _BuildContactTile extends StatelessWidget {
             ? ""
             : "${e.contact?.phones?.toList()[0].value}"),
         trailing: InkWell(
-          onTap: () {},
+          onTap: () {
+            log("${e.contact!.displayName}");
+          },
           child: Container(
             height: 50,
             width: MediaQuery.of(context).size.width / 5,

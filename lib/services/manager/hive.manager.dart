@@ -32,7 +32,6 @@ class HiveManager extends Manager {
         chatId: chat.chatID,
         participants: chat.participants!.map((e) => User.fromMap(e!)).toList());
     if (checkIfChatExists(_hiveChat)) {
-      print("It Didnt work");
       return;
     }
     await _chatBox.add(_hiveChat);
@@ -89,7 +88,7 @@ class HiveManager extends Manager {
   bool checkIfChatExists(HiveChat hiveChat) {
     return _chatBox.values
         .where((element) => hiveChat.chatId == element.chatId)
-        .isEmpty;
+        .isNotEmpty;
   }
 
   bool _checkIfMessageExists(HiveMessages message) {
@@ -137,32 +136,33 @@ class HiveManager extends Manager {
   }
 
   void updateUserOnContactsListInHive(User user, int index) {
-    _hiveContactsList.values
-        .where(
-          (element) {
-            late bool isEqualToId;
-            element.phoneContacts[0].forEach(
-              (element) {
-                isEqualToId = element['user']['id'] == user.id;
-              },
-            );
-            return isEqualToId;
-          },
-        )
-        .toList()
-        .forEach(
-          (phoneContactList) {
-            phoneContactList.phoneContacts[0].forEach(
-              (element) {
-                if (Map<String, dynamic>.from(element['user']) !=
-                    user.toMap()) {
-                  element['user'] = user.toMap() as dynamic;
-                  phoneContactList.save();
-                }
-              },
-            );
-          },
-        );
+    // print("Happen shele");
+    // _hiveContactsList.values
+    //     .where(
+    //       (element) {
+    //         late bool isEqualToId;
+    //         element.phoneContacts[0].forEach(
+    //           (element) {
+    //             isEqualToId = element['user']['id'] == user.id;
+    //           },
+    //         );
+    //         return isEqualToId;
+    //       },
+    //     )
+    //     .toList()
+    //     .forEach(
+    //       (phoneContactList) {
+    //         phoneContactList.phoneContacts[0].forEach(
+    //           (element) {
+    //             if (Map<String, dynamic>.from(element['user']) !=
+    //                 user.toMap()) {
+    //               element['user'] = user.toMap() as dynamic;
+    //               phoneContactList.save();
+    //             }
+    //           },
+    //         );
+    //       },
+    //     );
   }
 
   Future<void> saveContactsListToDB(

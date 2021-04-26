@@ -63,23 +63,19 @@ class ContactProvider extends ChangeNotifier {
   }
 
   Future<bool> _checkIfChatExistAlready({List<String?>? participants}) async {
-    late bool exists;
+    bool exists = true;
     await _fireStoreService.queryInfo(participants![0]).then((value) {
       bool _contains = value.docChanges.isNotEmpty;
-      if (_contains) print(value.docChanges[0].doc.data());
-
-      if (_contains &&
-              value.docChanges[0].doc.data()!['participantsIDs'][0] ==
-                  participants[0] ||
-          _contains &&
-              value.docChanges[0].doc.data()!['participantsIDs'][0] ==
-                  participants[1]) {
-        exists = false;
-        print("Already Exist");
-      } else {
-        exists = true;
-        print("Does Not Exist");
-      }
+      if (_contains)
+        value.docChanges.forEach((d) {
+          if (_contains &&
+                  d.doc.data()!['participantsIDs'][0] == participants[1] ||
+              _contains &&
+                  d.doc.data()!['participantsIDs'][1] == participants[1]) {
+            exists = false;
+            print("Already Exist");
+          }
+        });
     });
     return exists;
   }
@@ -95,17 +91,6 @@ class ContactProvider extends ChangeNotifier {
     List<UnRegisteredPhoneContacts> unRegistered = [];
     final _contactListFromHiveDB = _hiveHandler.getContactsListFromDB();
     if (_contactListFromHiveDB.length > 0) {
-      // // change to map for better iteration
-      // _contactListFromHiveDB[0].map(
-      //   (e) => registered.add(
-      //     RegisteredPhoneContacts.fromMap(e),
-      //   ),
-      // );
-      // _contactListFromHiveDB[1].map(
-      //   (e) => unRegistered.add(
-      //     UnRegisteredPhoneContacts.fromMap(e),
-      //   ),
-      // );
       _contactListFromHiveDB[0].forEach(
         (element) {
           registered.add(

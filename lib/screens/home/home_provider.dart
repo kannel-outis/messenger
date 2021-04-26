@@ -37,8 +37,7 @@ class HomeProvider extends ChangeNotifier {
           );
           bool exists = _hiveHandler.checkIfchatExists(hiveChat);
 
-          if (exists == true) {
-            print("shit:::::::: started");
+          if (exists == false) {
             _hiveHandler.saveChatToDB(chat);
           } else {
             for (var i = 0; i < hiveChat.participants!.length; i++) {
