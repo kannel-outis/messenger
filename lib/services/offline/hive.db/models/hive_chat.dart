@@ -27,7 +27,7 @@ class HiveChat extends HiveObject {
 
   @override
   String toString() {
-    return "${this.chatId} ..... ${this.participants![0].id} .....${this.participants![1].id}";
+    return "${this.chatId} ..... ${this.participants![0].publicKey} .....${this.participants![1].publicKey}";
   }
 
   @override

@@ -6,7 +6,7 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 
 import 'manager.dart';
 
-class MQTTManager implements Manager {
+class MQTTManager extends Manager {
   final String broker;
   final String? clientIdentifier;
   final String username;
