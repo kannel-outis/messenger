@@ -17,8 +17,8 @@ class HiveKeyPairAdapter extends TypeAdapter<HiveKeyPair> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return HiveKeyPair(
-      privateKey: fields[0] as MyPrivateKey?,
-      publicKey: fields[1] as MyPublicKey?,
+      privateKey: fields[0] as String?,
+      publicKey: fields[1] as String?,
     );
   }
 

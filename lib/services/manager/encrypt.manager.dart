@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/manager/manager.dart';
 import 'package:pointycastle/export.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
+import 'dart:developer';
 
 class EncryptClass extends Manager {
   static EncryptClass? _instance;
@@ -15,6 +17,8 @@ class EncryptClass extends Manager {
     }
     return _instance!;
   }
+
+  final _keyHelper = RsaKeyHelper();
 
   @override
   AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
@@ -40,20 +44,23 @@ class EncryptClass extends Manager {
   }
 
   @override
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt) {
+  Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) {
     final encryptor = OAEPEncoding(RSAEngine())
       ..init(true, PublicKeyParameter<RSAPublicKey>(myPublic)); // true=encrypt
 
-    return _processInBlocks(encryptor, dataToEncrypt);
+    return _processInBlocks(
+        encryptor, Uint8List.fromList(dataToEncrypt.codeUnits));
   }
 
   @override
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText) {
+  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) {
+    print(cipherText);
     final decryptor = OAEPEncoding(RSAEngine())
       ..init(false,
           PrivateKeyParameter<RSAPrivateKey>(myPrivate)); // false=decrypt
 
-    return _processInBlocks(decryptor, cipherText);
+    return _processInBlocks(
+        decryptor, Uint8List.fromList(cipherText.codeUnits));
   }
 
   Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
@@ -82,7 +89,6 @@ class EncryptClass extends Manager {
 
   @override
   String? keyToString({RSAAsymmetricKey? key}) {
-    final _keyHelper = RsaKeyHelper();
     if (key is RSAPrivateKey) {
       return _keyHelper
           .removePemHeaderAndFooter(_keyHelper.encodePrivateKeyToPemPKCS1(key));
@@ -91,5 +97,14 @@ class EncryptClass extends Manager {
           .removePemHeaderAndFooter(_keyHelper.encodePublicKeyToPemPKCS1(key));
     }
     return null;
+  }
+
+  @override
+  RSAAsymmetricKey keysFromString({String? key, required bool isPrivate}) {
+    if (isPrivate == true) {
+      return _keyHelper.parsePrivateKeyFromPem(key);
+    } else {
+      return _keyHelper.parsePublicKeyFromPem(key);
+    }
   }
 }

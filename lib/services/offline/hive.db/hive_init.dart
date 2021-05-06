@@ -16,14 +16,10 @@ class HiveInit {
   static Future hiveInit() async {
     final documentDir = await getApplicationDocumentsDirectory();
     Hive.init(documentDir.path);
-    Hive.ignoreTypeId<MyPrivateKey>(5);
-    Hive.ignoreTypeId<MyPublicKey>(4);
     Hive.registerAdapter(HiveMessagesAdapter());
     Hive.registerAdapter(HiveChatAdapter());
     Hive.registerAdapter(UserAdapter());
     Hive.registerAdapter(HivePhoneContactsListAdapter());
-    // Hive.registerAdapter(MyPrivateKeyAdapter());
-    // Hive.registerAdapter(MyPublicKeyAdapter());
     Hive.registerAdapter(HiveKeyPairAdapter());
 
     // await Hive.openBox<User>()

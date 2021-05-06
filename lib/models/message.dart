@@ -29,6 +29,26 @@ class Message {
     };
   }
 
+  Message copyWith({
+    String? message,
+    DateTime? timeOfMessage,
+    String? senderID,
+    String? receiverID,
+    String? chatID,
+    String? messageType,
+    String? messageID,
+  }) {
+    return Message(
+      chatID: chatID ?? this.chatID,
+      message: message ?? this.message,
+      messageID: messageID ?? this.messageID,
+      messageType: messageType ?? this.messageType,
+      senderID: senderID ?? this.senderID,
+      timeOfMessage: timeOfMessage ?? this.timeOfMessage,
+      receiverID: receiverID ?? this.receiverID,
+    );
+  }
+
   Message.fromMap(Map<String, dynamic> map)
       : message = map["message"],
         receiverID = map["receiverID"],

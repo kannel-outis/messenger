@@ -51,7 +51,7 @@ class ContactProvider extends ChangeNotifier {
         friendUser.toMap(),
       ],
     );
-    if (await (_checkIfChatExistAlready(participants: _chat.participantsIDs))) {
+    if (await _checkIfChatExistAlready(participants: _chat.participantsIDs)) {
       await _fireStoreService.createNewChat(_chat).then((value) {
         _hiveHandler.saveChatToDB(_chat).then((value) {
           navigate!();

@@ -28,7 +28,7 @@ class AuthProvider extends ChangeNotifier {
   final Online _firebaseStorage = MessengerFirebaseStorage();
   final _c = EncryptClassHandler();
   final _hiveHandler = HiveHandler();
-  final _keyHelper = RsaKeyHelper();
+  // final _keyHelper = RsaKeyHelper();
   firebaseAuth.User? _firebaseUser;
   bool? _isLoading;
   bool? _isTryingToVerify;
@@ -98,7 +98,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     final keyPair = _c.generateKeyPairs();
     HiveKeyPair _hiveKeyPair = HiveKeyPair(
-        privateKey: keyPair.privateKey, publicKey: keyPair.publicKey);
+        privateKey: _c.keyToString(key: keyPair.privateKey),
+        publicKey: _c.keyToString(key: keyPair.publicKey));
     String? _publicKey = _c.keyToString(key: keyPair.publicKey);
     _hiveHandler.saveKeyPairs(_hiveKeyPair);
     print(_publicKey);

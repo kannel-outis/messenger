@@ -6,6 +6,8 @@ import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
+import 'package:messenger/services/offline/hive.db/models/keys.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
 
 import 'encrypt.manager.dart';
 import 'manager.dart';
@@ -58,7 +60,9 @@ class HiveManager extends Manager {
   @override
   Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) async {
     final _hiveKeyPairs = hiveKeyPairs;
-    await _hiveKeyPairsBox.add(_hiveKeyPairs);
+    await _hiveKeyPairsBox
+        .add(_hiveKeyPairs)
+        .then((value) => print("saved Key pairs"));
     return _hiveKeyPairs;
   }
 
@@ -194,6 +198,19 @@ class HiveManager extends Manager {
       ],
     );
     await _hiveContactsList.add(hiveContact);
+  }
+
+  @override
+  MyPrivateKey get getPrivateKeyFromDB {
+    final _keyHelper = RsaKeyHelper();
+
+    final rsaPrivateKey = _keyHelper.parsePrivateKeyFromPem(
+        _hiveKeyPairsBox.values.toList()[0].privateKey!);
+    return MyPrivateKey(
+        modulus: rsaPrivateKey.modulus,
+        p: rsaPrivateKey.p,
+        privateExponent: rsaPrivateKey.privateExponent,
+        q: rsaPrivateKey.q);
   }
 
   Box<HiveChat> get chatBox => _chatBox;

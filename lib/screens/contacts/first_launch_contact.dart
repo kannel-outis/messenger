@@ -15,12 +15,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
     final _contactModel = Provider.of<ContactProvider>(context);
-    if (_listOfContacts.length != 0) {
-      for (var i = 0; i < _listOfContacts[0].length; i++) {
-        print((_listOfContacts[0][i] as RegisteredPhoneContacts).user.userName);
-        print("wait");
-      }
-    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,

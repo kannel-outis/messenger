@@ -24,11 +24,11 @@ class EncryptClassHandler extends ManagerHandler<EncryptClass?> {
     return super.setManager(newManager);
   }
 
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt) {
+  Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) {
     return manager!.rsaEncrypt(myPublic, dataToEncrypt);
   }
 
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText) {
+  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) {
     return manager!.rsaDecrypt(myPrivate, cipherText);
   }
 
@@ -48,6 +48,10 @@ class EncryptClassHandler extends ManagerHandler<EncryptClass?> {
     secureRandom.seed(KeyParameter(Uint8List.fromList(seeds)));
 
     return secureRandom;
+  }
+
+  RSAAsymmetricKey keysFromString({String? key, required bool isPrivate}) {
+    return manager!.keysFromString(isPrivate: isPrivate, key: key);
   }
 
   String? keyToString({RSAAsymmetricKey? key}) {

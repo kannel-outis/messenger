@@ -49,17 +49,20 @@ abstract class Manager {
 
   Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) =>
       throw UnimplementedError();
+  MyPrivateKey get getPrivateKeyFromDB => throw UnimplementedError();
 
   //EncryptClass
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt) =>
+  Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) =>
       throw UnimplementedError();
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText) =>
+  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) =>
       throw UnimplementedError();
   AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
           {SecureRandom? secureRandom, int bitLength = 2048}) =>
       throw UnimplementedError();
 
   String? keyToString({RSAAsymmetricKey? key}) => throw UnimplementedError();
+  RSAAsymmetricKey keysFromString({String? key, required bool isPrivate}) =>
+      throw UnimplementedError();
 }
 
 abstract class ManagerHandler<T extends Manager?> {

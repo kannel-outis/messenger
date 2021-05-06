@@ -170,7 +170,10 @@ class ChatsScreen extends HookWidget {
                         ? () {
                             String? msg = valueListener.value;
                             _chatsProvider.sendMessage(
-                                hiveChat: hiveChat, msg: msg);
+                                // Change to One later
+                                publicKey: hiveChat.participants![1].publicKey!,
+                                hiveChat: hiveChat,
+                                msg: msg);
                             _textController!.clear();
                             valueListener.value = "";
                           }

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
+import 'package:messenger/services/encryption_class.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
@@ -11,11 +12,13 @@ import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 
 class HomeProvider extends ChangeNotifier {
   Online _storeService = FireStoreService();
   MQTThandler _mqttHandler = MQTThandler();
   HiveHandler _hiveHandler = HiveHandler();
+  EncryptClassHandler _encryptClassHandler = EncryptClassHandler();
   List<Map<String, dynamic>?> _list = [];
   bool isme(String? userID) {
     final User prefUser = User.fromMap(
@@ -27,9 +30,9 @@ class HomeProvider extends ChangeNotifier {
     _storeService
         .listenWhenAUserInitializesAChat(_mqttHandler.user)
         .listen((event) {
-      if (event.docChanges.isNotEmpty) {
-        event.docChanges.forEach((element) {
-          Chat chat = Chat.froMap(element.doc.data()!);
+      if (event.docs.isNotEmpty) {
+        event.docs.forEach((element) {
+          Chat chat = Chat.froMap(element.data()!);
           HiveChat hiveChat = HiveChat(
             chatId: chat.chatID,
             participants:
@@ -38,6 +41,7 @@ class HomeProvider extends ChangeNotifier {
           bool exists = _hiveHandler.checkIfchatExists(hiveChat);
 
           if (exists == false) {
+            print("false");
             _hiveHandler.saveChatToDB(chat);
           } else {
             for (var i = 0; i < hiveChat.participants!.length; i++) {
@@ -58,7 +62,20 @@ class HomeProvider extends ChangeNotifier {
       _list.add(event);
       print(_list.length);
       try {
-        _hiveHandler.saveMessages(Message.fromMap(_list.last!));
+        if (!isme(_list.last!["senderID"])) {
+          // print(String.fromCharCodes(_encryptClassHandler.rsaDecrypt(
+          //     _hiveHandler.myPrivateKeyFromDB, event!['message'])));
+          _hiveHandler.saveMessages(
+            Message.fromMap(_list.last!).copyWith(
+              message: String.fromCharCodes(
+                _encryptClassHandler.rsaDecrypt(
+                  _hiveHandler.myPrivateKeyFromDB,
+                  event!['message'],
+                ),
+              ),
+            ),
+          );
+        }
       } catch (e) {
         print(e.toString());
       }
