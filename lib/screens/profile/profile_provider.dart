@@ -24,6 +24,7 @@ class ProfileProvider extends ChangeNotifier {
       status: status ?? userPrefData.status,
       userName: username ?? userPrefData.userName,
       photoUrl: _imageUrl ?? userPrefData.photoUrl,
+      publicKey: userPrefData.publicKey,
     );
     _isDone = await _cloud.updateUserInCloud(user: user);
     notifyListeners();

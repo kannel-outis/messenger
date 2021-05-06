@@ -16,6 +16,8 @@ class User {
   final String? photoUrl;
   @HiveField(4)
   final String? status;
+  @HiveField(5)
+  final String? publicKey;
 
   User({
     this.id,
@@ -23,6 +25,7 @@ class User {
     this.phoneNumbers,
     this.photoUrl,
     this.status,
+    required this.publicKey,
   });
 
   @override
@@ -33,7 +36,8 @@ class User {
         typedOther.phoneNumbers == phoneNumbers &&
         typedOther.photoUrl == photoUrl &&
         typedOther.status == status &&
-        typedOther.userName == userName;
+        typedOther.userName == userName &&
+        typedOther.publicKey == publicKey;
   }
 
   @override
@@ -46,20 +50,23 @@ class User {
       "phoneNumbers": phoneNumbers,
       "photoUrl": photoUrl,
       "status": status,
+      "publicKey": publicKey,
     };
   }
 
   User.empty()
-      : id = null,
-        phoneNumbers = null,
-        photoUrl = null,
-        status = null,
-        userName = null;
+      : this.id = null,
+        this.phoneNumbers = null,
+        this.photoUrl = null,
+        this.status = null,
+        this.userName = null,
+        this.publicKey = null;
 
   User.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         userName = map['userName'],
         phoneNumbers = List<String>.from(map['phoneNumbers']),
         photoUrl = map['photoUrl'],
-        status = map['status'];
+        status = map['status'],
+        publicKey = map['publicKey'];
 }

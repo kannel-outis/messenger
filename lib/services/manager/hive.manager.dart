@@ -5,7 +5,11 @@ import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
+import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
+import 'package:messenger/services/offline/hive.db/models/keys.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
 
+import 'encrypt.manager.dart';
 import 'manager.dart';
 
 class HiveManager extends Manager {
@@ -22,16 +26,20 @@ class HiveManager extends Manager {
   final _messageBox = Hive.box<HiveMessages>(HiveInit.messagesBoxName);
   final _hiveContactsList =
       Hive.box<HivePhoneContactsList>(HiveInit.hiveContactsList);
-
+  final _hiveKeyPairsBox = Hive.box<HiveKeyPair>(HiveInit.keyPairs);
+  @override
   Future<void> saveChatToDB(Chat chat) async {
     // List<User> _users = ;
     final _hiveChat = HiveChat(
         chatId: chat.chatID,
         participants: chat.participants!.map((e) => User.fromMap(e!)).toList());
-    if (checkIfChatExists(_hiveChat)) return;
+    if (checkIfChatExists(_hiveChat)) {
+      return;
+    }
     await _chatBox.add(_hiveChat);
   }
 
+  @override
   Future<void> saveMessages(HiveMessages message) async {
     print("OdeBi");
     if (_checkIfMessageExists(message)) return;
@@ -42,10 +50,20 @@ class HiveManager extends Manager {
     }
   }
 
+  @override
   List<HiveMessages> getMessagesFromDB(String chatID) {
     return _messageBox.values
         .where((element) => element.chatID == chatID)
         .toList();
+  }
+
+  @override
+  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) async {
+    final _hiveKeyPairs = hiveKeyPairs;
+    await _hiveKeyPairsBox
+        .add(_hiveKeyPairs)
+        .then((value) => print("saved Key pairs"));
+    return _hiveKeyPairs;
   }
 
   // bool checkIfExistObjExist(Object obj) {
@@ -62,7 +80,7 @@ class HiveManager extends Manager {
   //     return false;
   //   }
   // }
-
+  @override
   Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {
     await _chatBox.delete(hiveChat.key).then((value) {
       _messageBox.values
@@ -74,6 +92,7 @@ class HiveManager extends Manager {
     });
   }
 
+  @override
   bool checkIfChatExists(HiveChat hiveChat) {
     return _chatBox.values
         .where((element) => hiveChat.chatId == element.chatId)
@@ -86,6 +105,7 @@ class HiveManager extends Manager {
         .isNotEmpty;
   }
 
+  @override
   void updateMessageIsRead(HiveMessages message) {
     var messagesList = _messageBox.values
         .where((element) =>
@@ -97,14 +117,17 @@ class HiveManager extends Manager {
     });
   }
 
+  @override
   List<HiveChat> loadChatsFromLocalDB() {
     return _chatBox.values.toList();
   }
 
+  @override
   List<List<Map<String, dynamic>>> getContactsListFromDB() {
     return _hiveContactsList.values.toList().single.phoneContacts;
   }
 
+  @override
   void updateUserInHive(User user, int index) {
     assert(index < 2);
     _chatBox.values
@@ -124,35 +147,37 @@ class HiveManager extends Manager {
         );
   }
 
+  @override
   void updateUserOnContactsListInHive(User user, int index) {
-    _hiveContactsList.values
-        .where(
-          (element) {
-            late bool isEqualToId;
-            element.phoneContacts[0].forEach(
-              (element) {
-                isEqualToId = element['user']['id'] == user.id;
-              },
-            );
-            return isEqualToId;
-          },
-        )
-        .toList()
-        .forEach(
-          (phoneContactList) {
-            phoneContactList.phoneContacts[0].forEach(
-              (element) {
-                if (Map<String, dynamic>.from(element['user']) !=
-                    user.toMap()) {
-                  element['user'] = user.toMap() as dynamic;
-                  phoneContactList.save();
-                }
-              },
-            );
-          },
-        );
+    // print("Happen shele");
+    // _hiveContactsList.values
+    //     .where(
+    //       (element) {
+    //         late bool isEqualToId;
+    //         element.phoneContacts[0].forEach(
+    //           (element) {
+    //             isEqualToId = element['user']['id'] == user.id;
+    //           },
+    //         );
+    //         return isEqualToId;
+    //       },
+    //     )
+    //     .toList()
+    //     .forEach(
+    //       (phoneContactList) {
+    //         phoneContactList.phoneContacts[0].forEach(
+    //           (element) {
+    //             if (Map<String, dynamic>.from(element['user']) !=
+    //                 user.toMap()) {
+    //               element['user'] = user.toMap() as dynamic;
+    //               phoneContactList.save();
+    //             }
+    //           },
+    //         );
+    //       },
+    //     );
   }
-
+  @override
   Future<void> saveContactsListToDB(
       List<List<PhoneContacts>> phoneContact) async {
     List<Map<String, Map<String, dynamic>>> _registered = [];
@@ -173,6 +198,19 @@ class HiveManager extends Manager {
       ],
     );
     await _hiveContactsList.add(hiveContact);
+  }
+
+  @override
+  MyPrivateKey get getPrivateKeyFromDB {
+    final _keyHelper = RsaKeyHelper();
+
+    final rsaPrivateKey = _keyHelper.parsePrivateKeyFromPem(
+        _hiveKeyPairsBox.values.toList()[0].privateKey!);
+    return MyPrivateKey(
+        modulus: rsaPrivateKey.modulus,
+        p: rsaPrivateKey.p,
+        privateExponent: rsaPrivateKey.privateExponent,
+        q: rsaPrivateKey.q);
   }
 
   Box<HiveChat> get chatBox => _chatBox;

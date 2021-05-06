@@ -1,36 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'contacts_model.dart';
+part of 'keypairs.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class HivePhoneContactsListAdapter extends TypeAdapter<HivePhoneContactsList> {
+class HiveKeyPairAdapter extends TypeAdapter<HiveKeyPair> {
   @override
-  final int typeId = 6;
+  final int typeId = 7;
 
   @override
-  HivePhoneContactsList read(BinaryReader reader) {
+  HiveKeyPair read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return HivePhoneContactsList(
-      phoneContacts: (fields[0] as List)
-          .map((dynamic e) => (e as List)
-              .map((dynamic e) => (e as Map).cast<String, dynamic>())
-              .toList())
-          .toList(),
+    return HiveKeyPair(
+      privateKey: fields[0] as String?,
+      publicKey: fields[1] as String?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, HivePhoneContactsList obj) {
+  void write(BinaryWriter writer, HiveKeyPair obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.phoneContacts);
+      ..write(obj.privateKey)
+      ..writeByte(1)
+      ..write(obj.publicKey);
   }
 
   @override
@@ -39,7 +38,7 @@ class HivePhoneContactsListAdapter extends TypeAdapter<HivePhoneContactsList> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is HivePhoneContactsListAdapter &&
+      other is HiveKeyPairAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

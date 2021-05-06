@@ -3,10 +3,11 @@ import 'dart:convert';
 // import '../../models/message.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'dart:developer';
 
 import 'manager.dart';
 
-class MQTTManager implements Manager {
+class MQTTManager extends Manager {
   final String broker;
   final String? clientIdentifier;
   final String username;
@@ -89,7 +90,7 @@ class MQTTManager implements Manager {
               String data = MqttPublishPayload.bytesToStringAsString(
                   payLoad.payload.message!);
               Map<String, dynamic>? dataPayload = json.decode(data);
-              print(dataPayload);
+              log(data);
               _streamController.add(dataPayload);
             });
           }

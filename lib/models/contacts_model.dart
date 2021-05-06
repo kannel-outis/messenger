@@ -62,7 +62,7 @@ class UnRegisteredPhoneContacts extends PhoneContacts {
 }
 
 @HiveType(typeId: 6)
-class HivePhoneContactsList extends PhoneContacts with HiveObject {
+class HivePhoneContactsList extends PhoneContacts with HiveObjectMixin {
   @HiveField(0)
   List<List<Map<String, dynamic>>> phoneContacts;
   HivePhoneContactsList({

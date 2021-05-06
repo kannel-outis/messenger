@@ -4,6 +4,7 @@ import 'package:messenger/screens/home/home.dart';
 import 'package:provider/provider.dart';
 
 import 'contacts_provider.dart';
+import "dart:developer";
 
 class FirstLaunchContactScreen extends StatelessWidget {
   final bool? fromHome;
@@ -80,7 +81,7 @@ class FirstLaunchContactScreen extends StatelessWidget {
                         ),
                       ),
                       ..._listOfContacts[index].map((e) {
-                        return BuildContactTile(
+                        return _BuildContactTile(
                             fromHome: fromHome,
                             contactModel: _contactModel,
                             element: e,
@@ -95,8 +96,8 @@ class FirstLaunchContactScreen extends StatelessWidget {
   }
 }
 
-class BuildContactTile extends StatelessWidget {
-  const BuildContactTile({
+class _BuildContactTile extends StatelessWidget {
+  const _BuildContactTile({
     Key? key,
     required this.fromHome,
     required ContactProvider contactModel,
@@ -135,6 +136,8 @@ class BuildContactTile extends StatelessWidget {
                     : Navigator.pop(context);
               },
             );
+            print(e.user.userName);
+            log(e.contact.displayName!);
           },
           child: Container(
             height: 50,
@@ -166,7 +169,9 @@ class BuildContactTile extends StatelessWidget {
             ? ""
             : "${e.contact?.phones?.toList()[0].value}"),
         trailing: InkWell(
-          onTap: () {},
+          onTap: () {
+            log("${e.contact!.displayName}");
+          },
           child: Container(
             height: 50,
             width: MediaQuery.of(context).size.width / 5,
