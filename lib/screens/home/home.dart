@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -35,6 +37,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  int _indexOf(List<String> iDs, HomeProvider _homeProvider,
+      {bool isMe = true}) {
+    if (!isMe)
+      return iDs.indexWhere((element) => _homeProvider.user.id != element);
+    return iDs.indexWhere((element) => _homeProvider.user.id == element);
   }
 
   @override
@@ -76,15 +85,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               valueListenable2:
                   Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
               builder: (context, hiveChat, hiveMessage, child) {
-                final List<HiveChat> hiveChats = hiveChat!.values
-                    .where((element) =>
-                        _homeProvider.isme(element.participants![0].id))
-                    .toList();
+                final List<HiveChat> hiveChats =
+                    hiveChat!.values.where((element) {
+                  final List<String>? _iDs = [
+                    element.participants![0].id!,
+                    element.participants![1].id!
+                  ];
+                  return _homeProvider.isme(_iDs);
+                }).toList();
 
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: hiveChats.length,
                   itemBuilder: (context, index) {
+                    final List<String>? _iDs = [
+                      hiveChats[index].participants![0].id!,
+                      hiveChats[index].participants![1].id!
+                    ];
                     final List<HiveMessages> hiveMessages = hiveMessage!.values
                         .where((element) =>
                             element.chatID == hiveChats[index].chatId)
@@ -97,7 +114,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     return ListTile(
                       title: Text(
                         hiveChats[index]
-                                .participants![1]
+                                .participants![
+                                    _indexOf(_iDs!, _homeProvider, isMe: false)]
                                 .userName!
                                 .capitalize() ??
                             'Null',
@@ -146,6 +164,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             )
                           : SizedBox(),
                       onTap: () {
+                        print(hiveChats[index]
+                            .participants![_indexOf(_iDs, _homeProvider)]
+                            .id);
+                        print(hiveChats[index]
+                            .participants![
+                                _indexOf(_iDs, _homeProvider, isMe: false)]
+                            .id);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => ChatsScreen(hiveChats[index]),

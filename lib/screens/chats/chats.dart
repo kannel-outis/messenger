@@ -17,19 +17,31 @@ class ChatsScreen extends HookWidget {
   final HiveChat hiveChat;
 
   ChatsScreen(this.hiveChat);
+  int _indexOf(ChatsProvider _chatsProvider, {bool isMe = true}) {
+    final List<String> iDs = [
+      hiveChat.participants![0].id!,
+      hiveChat.participants![1].id!
+    ];
+    if (isMe == false)
+      return iDs.indexWhere((element) => _chatsProvider.user.id != element);
+    return iDs.indexWhere((element) => _chatsProvider.user.id == element);
+  }
+
   @override
   Widget build(BuildContext context) {
     var valueListener = useState<String?>("");
     final TextEditingController? _textController = useTextEditingController();
     final _scrollController = useScrollController();
     final _chatsProvider = Provider.of<ChatsProvider>(context);
-    print(hiveChat.toString());
+    // print(hiveChat.toString());
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(
           context: context,
-          friendContactName: hiveChat.participants![1].userName,
-          photoUrl: hiveChat.participants![1].photoUrl,
+          friendContactName: hiveChat
+              .participants![_indexOf(_chatsProvider, isMe: false)].userName,
+          photoUrl: hiveChat
+              .participants![_indexOf(_chatsProvider, isMe: false)].photoUrl,
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -57,8 +69,9 @@ class ChatsScreen extends HookWidget {
                         ScrollViewKeyboardDismissBehavior.onDrag,
                     itemBuilder: (context, index) {
                       // _scrollController.position
+
                       bool isMe = hiveMessages[index].senderID ==
-                          hiveChat.participants![0].id;
+                          hiveChat.participants![_indexOf(_chatsProvider)].id;
                       _chatsProvider.updateMessageIsRead(hiveMessages[index]);
                       // print(hiveMessages[index])
                       return Row(
@@ -168,11 +181,26 @@ class ChatsScreen extends HookWidget {
                   GestureDetector(
                     onTap: valueListener.value!.length > 0
                         ? () {
+                            // print(hiveChat
+                            //     .participants![_indexOf(_chatsProvider)].id);
+                            // print(hiveChat
+                            //     .participants![
+                            //         _indexOf(_chatsProvider, isMe: false)]
+                            //     .id);
                             String? msg = valueListener.value;
                             _chatsProvider.sendMessage(
-                                // Change to One later
-                                publicKey: hiveChat.participants![1].publicKey!,
-                                hiveChat: hiveChat,
+                                receiverID: hiveChat
+                                    .participants![
+                                        _indexOf(_chatsProvider, isMe: false)]
+                                    .id!,
+                                senderID: hiveChat
+                                    .participants![_indexOf(_chatsProvider)]
+                                    .id!,
+                                publicKey: hiveChat
+                                    .participants![
+                                        _indexOf(_chatsProvider, isMe: false)]
+                                    .publicKey!,
+                                chatId: hiveChat.chatId!,
                                 msg: msg);
                             _textController!.clear();
                             valueListener.value = "";
