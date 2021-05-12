@@ -20,10 +20,10 @@ class HomeProvider extends ChangeNotifier {
   HiveHandler _hiveHandler = HiveHandler();
   EncryptClassHandler _encryptClassHandler = EncryptClassHandler();
   List<Map<String, dynamic>?> _list = [];
-  bool isme(String? userID) {
+  bool isme(List<String>? iDs) {
     final User prefUser = User.fromMap(
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
-    return prefUser.id == userID;
+    return iDs!.contains(prefUser.id);
   }
 
   void listenTocloudStreamAndSubscribeTopic() {
@@ -41,7 +41,6 @@ class HomeProvider extends ChangeNotifier {
           bool exists = _hiveHandler.checkIfchatExists(hiveChat);
 
           if (exists == false) {
-            print("false");
             _hiveHandler.saveChatToDB(chat);
           } else {
             for (var i = 0; i < hiveChat.participants!.length; i++) {
@@ -61,8 +60,9 @@ class HomeProvider extends ChangeNotifier {
     _mqttHandler.messageController.listen((event) {
       _list.add(event);
       print(_list.length);
+      print(_list.last!["senderID"]);
       try {
-        if (!isme(_list.last!["senderID"])) {
+        if (!isme([_list.last!["senderID"]])) {
           // print(String.fromCharCodes(_encryptClassHandler.rsaDecrypt(
           //     _hiveHandler.myPrivateKeyFromDB, event!['message'])));
           _hiveHandler.saveMessages(

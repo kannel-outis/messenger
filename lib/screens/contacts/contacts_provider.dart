@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
@@ -19,6 +20,7 @@ class ContactProvider extends ChangeNotifier {
   final _hiveHandler = HiveHandler();
   List<List<PhoneContacts>>? _listOfContact;
   Future<List<List<PhoneContacts>>> registeredAndUnregisteredContacts() async {
+    Timeline.startSync("name");
     var _contacts = Contacts(_fireStoreService);
     if (_listOfContact != null) return _listOfContact!;
     try {
@@ -36,6 +38,7 @@ class ContactProvider extends ChangeNotifier {
       print(s.toString());
       throw MessengerError(e.toString());
     }
+    Timeline.finishSync();
     return _listOfContact!;
   }
 
@@ -74,6 +77,7 @@ class ContactProvider extends ChangeNotifier {
                   d.doc.data()!['participantsIDs'][1] == participants[1]) {
             exists = false;
             print("Already Exist");
+            print(d.doc.data()!['chatID']);
           }
         });
     });
