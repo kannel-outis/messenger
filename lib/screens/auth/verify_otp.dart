@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
 import 'package:messenger/screens/set_name/set_name_screen.dart';
 import 'package:provider/provider.dart';
@@ -56,25 +57,38 @@ class VerifyOTPScreen extends HookWidget {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      _authProvider.verifyOTP(
-                        int.parse(_otpController!.text),
-                        () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => SetNameScreen(),
-                            ),
-                          );
-                        },
-                      );
+                      _authProvider.verifyOTP(int.parse(_otpController!.text),
+                          () {
+                        Fluttertoast.showToast(msg: "Verification Successfull");
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => SetNameScreen(),
+                          ),
+                        );
+                      }, handleExceptionInUi: (e) {
+                        Fluttertoast.showToast(
+                            msg: e, toastLength: Toast.LENGTH_LONG);
+                      });
                     },
                     child: Container(
                       height: MediaQuery.of(context).size.width / 9,
                       width: MediaQuery.of(context).size.width / 3,
                       color: Colors.blue,
                       child: Center(
-                        child: Text(
-                          'Confirm',
-                          style: TextStyle(color: Colors.white),
+                        child: Consumer<AuthProvider>(
+                          builder: (context, authProvider, child) {
+                            final bool? isVerifying =
+                                authProvider.isTryingToVerify;
+                            return isVerifying == true
+                                ? Text(
+                                    'Verifying...',
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                : Text(
+                                    'Confirm',
+                                    style: TextStyle(color: Colors.white),
+                                  );
+                          },
                         ),
                       ),
                     ),

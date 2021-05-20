@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
@@ -76,7 +77,7 @@ class HomeProvider extends ChangeNotifier {
             ),
           );
         }
-      } catch (e) {
+      } on MessengerError catch (e) {
         print(e.toString());
       }
     });

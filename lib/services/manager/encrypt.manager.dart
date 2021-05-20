@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/manager/manager.dart';
 import 'package:pointycastle/export.dart';
@@ -23,44 +24,56 @@ class EncryptClass extends Manager {
   @override
   AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
       {SecureRandom? secureRandom, int bitLength = 2048}) {
-    print("Start");
-    final keyGen = RSAKeyGenerator()
-      ..init(ParametersWithRandom(
-          RSAKeyGeneratorParameters(BigInt.parse('65537'), bitLength, 64),
-          secureRandom!));
-    final keyPair = keyGen.generateKeyPair();
+    try {
+      final keyGen = RSAKeyGenerator()
+        ..init(ParametersWithRandom(
+            RSAKeyGeneratorParameters(BigInt.parse('65537'), bitLength, 64),
+            secureRandom!));
+      final keyPair = keyGen.generateKeyPair();
 
-    final RSAPublicKey _publicKey = keyPair.publicKey as RSAPublicKey;
-    final RSAPrivateKey _privateKey = keyPair.privateKey as RSAPrivateKey;
+      final RSAPublicKey _publicKey = keyPair.publicKey as RSAPublicKey;
+      final RSAPrivateKey _privateKey = keyPair.privateKey as RSAPrivateKey;
 
-    return AsymmetricKeyPair<MyPublicKey, MyPrivateKey>(
-        MyPublicKey(
-            modulus: _publicKey.modulus!, exponent: _publicKey.exponent!),
-        MyPrivateKey(
-            modulus: _privateKey.modulus!,
-            privateExponent: _privateKey.privateExponent!,
-            p: _privateKey.p,
-            q: _privateKey.q));
+      return AsymmetricKeyPair<MyPublicKey, MyPrivateKey>(
+          MyPublicKey(
+              modulus: _publicKey.modulus!, exponent: _publicKey.exponent!),
+          MyPrivateKey(
+              modulus: _privateKey.modulus!,
+              privateExponent: _privateKey.privateExponent!,
+              p: _privateKey.p,
+              q: _privateKey.q));
+    } catch (e) {
+      throw MessengerError("Something went wrong" + " ${e.toString()}");
+    }
   }
 
   @override
   Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) {
-    final encryptor = OAEPEncoding(RSAEngine())
-      ..init(true, PublicKeyParameter<RSAPublicKey>(myPublic)); // true=encrypt
+    try {
+      final encryptor = OAEPEncoding(RSAEngine())
+        ..init(
+            true, PublicKeyParameter<RSAPublicKey>(myPublic)); // true=encrypt
 
-    return _processInBlocks(
-        encryptor, Uint8List.fromList(dataToEncrypt.codeUnits));
+      return _processInBlocks(
+          encryptor, Uint8List.fromList(dataToEncrypt.codeUnits));
+    } catch (e) {
+      throw MessengerError("Something went wrong" + " ${e.toString()}");
+    }
   }
 
   @override
   Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) {
-    print(cipherText);
-    final decryptor = OAEPEncoding(RSAEngine())
-      ..init(false,
-          PrivateKeyParameter<RSAPrivateKey>(myPrivate)); // false=decrypt
+    try {
+      print(cipherText);
+      final decryptor = OAEPEncoding(RSAEngine())
+        ..init(false,
+            PrivateKeyParameter<RSAPrivateKey>(myPrivate)); // false=decrypt
 
-    return _processInBlocks(
-        decryptor, Uint8List.fromList(cipherText.codeUnits));
+      return _processInBlocks(
+          decryptor, Uint8List.fromList(cipherText.codeUnits));
+    } catch (e) {
+      throw MessengerError("Something went wrong" + " ${e.toString()}");
+    }
   }
 
   Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {

@@ -19,7 +19,10 @@ abstract class Online {
     required VoidUserCallBack? setFirebaseUser,
     required VoidCallback? voidCallBack,
     required VoidCallback? timeOutFunction,
-  }) async {}
+    required VoidExceptionCallBack? handleException,
+  }) async {
+    throw UnimplementedError();
+  }
 
   @protected
   Stream<firebaseAuth.User?> fireBaseUserOnChanged() =>

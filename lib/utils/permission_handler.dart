@@ -12,7 +12,7 @@ class PermissionHandler {
     } else if (contactsPermissionStatus.isDenied ||
         contactsPermissionStatus.isPermanentlyDenied) {
       _finalStatus = PermissionStatus.denied;
-      throw PermissionError(
+      throw MessengerError(
           'Permission is denied. please check app settings to allow permisson');
     } else {
       _finalStatus = PermissionStatus.granted;

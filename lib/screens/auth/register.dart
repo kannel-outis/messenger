@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/screens/auth/verify_otp.dart';
 import 'package:messenger/screens/set_name/set_name_screen.dart';
 import 'package:messenger/utils/utils.dart';
@@ -26,6 +27,8 @@ class RegistrationScreen extends HookWidget {
       }, timeOutFunction: () {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => VerifyOTPScreen()));
+      }, handleExceptionInUi: (eMessage) {
+        Fluttertoast.showToast(msg: eMessage);
       });
     } else {
       Navigator.of(context)
@@ -89,7 +92,7 @@ class RegistrationScreen extends HookWidget {
                         SizedBox(width: 10),
                         SizedBox(
                           width: 200,
-                          height: 35,
+                          height: 40,
                           child: Container(
                             child: TextField(
                               keyboardType: TextInputType.phone,
@@ -105,9 +108,9 @@ class RegistrationScreen extends HookWidget {
                               }) {
                                 return SizedBox();
                               },
-                              // decoration: InputDecoration(
-                              //   contentPadding: EdgeInsets.only(bottom: 15),
-                              // ),
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(bottom: 15),
+                              ),
                             ),
                           ),
                         ),
