@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
@@ -201,7 +202,9 @@ class ChatsScreen extends HookWidget {
                                         _indexOf(_chatsProvider, isMe: false)]
                                     .publicKey!,
                                 chatId: hiveChat.chatId!,
-                                msg: msg);
+                                msg: msg,
+                                handleExceptionInUi: (e) =>
+                                    Fluttertoast.showToast(msg: e));
                             _textController!.clear();
                             valueListener.value = "";
                           }

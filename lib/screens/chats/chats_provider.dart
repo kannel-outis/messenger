@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/encryption_class.dart';
@@ -12,6 +13,7 @@ import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import 'package:messenger/utils/constants.dart';
+import 'package:messenger/utils/typedef.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatsProvider extends ChangeNotifier {
@@ -23,26 +25,31 @@ class ChatsProvider extends ChangeNotifier {
       required String senderID,
       required String receiverID,
       required String? msg,
-      required String publicKey}) {
+      required String publicKey,
+      required VoidExceptionCallBack? handleExceptionInUi}) {
     // print(SharedPrefs.instance.getUserData().id);
     print(senderID);
     // return;
-    final rsaPublicKey =
-        _encryptClassHandler.keysFromString(isPrivate: false, key: publicKey);
-    final myPublicKey = MyPublicKey(
-        modulus: rsaPublicKey.modulus, exponent: rsaPublicKey.exponent);
-    final secureMessage = _encryptClassHandler.rsaEncrypt(myPublicKey, msg!);
-    final Message message = Message(
-      chatID: chatId,
-      message: String.fromCharCodes(secureMessage),
-      messageType: 'text',
-      senderID: senderID,
-      receiverID: receiverID,
-      timeOfMessage: DateTime.now(),
-      messageID: Uuid().v4(),
-    );
-    _hiveHandler.saveMessages(message.copyWith(message: msg));
-    _mqttHandler.publish(chatId, message);
+    try {
+      final rsaPublicKey =
+          _encryptClassHandler.keysFromString(isPrivate: false, key: publicKey);
+      final myPublicKey = MyPublicKey(
+          modulus: rsaPublicKey.modulus, exponent: rsaPublicKey.exponent);
+      final secureMessage = _encryptClassHandler.rsaEncrypt(myPublicKey, msg!);
+      final Message message = Message(
+        chatID: chatId,
+        message: String.fromCharCodes(secureMessage),
+        messageType: 'text',
+        senderID: senderID,
+        receiverID: receiverID,
+        timeOfMessage: DateTime.now(),
+        messageID: Uuid().v4(),
+      );
+      _hiveHandler.saveMessages(message.copyWith(message: msg));
+      _mqttHandler.publish(chatId, message);
+    } on MessengerError catch (e) {
+      handleExceptionInUi!(e.message);
+    }
   }
 
   Stream<Map<String, dynamic>?> get stream => _mqttHandler.messageController;

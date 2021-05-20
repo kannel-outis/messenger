@@ -13,7 +13,7 @@ import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/codes.dart';
 import 'package:messenger/services/online/firebase/firebase_auth.dart';
-import 'package:rsa_encrypt/rsa_encrypt.dart';
+import 'package:messenger/utils/typedef.dart';
 
 class AuthProvider extends ChangeNotifier {
   List<CountryCode> _listOfCCs =
@@ -28,7 +28,6 @@ class AuthProvider extends ChangeNotifier {
   final Online _firebaseStorage = MessengerFirebaseStorage();
   final _c = EncryptClassHandler();
   final _hiveHandler = HiveHandler();
-  // final _keyHelper = RsaKeyHelper();
   firebaseAuth.User? _firebaseUser;
   bool? _isLoading;
   bool? _isTryingToVerify;
@@ -40,17 +39,24 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> verifyPhoneNumber(String phoneNumber,
-      {VoidCallback? navigate, VoidCallback? timeOutFunction}) async {
+      {VoidCallback? navigate,
+      VoidCallback? timeOutFunction,
+      required VoidExceptionCallBack? handleExceptionInUi}) async {
     _countryCode =
         listOfCCs.where((element) => element.dialCode == "+234").first;
+    _isLoading = true;
+    notifyListeners();
     try {
-      _isLoading = true;
-      notifyListeners();
       await _auth.verifyPhoneNumber(
         _countryCode!.dialCode! + phoneNumber,
         setVerificationId: _setVerificationId,
         setPhoneAutoRetrieval: _setVerificationId,
         setFirebaseUser: _setFirebaseUser,
+        handleException: (e) {
+          handleExceptionInUi!(e);
+          _isLoading = false;
+          notifyListeners();
+        },
         voidCallBack: () {
           navigate!();
           _isTryingToVerify = false;
@@ -64,63 +70,74 @@ class AuthProvider extends ChangeNotifier {
           notifyListeners();
         },
       );
+
       _phoneNumberWithoutCC = phoneNumber;
     } on MessengerError catch (e) {
-      print(e.message);
+      _isLoading = false;
+      notifyListeners();
+      handleExceptionInUi!(e.message);
     }
   }
 
-  Future<void> verifyOTP(int otp, VoidCallback voidCallBack) async {
+  Future<void> verifyOTP(int otp, VoidCallback voidCallBack,
+      {required VoidExceptionCallBack? handleExceptionInUi}) async {
     _isTryingToVerify = true;
     notifyListeners();
-
-    await _auth
-        .verifyOTP(
-      otp: otp,
-      verificationID: _verificationId,
-    )
-        .then((value) {
-      _auth.firebaseUser.listen((newUser) {
-        _setFirebaseUser(newUser!);
+    try {
+      await _auth
+          .verifyOTP(
+        otp: otp,
+        verificationID: _verificationId,
+      )
+          .then((value) {
+        _auth.firebaseUser.listen((newUser) {
+          _setFirebaseUser(newUser!);
+        });
+      }).then((value) async {
+        _isTryingToVerify = true;
+        notifyListeners();
+        if (await Future.delayed(Duration(seconds: 2), () => _firebaseUser) !=
+            null) {
+          voidCallBack();
+        }
       });
-    }).then((value) async {
-      _isTryingToVerify = true;
+    } on MessengerError catch (e) {
+      _isTryingToVerify = false;
       notifyListeners();
-      if (await Future.delayed(Duration(seconds: 2), () => _firebaseUser) !=
-          null) {
-        voidCallBack();
-      }
-    });
+      handleExceptionInUi!(e.message);
+    }
   }
 
-  Future<void> saveNewUserToCloudAndSetPrefs(String username) async {
+  Future<void> saveNewUserToCloudAndSetPrefs(String username,
+      {required VoidExceptionCallBack? handleExceptionInUi}) async {
     _isLoading = true;
     notifyListeners();
-    final keyPair = _c.generateKeyPairs();
-    HiveKeyPair _hiveKeyPair = HiveKeyPair(
-        privateKey: _c.keyToString(key: keyPair.privateKey),
-        publicKey: _c.keyToString(key: keyPair.publicKey));
-    String? _publicKey = _c.keyToString(key: keyPair.publicKey);
-    _hiveHandler.saveKeyPairs(_hiveKeyPair);
-    print(_publicKey);
-    // Change the keys to Strings and save it to cloud
-    await _fireStoreService
-        .saveNewUserToCloud(
-      user: _firebaseUser,
-      userName: username,
-      phoneNumberWithoutCC: _phoneNumberWithoutCC,
-      userDataPref: _prefs.getUserData(),
-      newPhotoUrlString: _imageUrl,
-      publicKey: _publicKey!,
-    )
-        .then((value) {
-      _isLoading = false;
-      notifyListeners();
-      // if (_prefs.getBool(OfflineConstants.FIRST_TIME) != true) {
-      _prefs.setUserData(value);
+    try {
+      final keyPair = _c.generateKeyPairs();
+      HiveKeyPair _hiveKeyPair = HiveKeyPair(
+          privateKey: _c.keyToString(key: keyPair.privateKey),
+          publicKey: _c.keyToString(key: keyPair.publicKey));
+      String? _publicKey = _c.keyToString(key: keyPair.publicKey);
+      _hiveHandler.saveKeyPairs(_hiveKeyPair);
+      await _fireStoreService
+          .saveNewUserToCloud(
+        user: _firebaseUser,
+        userName: username,
+        phoneNumberWithoutCC: _phoneNumberWithoutCC,
+        userDataPref: _prefs.getUserData(),
+        newPhotoUrlString: _imageUrl,
+        publicKey: _publicKey!,
+      )
+          .then((value) {
+        _isLoading = false;
+        notifyListeners();
+        _prefs.setUserData(value);
 
-      _fireStoreService.updateUserInCloud(user: value);
-    });
+        _fireStoreService.updateUserInCloud(user: value);
+      });
+    } on MessengerError catch (e) {
+      handleExceptionInUi!(e.message);
+    }
   }
 
   void _setVerificationId(String newVerificationId, {bool? codeSent}) {
@@ -138,19 +155,23 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> pickeImageAndSaveToCloudStorage() async {
-    await MessengerImagePicker.pickeImage().then(
-      (value) async {
-        _uploadingImageToStore = true;
-        notifyListeners();
-        _firebaseStorage.saveImageToFireStore(_firebaseUser!.uid, value).then(
-          (value) {
-            _imageUrl = value;
-            _uploadingImageToStore = false;
-            notifyListeners();
-          },
-        );
-      },
-    );
+    try {
+      await MessengerImagePicker.pickeImage().then(
+        (value) async {
+          _uploadingImageToStore = true;
+          notifyListeners();
+          _firebaseStorage.saveImageToFireStore(_firebaseUser!.uid, value).then(
+            (value) {
+              _imageUrl = value;
+              _uploadingImageToStore = false;
+              notifyListeners();
+            },
+          );
+        },
+      );
+    } on MessengerError catch (e) {
+      print(e.message);
+    }
   }
 
   List<CountryCode> get listOfCCs => _listOfCCs;

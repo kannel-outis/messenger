@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/manager/encrypt.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
@@ -25,16 +26,28 @@ class EncryptClassHandler extends ManagerHandler<EncryptClass?> {
   }
 
   Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) {
-    return manager!.rsaEncrypt(myPublic, dataToEncrypt);
+    try {
+      return manager!.rsaEncrypt(myPublic, dataToEncrypt);
+    } on MessengerError {
+      rethrow;
+    }
   }
 
   Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) {
-    return manager!.rsaDecrypt(myPrivate, cipherText);
+    try {
+      return manager!.rsaDecrypt(myPrivate, cipherText);
+    } on MessengerError {
+      rethrow;
+    }
   }
 
   AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
       {SecureRandom? secureRandom, int bitLength = 2048}) {
-    return manager!.generateKeyPairs(secureRandom: _exampleSecureRandom());
+    try {
+      return manager!.generateKeyPairs(secureRandom: _exampleSecureRandom());
+    } catch (e) {
+      rethrow;
+    }
   }
 
   SecureRandom _exampleSecureRandom() {
