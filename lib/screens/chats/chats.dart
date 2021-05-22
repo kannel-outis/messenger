@@ -176,6 +176,7 @@ class ChatsScreen extends HookWidget {
                       decoration: InputDecoration(
                         hintText: "Write a Message",
                         border: InputBorder.none,
+                        contentPadding: const EdgeInsets.only(right: 20),
                       ),
                     ),
                   ),

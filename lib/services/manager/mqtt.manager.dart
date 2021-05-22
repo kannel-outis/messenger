@@ -12,27 +12,31 @@ class MQTTManager extends Manager {
   final String? clientIdentifier;
   final String username;
   final String? password;
+  final MqttServerClient? client;
 
   MQTTManager._(
-      this.broker, this.clientIdentifier, this.password, this.username);
+      this.broker, this.clientIdentifier, this.password, this.username,
+      {this.client})
+      : _client = client ?? MqttServerClient(broker, clientIdentifier!);
   static MQTTManager? _instance;
   static MQTTManager? getInstance(String broker, String? clientIdentifier,
-      String username, String? password) {
+      String username, String? password,
+      {MqttServerClient? client}) {
     if (_instance == null) {
-      _instance = MQTTManager._(broker, clientIdentifier, password, username);
+      _instance = MQTTManager._(broker, clientIdentifier, password, username,
+          client: client);
     }
     return _instance;
   }
 
-  ///change late
   MqttServerClient? _client;
   bool? isConnected;
   StreamController<Map<String, dynamic>?> _streamController =
       StreamController<Map<String, dynamic>?>.broadcast();
 
   Future<MqttClient> login() async {
-    if (_client != null) return _client!;
-    _client = MqttServerClient(broker, clientIdentifier!);
+    // if (_client != null) return _client!;
+    // _client = MqttServerClient(broker, clientIdentifier!);
     // _client.logging(on: true);
     final MqttConnectMessage connMess = MqttConnectMessage()
         .withClientIdentifier(clientIdentifier!)
@@ -99,8 +103,7 @@ class MQTTManager extends Manager {
     } catch (e) {
       disconnectMQTTClient();
 
-      print(
-          "something went wrong and there is nothing we can do about it ::: $e");
+      print("${e.toString()}");
     }
   }
 

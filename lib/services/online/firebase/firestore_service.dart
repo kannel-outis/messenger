@@ -6,7 +6,10 @@ import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
 
 class FireStoreService extends Online {
-  final _cloud = FirebaseFirestore.instance;
+  final FirebaseFirestore? firebaseFirestore;
+  FireStoreService({this.firebaseFirestore})
+      : _cloud = firebaseFirestore ?? FirebaseFirestore.instance;
+  late final FirebaseFirestore _cloud;
   @override
   Future<User> saveNewUserToCloud(
       {String? userName,

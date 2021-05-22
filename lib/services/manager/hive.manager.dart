@@ -30,12 +30,10 @@ class HiveManager extends Manager {
   @override
   Future<void> saveChatToDB(Chat chat) async {
     // List<User> _users = ;
-    print("Odebi");
+
     final _hiveChat = HiveChat(
         chatId: chat.chatID,
         participants: chat.participants!.map((e) => User.fromMap(e!)).toList());
-    print(_hiveChat.participants![0].id! + "This  is it ");
-    print(_hiveChat.participants![1].id! + "This is also It");
     if (checkIfChatExists(_hiveChat)) {
       return;
     }

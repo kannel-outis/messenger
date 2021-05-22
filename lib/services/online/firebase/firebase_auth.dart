@@ -3,7 +3,11 @@ import 'package:messenger/services/online/online.dart';
 import '../../../customs/error/error.dart';
 
 class FirebaseMAuth extends Online {
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  // FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth? firebaseAuth;
+  FirebaseMAuth({this.firebaseAuth})
+      : _auth = firebaseAuth ?? FirebaseAuth.instance;
+  late final FirebaseAuth _auth;
 
   @override
   Future<void> verifyPhoneNumber(

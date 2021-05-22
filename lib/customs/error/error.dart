@@ -5,8 +5,8 @@ class MessengerError {
 
   const MessengerError(this.message);
 
-  // @override
-  // String toString() {
-  //   return 'MessengerError::::::::::::::::::: $message';
-  // }
+  @override
+  String toString() {
+    return '$message';
+  }
 }

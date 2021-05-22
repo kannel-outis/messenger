@@ -78,7 +78,7 @@ class HomeProvider extends ChangeNotifier {
           );
         }
       } on MessengerError catch (e) {
-        print(e.toString());
+        print(e.message);
       }
     });
   }

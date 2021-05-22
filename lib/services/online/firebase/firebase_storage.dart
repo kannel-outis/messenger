@@ -5,10 +5,14 @@ import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/services/online/online.dart';
 
 class MessengerFirebaseStorage extends Online {
+  final FirebaseStorage? storage;
+  MessengerFirebaseStorage({this.storage})
+      : _storage = storage ?? FirebaseStorage.instance;
+  FirebaseStorage? _storage;
   @override
   Future<String> saveImageToFireStore(String? uid, File? file) async {
     try {
-      return await FirebaseStorage.instance
+      return await _storage!
           .ref(uid!)
           .child(file!.path.split('/').last)
           .putFile(file)

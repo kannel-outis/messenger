@@ -28,7 +28,7 @@ class ChatsProvider extends ChangeNotifier {
       required String publicKey,
       required VoidExceptionCallBack? handleExceptionInUi}) {
     // print(SharedPrefs.instance.getUserData().id);
-    print(senderID);
+    print(publicKey);
     // return;
     try {
       final rsaPublicKey =

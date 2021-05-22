@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/image_picker.dart';
@@ -37,17 +38,21 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<void> pickeImageAndSaveToCloudStorage(User? user) async {
-    await MessengerImagePicker.pickeImage().then(
-      (value) async {
-        _firebaseStorage.saveImageToFireStore(user!.id, value).then(
-          (value) {
-            _imageUrl = value;
-            print(_imageUrl);
-            notifyListeners();
-          },
-        );
-      },
-    );
+    try {
+      await MessengerImagePicker.pickeImage().then(
+        (value) async {
+          _firebaseStorage.saveImageToFireStore(user!.id, value).then(
+            (value) {
+              _imageUrl = value;
+              print(_imageUrl);
+              notifyListeners();
+            },
+          );
+        },
+      );
+    } on MessengerError catch (e) {
+      print(e.message);
+    }
   }
 
   User get userPrefData => _sharedPrefs.getUserData();
