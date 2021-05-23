@@ -33,7 +33,7 @@ class HiveManager extends Manager {
 
     final _hiveChat = HiveChat(
         chatId: chat.chatID,
-        participants: chat.participants!.map((e) => User.fromMap(e!)).toList());
+        participants: chat.participants.map((e) => User.fromMap(e!)).toList());
     if (checkIfChatExists(_hiveChat)) {
       return;
     }

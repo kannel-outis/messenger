@@ -129,15 +129,15 @@ class FireStoreService extends Online {
                 late Chat newChat;
 
                 final Map<String, dynamic>? secondUserMap =
-                    chat.participants?.last!;
+                    chat.participants.last!;
 
-                if (chat.participants![1]!['id'] == user.id) {
+                if (chat.participants[1]!['id'] == user.id) {
                   newChat = Chat(
                       chatID: chat.chatID,
                       participantsIDs: chat.participantsIDs,
-                      participants: [chat.participants?.first!, user.toMap()]);
-                } else if (chat.participants![1]!['id'] == user.id &&
-                    chat.participants![0]!['id'] == user.id) {
+                      participants: [chat.participants.first!, user.toMap()]);
+                } else if (chat.participants[1]!['id'] == user.id &&
+                    chat.participants[0]!['id'] == user.id) {
                   newChat = Chat(
                       chatID: chat.chatID,
                       participantsIDs: chat.participantsIDs,

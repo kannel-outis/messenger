@@ -37,7 +37,7 @@ class HomeProvider extends ChangeNotifier {
           HiveChat hiveChat = HiveChat(
             chatId: chat.chatID,
             participants:
-                chat.participants!.map((e) => User.fromMap(e!)).toList(),
+                chat.participants.map((e) => User.fromMap(e!)).toList(),
           );
           bool exists = _hiveHandler.checkIfchatExists(hiveChat);
 

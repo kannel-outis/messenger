@@ -4,7 +4,6 @@ import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
-import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:path_provider/path_provider.dart';
 
 class HiveInit {
@@ -12,6 +11,7 @@ class HiveInit {
   static String chatBoxName = "HiveChatBox";
   static String hiveContactsList = "HiveContactsList";
   static String keyPairs = "KeyPairs";
+  static String hiveGroupChatsBoxName = "HiveGroupChats";
 
   static Future hiveInit() async {
     final documentDir = await getApplicationDocumentsDirectory();
@@ -21,10 +21,12 @@ class HiveInit {
     Hive.registerAdapter(UserAdapter());
     Hive.registerAdapter(HivePhoneContactsListAdapter());
     Hive.registerAdapter(HiveKeyPairAdapter());
+    Hive.registerAdapter(HiveGroupChatAdapter());
 
     // await Hive.openBox<User>()
     await Hive.openBox<HiveMessages>(messagesBoxName);
     await Hive.openBox<HiveChat>(chatBoxName);
+    await Hive.openBox<HiveGroupChat>(hiveGroupChatsBoxName);
     await Hive.openBox<HivePhoneContactsList>(hiveContactsList);
     await Hive.openBox<HiveKeyPair>(keyPairs);
   }
