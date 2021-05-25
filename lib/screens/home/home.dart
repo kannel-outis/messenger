@@ -2,9 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messenger/screens/contacts/first_launch_contact.dart';
+import 'package:messenger/screens/group/create_group_screen.dart';
 import 'package:messenger/screens/home/home_provider.dart';
 import 'package:messenger/customs/double_listenable.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
@@ -48,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    ValueNotifier<bool> isDialOpen = ValueNotifier(false);
+
     final _homeProvider = Provider.of<HomeProvider>(context);
     return Scaffold(
       body: Padding(
@@ -189,22 +193,74 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ],
         ),
       ),
-      floatingActionButton: InkWell(
-        onTap: () {
-          Navigator.of(context)
-              .push(CupertinoPageRoute(builder: (_) => SettingsScreen()));
-        },
-        child: Container(
-          height: 60,
-          width: 60,
-          decoration: BoxDecoration(
-            color: Colors.yellow,
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: Center(
+      // floatingActionButton: InkWell(
+      //   onTap: () {
+      // Navigator.of(context)
+      //     .push(CupertinoPageRoute(builder: (_) => SettingsScreen()));
+      //   },
+      //   child: Container(
+      //     height: 60,
+      //     width: 60,
+      //     decoration: BoxDecoration(
+      //       color: Colors.yellow,
+      //       borderRadius: BorderRadius.circular(5),
+      //     ),
+      //     child: Center(
+      //       child: Icon(Icons.settings),
+      //     ),
+      //   ),
+      // ),
+      floatingActionButton: SpeedDial(
+        marginEnd: 18,
+        marginBottom: 20,
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: IconThemeData(size: 22.0),
+        icon: Icons.add,
+        activeIcon: Icons.remove, openCloseDial: isDialOpen,
+        useRotationAnimation: true,
+
+        buttonSize: 56.0,
+        visible: true,
+        closeManually: true,
+
+        /// If true overlay will render no matter what.
+        renderOverlay: false,
+        curve: Curves.bounceIn,
+        overlayColor: Colors.black,
+        overlayOpacity: 0.5,
+        onOpen: () => print('OPENING DIAL'),
+        onClose: () => print('DIAL CLOSED'),
+        tooltip: 'Speed Dial',
+        heroTag: 'speed-dial-hero-tag',
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 8.0,
+        shape: CircleBorder(),
+
+        children: [
+          SpeedDialChild(
             child: Icon(Icons.settings),
+            backgroundColor: Colors.red,
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+              isDialOpen.value = false;
+              Navigator.of(context)
+                  .push(CupertinoPageRoute(builder: (_) => SettingsScreen()));
+            },
+            onLongPress: () => print('FIRST CHILD LONG PRESS'),
           ),
-        ),
+          SpeedDialChild(
+            child: Icon(Icons.group),
+            backgroundColor: Colors.blue,
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+              isDialOpen.value = false;
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => CreateGroupScreen(), fullscreenDialog: true));
+            },
+            onLongPress: () => print('SECOND CHILD LONG PRESS'),
+          ),
+        ],
       ),
     );
   }

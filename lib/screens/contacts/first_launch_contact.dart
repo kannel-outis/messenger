@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/screens/home/home.dart';
 import 'package:provider/provider.dart';
@@ -127,9 +128,8 @@ class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
                                       shrinkWrap: true,
                                       itemCount: _listOfContacts[0].length,
                                       itemBuilder: (context, i) {
-                                        return _BuildContactTile(
+                                        return BuildContactTile(
                                           fromHome: widget.fromHome,
-                                          contactModel: _contactModel,
                                           element: _listOfContacts[0][i],
                                         );
                                       }),
@@ -209,9 +209,8 @@ class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
                                       shrinkWrap: true,
                                       itemCount: _listOfContacts[1].length,
                                       itemBuilder: (context, i) {
-                                        return _BuildContactTile(
+                                        return BuildContactTile(
                                           fromHome: widget.fromHome,
-                                          contactModel: _contactModel,
                                           element: _listOfContacts[1][i],
                                         );
                                       }),
@@ -248,198 +247,5 @@ class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
               ],
             ),
     );
-  }
-}
-
-class _BuildContactTile extends StatelessWidget {
-  const _BuildContactTile({
-    Key? key,
-    required this.fromHome,
-    required ContactProvider contactModel,
-    required this.element,
-  })   : _contactModel = contactModel,
-        super(key: key);
-
-  final bool? fromHome;
-  final ContactProvider _contactModel;
-  final PhoneContacts element;
-
-  bool _isDenseLayout(ListTileTheme? tileTheme) {
-    return tileTheme?.dense ?? false;
-  }
-
-  TextStyle _titleTextStyle(ThemeData theme, ListTileTheme? tileTheme) {
-    final TextStyle style;
-    if (tileTheme != null) {
-      switch (tileTheme.style) {
-        case ListTileStyle.drawer:
-          style = theme.textTheme.bodyText1!;
-          break;
-        case ListTileStyle.list:
-          style = theme.textTheme.subtitle1!;
-          break;
-      }
-    } else {
-      style = theme.textTheme.subtitle1!;
-    }
-    final Color? color = _textColor(theme, tileTheme, style.color);
-    return _isDenseLayout(tileTheme)
-        ? style.copyWith(fontSize: 13.0, color: color)
-        : style.copyWith(color: color);
-  }
-
-  TextStyle _subtitleTextStyle(ThemeData theme, ListTileTheme? tileTheme) {
-    final TextStyle style = theme.textTheme.bodyText2!;
-    final Color? color =
-        _textColor(theme, tileTheme, theme.textTheme.caption!.color);
-    return _isDenseLayout(tileTheme)
-        ? style.copyWith(color: color, fontSize: 12.0)
-        : style.copyWith(color: color);
-  }
-
-  Color? _textColor(
-      ThemeData theme, ListTileTheme? tileTheme, Color? defaultColor) {
-    if (tileTheme?.selectedColor != null) return tileTheme!.selectedColor;
-
-    if (tileTheme?.textColor != null) return tileTheme!.textColor;
-
-    return defaultColor;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    if (element is RegisteredPhoneContacts) {
-      var e = element as RegisteredPhoneContacts;
-      // return Text("${e.contact.givenName ?? e.contact.displayName}");
-      return Container(
-        height: (size.height / 100) * 5,
-        constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${e.contact.givenName ?? e.contact.displayName}",
-                  style: _titleTextStyle(
-                    Theme.of(context),
-                    ListTileTheme.of(context),
-                  ),
-                ),
-                Text(
-                  e.contact.phones!.length == 0
-                      ? ""
-                      : "${e.contact.phones?.toList()[0].value}",
-                  style: _subtitleTextStyle(
-                    Theme.of(context),
-                    ListTileTheme.of(context),
-                  ),
-                ),
-              ],
-            ),
-            InkWell(
-              onTap: () {
-                _contactModel.messageUser(
-                  _contactModel.getUserPref(),
-                  e.user,
-                  navigate: () {
-                    fromHome != true
-                        ? Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => HomeScreen(),
-                            ),
-                          )
-                        : Navigator.pop(context);
-                  },
-                );
-                // print(e.user.userName);
-                log(e.user.userName!);
-              },
-              child: Container(
-                height: 40,
-                width: size.width / 5,
-                decoration: BoxDecoration(
-                  color: Colors.pink,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(7),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    "Message",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      var e = element as UnRegisteredPhoneContacts;
-      // return Text("${e.contact?.givenName ?? e.contact?.displayName}");
-
-      return Container(
-        height: (size.height / 100) * 5,
-        constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${e.contact!.givenName ?? e.contact!.displayName}",
-                  style: _titleTextStyle(
-                    Theme.of(context),
-                    ListTileTheme.of(context),
-                  ),
-                ),
-                Text(
-                  e.contact!.phones!.length == 0
-                      ? ""
-                      : "${e.contact!.phones?.toList()[0].value}",
-                  style: _subtitleTextStyle(
-                    Theme.of(context),
-                    ListTileTheme.of(context),
-                  ),
-                ),
-              ],
-            ),
-            InkWell(
-              onTap: () {},
-              child: Container(
-                height: 40,
-                width: size.width / 5,
-                decoration: BoxDecoration(
-                  color: Colors.pink,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(7),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    "Invite",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
   }
 }
