@@ -5,9 +5,6 @@ import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/screens/home/home.dart';
 import 'package:provider/provider.dart';
 
-import 'contacts_provider.dart';
-import "dart:developer";
-
 class FirstLaunchContactScreen extends StatefulWidget {
   final bool? fromHome;
 
@@ -45,7 +42,6 @@ class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
   @override
   Widget build(BuildContext context) {
     var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
-    final _contactModel = Provider.of<ContactProvider>(context);
 
     return Scaffold(
       appBar: AppBar(

@@ -13,7 +13,6 @@ import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
-import 'package:pointycastle/asymmetric/api.dart';
 
 class HomeProvider extends ChangeNotifier {
   Online _storeService = FireStoreService();
@@ -32,7 +31,7 @@ class HomeProvider extends ChangeNotifier {
         .listenWhenAUserInitializesAChat(_mqttHandler.user)
         .listen((event) {
       if (event.docs.isNotEmpty) {
-        event.docs.forEach((element) {
+        for (var element in event.docs) {
           Chat chat = Chat.froMap(element.data()!);
           HiveChat hiveChat = HiveChat(
             chatId: chat.chatID,
@@ -46,16 +45,53 @@ class HomeProvider extends ChangeNotifier {
           } else {
             for (var i = 0; i < hiveChat.participants!.length; i++) {
               _hiveHandler
-                ..updateUserInHive(hiveChat.participants![i], i)
+                ..updateUserInHive(hiveChat.participants![i])
                 ..updateUserOnContactsListInHive(hiveChat.participants![i], i);
             }
           }
           _mqttHandler
               .subscribe(chat.chatID)
               .then((value) => print('SubScribed'));
-        });
+        }
       } else {
         print('Empty');
+      }
+    });
+    // for Groups::: experimental
+    _storeService
+        .listenWhenAUserInitializesAChat(_mqttHandler.user, isGroup: true)
+        .listen((event) {
+      // print("foundOneChat");
+
+      if (event.docs.isNotEmpty) {
+        for (var element in event.docs) {
+          GroupChat chat = GroupChat.froMap(element.data()!);
+          HiveGroupChat hiveChat = HiveGroupChat(
+            groupID: chat.groupID,
+            participants:
+                chat.participants.map((e) => User.fromMap(e!)).toList(),
+            groupCreator: chat.groupCreator,
+            groupName: chat.groupName,
+            groupAdmins: chat.groupAdmins!.map((e) => User.fromMap(e)).toList(),
+            groupCreationTimeDate: chat.groupCreationTimeDate,
+            groupDescription: chat.groupDescription,
+            groupPhotoUrl: chat.groupPhotoUrl,
+          );
+          bool exists = _hiveHandler.checkIfchatExists(hiveChat);
+
+          if (exists == false) {
+            _hiveHandler.saveChatToDB(chat);
+          } else {
+            // TODO:update group Info in local db
+
+            _hiveHandler..updateAllGroupInfo(hiveChat);
+          }
+          _mqttHandler
+              .subscribe(chat.groupID)
+              .then((value) => print('SubScribed group'));
+        }
+      } else {
+        print('Group Empty');
       }
     });
     _mqttHandler.messageController.listen((event) {

@@ -68,15 +68,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ],
         ),
-        Align(
-          alignment: Alignment.topLeft,
-          child: IconButton(
-            icon: Icon(CupertinoIcons.back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.white,
-            iconSize: 30,
+        Positioned(
+          top: MediaQuery.of(context).padding.top,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: Icon(CupertinoIcons.back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              color: Colors.white,
+              iconSize: 30,
+            ),
           ),
         ),
       ],
@@ -84,6 +87,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize =>
-      Size(double.infinity, MediaQuery.of(context).size.height / 5.5);
+  Size get preferredSize => Size(
+      double.infinity,
+      (MediaQuery.of(context).size.height / 5.5) +
+          MediaQuery.of(context).padding.top);
 }

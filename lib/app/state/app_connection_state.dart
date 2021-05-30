@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:messenger/screens/home/home_provider.dart';
 import 'package:messenger/services/online/online.dart';
 
 class AppConnectionState {

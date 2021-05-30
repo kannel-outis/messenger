@@ -1,4 +1,6 @@
-class Chat {
+abstract class OnlineChat {}
+
+class Chat extends OnlineChat {
   final String? chatID;
   final List<String?> participantsIDs;
   final List<Map<String, dynamic>?> participants;
@@ -23,14 +25,14 @@ class Chat {
         participants = List<Map<String, dynamic>>.from(map["participants"]);
 }
 
-class GroupChat {
+class GroupChat extends OnlineChat {
   final String? groupID;
   final String groupName;
   final String? groupDescription;
   final String? groupPhotoUrl;
   final String groupCreator;
   final DateTime? groupCreationTimeDate;
-  final List<String>? groupAdmins;
+  final List<Map<String, dynamic>>? groupAdmins;
   final List<String?> participantsIDs;
   final List<Map<String, dynamic>?> participants;
   GroupChat(
@@ -45,6 +47,30 @@ class GroupChat {
       required this.participants});
 
   // GroupChat.fromMap(Map<String, dynamic> map):
+
+  GroupChat copyWith(
+      {String? groupID,
+      String? groupName,
+      String? groupDescription,
+      String? groupPhotoUrl,
+      String? groupCreator,
+      DateTime? groupCreationTimeDate,
+      List<Map<String, dynamic>>? groupAdmins,
+      List<String?>? participantsIDs,
+      List<Map<String, dynamic>?>? participants}) {
+    return GroupChat(
+      groupName: groupName ?? this.groupName,
+      groupCreator: groupCreator ?? this.groupCreator,
+      participantsIDs: participantsIDs ?? this.participantsIDs,
+      participants: participants ?? this.participants,
+      groupAdmins: groupAdmins ?? this.groupAdmins,
+      groupCreationTimeDate:
+          groupCreationTimeDate ?? this.groupCreationTimeDate,
+      groupDescription: groupDescription ?? this.groupDescription,
+      groupID: groupID ?? this.groupID,
+      groupPhotoUrl: groupPhotoUrl ?? this.groupPhotoUrl,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -64,7 +90,7 @@ class GroupChat {
       : groupID = map["groupID"],
         participantsIDs = List<String>.from(map["participantsIDs"]),
         participants = List<Map<String, dynamic>>.from(map["participants"]),
-        groupAdmins = List<String>.from(map["groupAdmins"]),
+        groupAdmins = List<Map<String, dynamic>>.from(map["groupAdmins"]),
         groupCreationTimeDate =
             DateTime.parse(map["groupCreationTimeDate"] as String),
         groupCreator = map["groupCreator"],

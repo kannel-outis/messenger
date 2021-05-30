@@ -30,18 +30,21 @@ abstract class Manager {
       throw UnimplementedError();
 
 // hive manager
-  Future<void> saveChatToDB(Chat chat) => throw UnimplementedError();
+  Future<void> saveChatToDB(OnlineChat chat) => throw UnimplementedError();
+  // Future<void> saveGroupChatToDB(GroupChat newGroupChat) =>
+  //     throw UnimplementedError();
+  void updateAllGroupInfo(HiveGroupChat group) => throw UnimplementedError();
   Future<void> saveMessages(HiveMessages message) => throw UnimplementedError();
   void updateMessageIsRead(HiveMessages message) => throw UnimplementedError();
   List<HiveMessages> getMessagesFromDB(String chatID) =>
       throw UnimplementedError();
   List<HiveChat> loadChatsFromLocalDB() => throw UnimplementedError();
-  bool checkIfChatExists(HiveChat hiveChat) => throw UnimplementedError();
+  bool checkIfChatExists(LocalChat hiveChat) => throw UnimplementedError();
   List<List<Map<String, dynamic>>> getContactsListFromDB() =>
       throw UnimplementedError();
   Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact) =>
       throw UnimplementedError();
-  void updateUserInHive(User user, int index) => throw UnimplementedError();
+  void updateUserInHive(User user) => throw UnimplementedError();
   void updateUserOnContactsListInHive(User user, int index) =>
       throw UnimplementedError();
   Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async =>

@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import "package:flutter/material.dart";
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
+import 'package:messenger/screens/chats/chats_provider.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:provider/provider.dart';
 
@@ -13,9 +15,11 @@ class CreateGroupScreen extends StatefulWidget {
 class _CreateGroupScreenState extends State<CreateGroupScreen>
     with SingleTickerProviderStateMixin {
   late GlobalKey<AnimatedListState> _animatedListKey;
+  late final TextEditingController _controller;
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController();
     _animatedListKey = GlobalKey<AnimatedListState>();
   }
 
@@ -24,6 +28,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
   @override
   Widget build(BuildContext context) {
     var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
+    var _chatProvider = Provider.of<ChatsProvider>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -53,43 +58,88 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
         ),
         body: Column(
           children: [
-            Container(
-              height: 100,
-              width: double.infinity,
-              padding: EdgeInsets.only(left: 30, right: 50),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: () => print("camera something"),
-                    child: Container(
-                      height: 85,
-                      width: 85,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            width: 3,
-                            style: BorderStyle.solid,
-                            color: Colors.blue),
-                        image: DecorationImage(
-                          fit: BoxFit.scaleDown,
-                          image: AssetImage('assets/person.png'),
+            Column(
+              children: [
+                Container(
+                  height: 100,
+                  width: double.infinity,
+                  padding: EdgeInsets.only(left: 30, right: 50),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        onTap: () => print("camera something"),
+                        child: Container(
+                          height: 85,
+                          width: 85,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(
+                                width: 3,
+                                style: BorderStyle.solid,
+                                color: Colors.blue),
+                            image: DecorationImage(
+                              fit: BoxFit.scaleDown,
+                              image: AssetImage('assets/person.png'),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            hintText: "Enter Group Name Here",
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.black,
+                                  style: BorderStyle.solid),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: const BorderSide(
-                              color: Colors.black, style: BorderStyle.solid),
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 30, right: 50),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          // final newGroupChat = new GroupChat(
+                          //   groupName: _controller.text,
+                          //   groupCreator: _chatProvider.user.id!,
+                          //   participantsIDs: _selected.map((e) => e.user.id).toList(),
+                          //   participants:
+                          //       _selected.map((e) => e.user.toMap()).toList(),
+                          // );
+                          if (_controller.text.isNotEmpty) {
+                            _chatProvider.createGroupChat(
+                                groupName: _controller.text,
+                                selected: _selected);
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "A group name must be given");
+                          }
+                        },
+                        child: Container(
+                          height: 60,
+                          width: 60,
+                          child: Center(
+                            child: Icon(Icons.done, color: Colors.white),
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
                         ),
                       ),
-                    ),
-                  )
-                ],
-              ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             // SizedBox(height: 40),
             Row(
@@ -131,7 +181,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                       onLongPress: () {
                         _selectingMode = true;
                         setState(() {});
-                        if (!_selected.contains(e) && _selected.length < 5) {
+                        if (!_selected.contains(e) && _selected.length < 2) {
                           _animatedListKey.currentState!.insertItem(
                               _selected.isEmpty ? 0 : _selected.length,
                               duration: const Duration(milliseconds: 300));
@@ -142,7 +192,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                       onTap: () {
                         if (!_selected.contains(e) &&
                             _selectingMode &&
-                            _selected.length < 5) {
+                            _selected.length < 2) {
                           _animatedListKey.currentState!.insertItem(
                               _selected.length,
                               duration: const Duration(milliseconds: 300));

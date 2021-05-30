@@ -61,8 +61,11 @@ abstract class Online {
   Future<QuerySnapshot> queryInfo(dynamic query) => throw UnimplementedError();
 
   Future<void> createNewChat(Chat chat) => throw UnimplementedError();
+  Future<void> createNewGroupChat(GroupChat groupChat) =>
+      throw UnimplementedError();
   // Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
-  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) =>
+  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user,
+          {bool isGroup = false}) =>
       throw UnimplementedError();
 
   ///firebase Storage for profile pics setUp

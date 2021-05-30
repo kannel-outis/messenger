@@ -19,7 +19,7 @@ class HiveHandler extends ManagerHandler<Manager> {
     return super.setManager(newManager);
   }
 
-  Future<void> saveChatToDB(Chat chat) async {
+  Future<void> saveChatToDB(OnlineChat chat) async {
     await manager!.saveChatToDB(chat);
   }
 
@@ -27,7 +27,7 @@ class HiveHandler extends ManagerHandler<Manager> {
     return manager!.loadChatsFromLocalDB();
   }
 
-  bool checkIfchatExists(HiveChat hiveChat) {
+  bool checkIfchatExists(LocalChat hiveChat) {
     return manager!.checkIfChatExists(hiveChat);
   }
 
@@ -40,8 +40,8 @@ class HiveHandler extends ManagerHandler<Manager> {
     manager!.saveContactsListToDB(phoneContact);
   }
 
-  void updateUserInHive(User user, int index) {
-    manager!.updateUserInHive(user, index);
+  void updateUserInHive(User user) {
+    manager!.updateUserInHive(user);
   }
 
   void updateUserOnContactsListInHive(User user, int index) {
@@ -54,6 +54,10 @@ class HiveHandler extends ManagerHandler<Manager> {
 
   void updateMessageIsRead(HiveMessages message) {
     manager!.updateMessageIsRead(message);
+  }
+
+  void updateAllGroupInfo(HiveGroupChat group) {
+    manager!.updateAllGroupInfo(group);
   }
 
   Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {

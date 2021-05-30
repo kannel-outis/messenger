@@ -95,6 +95,7 @@ class ContactProvider extends ChangeNotifier {
     List<UnRegisteredPhoneContacts> unRegistered = [];
     final _contactListFromHiveDB = _hiveHandler.getContactsListFromDB();
     if (_contactListFromHiveDB.length > 0) {
+      // TODO: change forEach to for in for both ops
       _contactListFromHiveDB[0].forEach(
         (element) {
           registered.add(

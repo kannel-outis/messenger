@@ -5,8 +5,15 @@ import 'package:messenger/models/user.dart' as u;
 import 'package:messenger/models/user.dart';
 part 'hive_chat.g.dart';
 
+abstract class LocalChat {
+  // String? name = "";
+  final String? id;
+
+  LocalChat({this.id});
+}
+
 @HiveType(typeId: 1)
-class HiveChat extends HiveObject {
+class HiveChat extends LocalChat with HiveObjectMixin {
   @HiveField(0)
   final String? chatId;
   @HiveField(1)
@@ -15,7 +22,7 @@ class HiveChat extends HiveObject {
   HiveChat({
     this.chatId,
     this.participants,
-  });
+  }) : super(id: chatId);
 
   @override
   bool operator ==(dynamic other) {
@@ -35,7 +42,7 @@ class HiveChat extends HiveObject {
 }
 
 @HiveType(typeId: 10)
-class HiveGroupChat {
+class HiveGroupChat extends LocalChat with HiveObjectMixin {
   @HiveField(0)
   final String? groupID;
   @HiveField(1)
@@ -61,7 +68,8 @@ class HiveGroupChat {
       required this.groupCreator,
       this.groupCreationTimeDate,
       this.groupAdmins,
-      required this.participants});
+      required this.participants})
+      : super(id: groupID);
   @override
   int get hashCode => hashValues(groupID, hashList(participants));
 
