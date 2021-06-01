@@ -7,6 +7,8 @@ import 'package:messenger/screens/chats/chats_provider.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:provider/provider.dart';
 
+import 'group_provider.dart';
+
 class CreateGroupScreen extends StatefulWidget {
   @override
   _CreateGroupScreenState createState() => _CreateGroupScreenState();
@@ -23,12 +25,21 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
     _animatedListKey = GlobalKey<AnimatedListState>();
   }
 
+  ImageProvider<Object> image(provider) {
+    if (provider.internalImage == null) {
+      return AssetImage('assets/person.png');
+    } else {
+      return FileImage(provider.internalImage);
+    }
+  }
+
   final List<RegisteredPhoneContacts> _selected = [];
   bool _selectingMode = false;
   @override
   Widget build(BuildContext context) {
     var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
-    var _chatProvider = Provider.of<ChatsProvider>(context);
+    // var _chatProvider = Provider.of<ChatsProvider>(context);
+    var _groupProvider = Provider.of<GroupProvider>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -67,7 +78,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                   child: Row(
                     children: [
                       InkWell(
-                        onTap: () => print("camera something"),
+                        onTap: () {
+                          // print("camera something");
+                          _groupProvider.pickeImageAndSaveToCloudStorage();
+                        },
                         child: Container(
                           height: 85,
                           width: 85,
@@ -79,7 +93,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                                 color: Colors.blue),
                             image: DecorationImage(
                               fit: BoxFit.scaleDown,
-                              image: AssetImage('assets/person.png'),
+                              image: image(_groupProvider),
                             ),
                           ),
                         ),
@@ -116,7 +130,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                           //       _selected.map((e) => e.user.toMap()).toList(),
                           // );
                           if (_controller.text.isNotEmpty) {
-                            _chatProvider.createGroupChat(
+                            _groupProvider.createGroupChat(
                                 groupName: _controller.text,
                                 selected: _selected);
                           } else {

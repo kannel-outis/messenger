@@ -21,7 +21,6 @@ import 'package:uuid/uuid.dart';
 class ChatsProvider extends ChangeNotifier {
   MQTThandler _mqttHandler = MQTThandler();
   HiveHandler _hiveHandler = HiveHandler();
-  Online _cloudService = FireStoreService();
   EncryptClassHandler _encryptClassHandler = EncryptClassHandler();
   void sendMessage(
       {required String chatId,
@@ -69,30 +68,5 @@ class ChatsProvider extends ChangeNotifier {
     final User prefUser = User.fromMap(
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
     return iDs!.contains(prefUser.id);
-  }
-
-  Future<void> createGroupChat(
-      {required String groupName,
-      required List<RegisteredPhoneContacts> selected,
-      String? photoUrl,
-      VoidCallback? onCreatedSuccessful}) async {
-    final newGroupChat = new GroupChat(
-      groupCreator: user.id!,
-      groupName: groupName,
-      participants: [
-        user.toMap(),
-        ...selected.map((e) => e.user.toMap()).toList()
-      ],
-      participantsIDs: [user.id!, ...selected.map((e) => e.user.id).toList()],
-      groupAdmins: [user.toMap()],
-      groupCreationTimeDate: DateTime.now(),
-      groupDescription: "This is a New group created by ${user.userName}",
-      groupID: Uuid().v4(),
-      groupPhotoUrl: photoUrl ?? GeneralConstants.DEFAULT_PHOTOURL,
-    );
-    await _cloudService
-        .createNewGroupChat(newGroupChat)
-        .then((value) => _hiveHandler.saveChatToDB(newGroupChat));
-    return;
   }
 }

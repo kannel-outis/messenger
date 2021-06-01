@@ -70,7 +70,7 @@ class HomeProvider extends ChangeNotifier {
             groupID: chat.groupID,
             participants:
                 chat.participants.map((e) => User.fromMap(e!)).toList(),
-            groupCreator: chat.groupCreator,
+            groupCreator: User.fromMap(chat.groupCreator),
             groupName: chat.groupName,
             groupAdmins: chat.groupAdmins!.map((e) => User.fromMap(e)).toList(),
             groupCreationTimeDate: chat.groupCreationTimeDate,
@@ -83,7 +83,6 @@ class HomeProvider extends ChangeNotifier {
             _hiveHandler.saveChatToDB(chat);
           } else {
             // TODO:update group Info in local db
-
             _hiveHandler..updateAllGroupInfo(hiveChat);
           }
           _mqttHandler

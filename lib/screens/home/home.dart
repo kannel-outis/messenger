@@ -46,15 +46,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: size * 7 > 100 ? 100 : size * 7,
-        // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0.0,
         title: Text(
-          'Chats',
+          '',
           style: TextStyle(
               fontSize: 35, fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
       body: PageView(
+        physics: NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           setState(() => selectedIndex = index);
         },
@@ -132,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
+        selectedItemColor: Colors.yellow,
         onTap: (value) {
           setState(() => selectedIndex = value);
           _pageController.animateToPage(selectedIndex,

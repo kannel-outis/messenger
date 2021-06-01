@@ -29,8 +29,6 @@ class HiveManager extends Manager {
       Hive.box<HiveGroupChat>(HiveInit.hiveGroupChatsBoxName);
   @override
   Future<void> saveChatToDB(OnlineChat chat) async {
-    // List<User> _users = ;
-
     if (chat is Chat) {
       final _hiveChat = HiveChat(
           chatId: chat.chatID,
@@ -44,7 +42,7 @@ class HiveManager extends Manager {
       chat as GroupChat;
       final hiveGroupChat = HiveGroupChat(
         groupName: chat.groupName,
-        groupCreator: chat.groupCreator,
+        groupCreator: User.fromMap(chat.groupCreator),
         participants: chat.participants.map((e) => User.fromMap(e!)).toList(),
         groupAdmins: chat.groupAdmins!.map((e) => User.fromMap(e)).toList(),
         groupCreationTimeDate: chat.groupCreationTimeDate,
@@ -152,8 +150,6 @@ class HiveManager extends Manager {
 
   @override
   void updateUserInHive(User user) {
-    print("here");
-    // assert(index < 2);
     int? index;
     final _listOfChatsThatUserParticipatesIn = _chatBox.values.where((element) {
       final listOfIDs = element.participants!.map((e) => e.id).toList();
@@ -163,11 +159,9 @@ class HiveManager extends Manager {
 
     if (_listOfChatsThatUserParticipatesIn.length >= 0) {
       for (var element in _listOfChatsThatUserParticipatesIn) {
-        print(" cool here");
         if (element.participants![index!] != user) {
           element.participants![index!] = user;
           element.save();
-          print(element.participants![index!].userName);
         }
       }
     }
@@ -207,15 +201,9 @@ class HiveManager extends Manager {
 
   @override
   void updateAllGroupInfo(HiveGroupChat group) {
-    _hiveGroupChatBox.values
-        .where((element) => element.id == group.id)
-        .forEach((element) {
-      if (element == group) {
-        // print("shit happens");
-        // element = group;
-        // element.save();
-      }
-    });
+    final _list =
+        _hiveGroupChatBox.values.where((element) => element.id == group.id);
+    if (_list.isNotEmpty) _hiveGroupChatBox.put(_list.single.key, group);
   }
 
   @override

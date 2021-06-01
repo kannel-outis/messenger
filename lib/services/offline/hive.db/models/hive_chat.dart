@@ -52,7 +52,7 @@ class HiveGroupChat extends LocalChat with HiveObjectMixin {
   @HiveField(3)
   final String? groupPhotoUrl;
   @HiveField(4)
-  final String groupCreator;
+  final User groupCreator;
   @HiveField(5)
   final DateTime? groupCreationTimeDate;
   @HiveField(6)

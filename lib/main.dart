@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/screens/contacts/contacts_provider.dart';
+import 'package:messenger/screens/group/group_provider.dart';
 import 'package:messenger/screens/home/home.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'models/contacts_model.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ContactProvider>(
             create: (_) => ContactProvider()),
+        ChangeNotifierProvider<GroupProvider>(create: (_) => GroupProvider()),
         FutureProvider<List<List<PhoneContacts>>>(
           initialData: [],
           create: (_) => ContactProvider().registeredAndUnregisteredContacts(),

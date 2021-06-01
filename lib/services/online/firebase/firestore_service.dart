@@ -171,12 +171,8 @@ class FireStoreService extends Online {
             .indexWhere((element) => element!.containsValue(user.id));
         int adminIndex = groupChat.groupAdmins!
             .indexWhere((element) => element.containsValue(user.id));
-
-        // for (var userMap in groupChat.groupAdmins!) {
-        //   if (userMap.containsValue(user.id)) {
-        //     adminIndex = groupChat.
-        //   }
-        // }
+        late final User _user;
+        if (user.id == groupChat.groupCreator['id']) _user = user;
 
         if (adminIndex != -1) {
           groupChat.groupAdmins![adminIndex] = user.toMap();
@@ -184,6 +180,7 @@ class FireStoreService extends Online {
 
         groupChat.participants[index] = user.toMap();
         newGroupChat = groupChat.copyWith(
+          groupCreator: _user.toMap(),
           participants: groupChat.participants,
           groupAdmins: groupChat.groupAdmins,
         );

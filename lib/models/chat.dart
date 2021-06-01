@@ -1,3 +1,5 @@
+import "dart:convert";
+
 abstract class OnlineChat {}
 
 class Chat extends OnlineChat {
@@ -30,7 +32,7 @@ class GroupChat extends OnlineChat {
   final String groupName;
   final String? groupDescription;
   final String? groupPhotoUrl;
-  final String groupCreator;
+  final Map<String, dynamic> groupCreator;
   final DateTime? groupCreationTimeDate;
   final List<Map<String, dynamic>>? groupAdmins;
   final List<String?> participantsIDs;
@@ -53,7 +55,8 @@ class GroupChat extends OnlineChat {
       String? groupName,
       String? groupDescription,
       String? groupPhotoUrl,
-      String? groupCreator,
+      // String? groupCreator,
+      Map<String, dynamic>? groupCreator,
       DateTime? groupCreationTimeDate,
       List<Map<String, dynamic>>? groupAdmins,
       List<String?>? participantsIDs,
