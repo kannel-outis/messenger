@@ -7,21 +7,12 @@ import 'package:messenger/services/manager/encrypt.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
 import "package:pointycastle/export.dart";
 
-abstract class EncryptionC {
-  AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
-      {SecureRandom? secureRandom, int bitLength = 2048});
-
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt);
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText);
-  String? keyToString({RSAAsymmetricKey? key});
-}
-
 class EncryptClassHandler extends ManagerHandler<EncryptClass?> {
   EncryptClassHandler() {
     setManager(EncryptClass.instance);
   }
 
-  Manager? setManager(Manager? newManager) {
+  Manager? setManager(EncryptClass? newManager) {
     return super.setManager(newManager);
   }
 

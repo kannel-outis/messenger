@@ -7,7 +7,7 @@ import 'dart:developer';
 
 import 'manager.dart';
 
-class MQTTManager extends Manager {
+class MQTTManager implements IMQTTManager {
   final String broker;
   final String? clientIdentifier;
   final String username;

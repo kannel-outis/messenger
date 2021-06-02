@@ -10,7 +10,7 @@ import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 import 'manager.dart';
 
-class HiveManager extends Manager {
+class HiveManager implements IHiveManager {
   HiveManager._();
   static HiveManager? _instance;
   static HiveManager? get instance {
@@ -275,4 +275,9 @@ class HiveManager extends Manager {
   Box<HiveChat> get chatBox => _chatBox;
   Box<HiveMessages> get messageBox => _messageBox;
   bool get checkIfChatBoxExistAlready => _hiveContactsList.isNotEmpty;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+  }
 }

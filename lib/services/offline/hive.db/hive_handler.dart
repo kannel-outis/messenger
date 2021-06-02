@@ -10,12 +10,12 @@ import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'models/hive_chat.dart';
 import 'models/keypairs.dart';
 
-class HiveHandler extends ManagerHandler<Manager> {
+class HiveHandler extends ManagerHandler<HiveManager> {
   HiveHandler() {
     setManager(HiveManager.instance);
   }
   @override
-  Manager? setManager(Manager? newManager) {
+  Manager? setManager(HiveManager? newManager) {
     return super.setManager(newManager);
   }
 

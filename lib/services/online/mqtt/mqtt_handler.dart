@@ -7,17 +7,17 @@ import 'package:mqtt_client/mqtt_client.dart';
 
 class MQTThandler extends ManagerHandler<MQTTManager> {
   MQTThandler() {
-    Manager? _newManager = MQTTManager.getInstance(
+    MQTTManager? _newManager = MQTTManager.getInstance(
         // "broker.emqx.io",
         "broker.hivemq.com",
         user.id,
         user.id!.substring(0, 10),
         user.phoneNumbers![0].substring(0, 7));
-    setManager(_newManager);
+    setManager(_newManager!);
   }
   // late MqttClient? _client;
   @override
-  Manager? setManager(newManager) {
+  Manager? setManager(MQTTManager? newManager) {
     return super.setManager(newManager);
   }
 

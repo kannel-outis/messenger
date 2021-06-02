@@ -22,61 +22,62 @@ abstract class Manager {
     return '${this.runtimeType}';
   }
 
-  Future<MqttClient?> login() => throw UnimplementedError();
-  Future<void> connectMQTTClient() => throw UnimplementedError();
-  void disconnectMQTTClient() => throw UnimplementedError();
-  bool subscribe(String topic) => throw UnimplementedError();
-  Future<void> publish(String topic, Map<String, dynamic> message) =>
-      throw UnimplementedError();
-
 // hive manager
-  Future<void> saveChatToDB(OnlineChat chat) => throw UnimplementedError();
-  // Future<void> saveGroupChatToDB(GroupChat newGroupChat) =>
-  //     throw UnimplementedError();
-  void updateAllGroupInfo(HiveGroupChat group) => throw UnimplementedError();
-  Future<void> saveMessages(HiveMessages message) => throw UnimplementedError();
-  void updateMessageIsRead(HiveMessages message) => throw UnimplementedError();
-  List<HiveMessages> getMessagesFromDB(String chatID) =>
-      throw UnimplementedError();
-  List<HiveChat> loadChatsFromLocalDB() => throw UnimplementedError();
-  bool checkIfChatExists(LocalChat hiveChat) => throw UnimplementedError();
-  List<List<Map<String, dynamic>>> getContactsListFromDB() =>
-      throw UnimplementedError();
-  Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact) =>
-      throw UnimplementedError();
-  void updateUserInHive(User user) => throw UnimplementedError();
-  void updateUserOnContactsListInHive(User user, int index) =>
-      throw UnimplementedError();
-  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async =>
-      throw UnimplementedError();
-
-  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) =>
-      throw UnimplementedError();
-  MyPrivateKey get getPrivateKeyFromDB => throw UnimplementedError();
 
   //EncryptClass
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) =>
-      throw UnimplementedError();
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) =>
-      throw UnimplementedError();
-  AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
-          {SecureRandom? secureRandom, int bitLength = 2048}) =>
-      throw UnimplementedError();
 
-  String? keyToString({RSAAsymmetricKey? key}) => throw UnimplementedError();
-  RSAAsymmetricKey keysFromString({String? key, required bool isPrivate}) =>
-      throw UnimplementedError();
+}
+
+abstract class IEncryptManager extends Manager {
+  // RSA Encyption for one-on-one Chats
+  Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt);
+  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText);
+  AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
+      {SecureRandom? secureRandom, int bitLength = 2048});
+
+  String? keyToString({RSAAsymmetricKey? key});
+  RSAAsymmetricKey keysFromString({String? key, required bool isPrivate});
+
+  // AES-CBC encryption for group chats
+  Uint8List aesEncrypt(String plaintext, String passPhrase);
+  String aesDecrypt(Uint8List cypherStringText, String passPhrase);
+}
+
+abstract class IMQTTManager extends Manager {
+  Future<MqttClient?> login();
+  Future<void> connectMQTTClient();
+  void disconnectMQTTClient();
+  bool subscribe(String topic);
+  Future<void> publish(String topic, Map<String, dynamic> message);
+}
+
+abstract class IHiveManager extends Manager {
+  Future<void> saveChatToDB(OnlineChat chat);
+  void updateAllGroupInfo(HiveGroupChat group);
+  Future<void> saveMessages(HiveMessages message);
+  void updateMessageIsRead(HiveMessages message);
+  List<HiveMessages> getMessagesFromDB(String chatID);
+  List<HiveChat> loadChatsFromLocalDB();
+  bool checkIfChatExists(LocalChat hiveChat);
+  List<List<Map<String, dynamic>>> getContactsListFromDB();
+  Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact);
+  void updateUserInHive(User user);
+  void updateUserOnContactsListInHive(User user, int index);
+  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat);
+
+  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs);
+  MyPrivateKey get getPrivateKeyFromDB => throw UnimplementedError();
 }
 
 abstract class ManagerHandler<T extends Manager?> {
-  Manager? _manager;
+  T? _manager;
 
   @protected
-  Manager? get manager => _manager;
+  T? get manager => _manager;
 
   @protected
   @mustCallSuper
-  Manager? setManager(Manager? newManager) {
+  Manager? setManager(T? newManager) {
     if (_manager == null) {
       _manager = newManager;
     }
