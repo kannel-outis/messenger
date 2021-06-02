@@ -40,9 +40,10 @@ class ChatsProvider extends ChangeNotifier {
         message: String.fromCharCodes(secureMessage),
         messageType: 'text',
         senderID: senderID,
-        receiverID: receiverID,
+        receiverIDs: [receiverID],
         timeOfMessage: DateTime.now(),
         messageID: Uuid().v4(),
+        isGroup: false,
       );
       _hiveHandler.saveMessages(message.copyWith(message: msg));
       _mqttHandler.publish(chatId, message);
@@ -62,6 +63,30 @@ class ChatsProvider extends ChangeNotifier {
 
   User get user {
     return SharedPrefs.instance.getUserData();
+  }
+
+  void sendMessageT(
+      {required String chatId,
+      required String senderID,
+      required List<String> receiverIDs,
+      required String msg,
+      required VoidExceptionCallBack? handleExceptionInUi}) {
+    try {
+      final Message message = Message(
+        chatID: chatId,
+        message: msg,
+        messageType: 'text',
+        senderID: senderID,
+        receiverIDs: receiverIDs,
+        timeOfMessage: DateTime.now(),
+        messageID: Uuid().v4(),
+        isGroup: true,
+      );
+      _hiveHandler.saveMessages(message.copyWith(message: msg));
+      _mqttHandler.publish(chatId, message);
+    } on MessengerError catch (e) {
+      handleExceptionInUi!(e.message);
+    }
   }
 
   bool isme(List<String>? iDs) {

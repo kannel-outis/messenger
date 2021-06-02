@@ -71,10 +71,11 @@ class HiveHandler extends ManagerHandler<Manager> {
         dateTime: message.timeOfMessage,
         messageType: message.messageType,
         msg: message.message,
-        receiverID: message.receiverID,
+        receiverIDs: message.receiverIDs,
         senderID: message.senderID,
         messageID: message.messageID,
         isRead: false,
+        isGroup: message.isGroup,
       ),
     );
   }

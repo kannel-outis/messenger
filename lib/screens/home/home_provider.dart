@@ -98,20 +98,26 @@ class HomeProvider extends ChangeNotifier {
       print(_list.length);
       print(_list.last!["senderID"]);
       try {
-        if (!isme([_list.last!["senderID"]])) {
-          // print(String.fromCharCodes(_encryptClassHandler.rsaDecrypt(
-          //     _hiveHandler.myPrivateKeyFromDB, event!['message'])));
-          _hiveHandler.saveMessages(
-            Message.fromMap(_list.last!).copyWith(
-              message: String.fromCharCodes(
-                _encryptClassHandler.rsaDecrypt(
-                  _hiveHandler.myPrivateKeyFromDB,
-                  event!['message'],
+        if (_list.last!['isGroup'] == false) {
+          if (!isme([_list.last!["senderID"]])) {
+            // print(String.fromCharCodes(_encryptClassHandler.rsaDecrypt(
+            //     _hiveHandler.myPrivateKeyFromDB, event!['message'])));
+            _hiveHandler.saveMessages(
+              Message.fromMap(_list.last!).copyWith(
+                message: String.fromCharCodes(
+                  _encryptClassHandler.rsaDecrypt(
+                    _hiveHandler.myPrivateKeyFromDB,
+                    event!['message'],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          }
         }
+
+        _hiveHandler.saveMessages(
+          Message.fromMap(_list.last!),
+        );
       } on MessengerError catch (e) {
         print(e.message);
       }

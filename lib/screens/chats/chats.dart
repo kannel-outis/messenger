@@ -414,22 +414,32 @@ class _HiveGroupChatPage extends HookWidget {
                       ? () {
                           String? msg = valueListener.value;
                           Fluttertoast.showToast(msg: msg!);
-                          // _chatsProvider.sendMessage(
-                          //     receiverID: hiveGroupChat
-                          //         .participants![
-                          //             _indexOf(_chatsProvider, isMe: false)]
-                          //         .id!,
-                          //     senderID: hiveGroupChat
-                          //         .participants![_indexOf(_chatsProvider)]
-                          //         .id!,
-                          //     publicKey: hiveGroupChat
-                          //         .participants![
-                          //             _indexOf(_chatsProvider, isMe: false)]
-                          //         .publicKey!,
-                          //     chatId: hiveGroupChat.groupID!,
-                          //     msg: msg,
-                          //     handleExceptionInUi: (e) =>
-                          //         Fluttertoast.showToast(msg: e));
+
+                          //                         int _indexOf(ChatsProvider _chatsProvider, {bool isMe = true}) {
+                          //   final List<String> iDs = hiveGroupChat.participants!.map((e) => e.id!).toList();
+                          //   if (isMe == false){
+
+                          //     return iDs.indexWhere((element) => _chatsProvider.user.id != element);
+                          //   }
+                          //   return iDs.indexWhere((element) => _chatsProvider.user.id == element);
+                          // }
+
+                          ///////////////////////////////////
+                          _chatsProvider.sendMessageT(
+                              receiverIDs: hiveGroupChat.participants!
+                                  .map((e) => e.id!)
+                                  .toList(),
+                              senderID: hiveGroupChat
+                                  .participants![hiveGroupChat.participants!
+                                      .map((e) => e.id!)
+                                      .toList()
+                                      .indexWhere((element) =>
+                                          _chatsProvider.user.id == element)]
+                                  .id!,
+                              chatId: hiveGroupChat.groupID!,
+                              msg: msg,
+                              handleExceptionInUi: (e) =>
+                                  Fluttertoast.showToast(msg: e));
                           textEditingController!.clear();
                           valueListener.value = "";
                         }

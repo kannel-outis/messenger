@@ -2,19 +2,21 @@ class Message {
   final String? message;
   final DateTime timeOfMessage;
   final String? senderID;
-  final String? receiverID;
+  final List<String>? receiverIDs;
   final String? chatID;
   final String? messageType;
   final String? messageID;
+  final bool? isGroup;
 
   Message({
     required this.message,
     required this.timeOfMessage,
     required this.senderID,
     required this.chatID,
-    this.receiverID,
+    this.receiverIDs,
     required this.messageType,
     required this.messageID,
+    required this.isGroup,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,10 +24,11 @@ class Message {
       "message": message,
       "timeSent": timeOfMessage.toString(),
       "senderID": senderID,
-      "receiverID": receiverID,
+      "receiverIDs": receiverIDs,
       "chatID": chatID,
       "messagetype": messageType,
       "messageID": messageID,
+      "isGroup": isGroup,
     };
   }
 
@@ -33,10 +36,11 @@ class Message {
     String? message,
     DateTime? timeOfMessage,
     String? senderID,
-    String? receiverID,
+    List<String>? receiverIDs,
     String? chatID,
     String? messageType,
     String? messageID,
+    bool? isGroup,
   }) {
     return Message(
       chatID: chatID ?? this.chatID,
@@ -45,21 +49,23 @@ class Message {
       messageType: messageType ?? this.messageType,
       senderID: senderID ?? this.senderID,
       timeOfMessage: timeOfMessage ?? this.timeOfMessage,
-      receiverID: receiverID ?? this.receiverID,
+      receiverIDs: receiverIDs ?? this.receiverIDs,
+      isGroup: isGroup ?? this.isGroup,
     );
   }
 
   Message.fromMap(Map<String, dynamic> map)
       : message = map["message"],
-        receiverID = map["receiverID"],
+        receiverIDs = List<String>.from(map["receiverIDs"]),
         senderID = map["senderID"],
         timeOfMessage = DateTime.parse(map["timeSent"] as String),
         chatID = map["chatID"],
         messageID = map["messageID"],
-        messageType = map["messagetype"];
+        messageType = map["messagetype"],
+        isGroup = map['isGroup'];
 
   @override
   String toString() {
-    return "message: $message, timeOfMessage: $timeOfMessage, senderID: $senderID, reiceverID: $receiverID , messageType: $messageType ";
+    return "message: $message, timeOfMessage: $timeOfMessage, senderID: $senderID, reiceverID: $receiverIDs , messageType: $messageType ";
   }
 }
