@@ -37,6 +37,7 @@ class GroupChat extends OnlineChat {
   final List<Map<String, dynamic>>? groupAdmins;
   final List<String?> participantsIDs;
   final List<Map<String, dynamic>?> participants;
+  final List<String> usersEncrytedKey;
   GroupChat(
       {required this.groupName,
       this.groupDescription,
@@ -46,7 +47,8 @@ class GroupChat extends OnlineChat {
       this.groupAdmins,
       this.groupID,
       required this.participantsIDs,
-      required this.participants});
+      required this.participants,
+      required this.usersEncrytedKey});
 
   // GroupChat.fromMap(Map<String, dynamic> map):
 
@@ -60,7 +62,8 @@ class GroupChat extends OnlineChat {
       DateTime? groupCreationTimeDate,
       List<Map<String, dynamic>>? groupAdmins,
       List<String?>? participantsIDs,
-      List<Map<String, dynamic>?>? participants}) {
+      List<Map<String, dynamic>?>? participants,
+      List<String>? usersEncrytedKey}) {
     return GroupChat(
       groupName: groupName ?? this.groupName,
       groupCreator: groupCreator ?? this.groupCreator,
@@ -72,6 +75,7 @@ class GroupChat extends OnlineChat {
       groupDescription: groupDescription ?? this.groupDescription,
       groupID: groupID ?? this.groupID,
       groupPhotoUrl: groupPhotoUrl ?? this.groupPhotoUrl,
+      usersEncrytedKey: usersEncrytedKey ?? this.usersEncrytedKey,
     );
   }
 
@@ -86,6 +90,7 @@ class GroupChat extends OnlineChat {
       "groupCreator": groupCreator,
       "groupCreationTimeDate": groupCreationTimeDate.toString(),
       "groupDescription": groupDescription,
+      "usersEncrytedKey": usersEncrytedKey,
     };
   }
 
@@ -99,5 +104,6 @@ class GroupChat extends OnlineChat {
         groupCreator = map["groupCreator"],
         groupDescription = map['groupDescription'],
         groupName = map['groupName'],
-        groupPhotoUrl = map['groupPhotoUrl'];
+        groupPhotoUrl = map['groupPhotoUrl'],
+        usersEncrytedKey = List<String>.from(map['usersEncrytedKey']);
 }

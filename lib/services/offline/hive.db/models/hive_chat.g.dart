@@ -64,6 +64,7 @@ class HiveGroupChatAdapter extends TypeAdapter<HiveGroupChat> {
       groupCreationTimeDate: fields[5] as DateTime?,
       groupAdmins: (fields[6] as List?)?.cast<User>(),
       participants: (fields[7] as List?)?.cast<User>(),
+      hiveGroupChatSaltIV: fields[8] as HiveGroupChatSaltIV?,
     );
   }
 
@@ -71,7 +72,7 @@ class HiveGroupChatAdapter extends TypeAdapter<HiveGroupChat> {
   void write(BinaryWriter writer, HiveGroupChat obj) {
     writer
       // ..writeByte(2)
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.groupID)
       ..writeByte(1)
@@ -87,7 +88,9 @@ class HiveGroupChatAdapter extends TypeAdapter<HiveGroupChat> {
       ..writeByte(6)
       ..write(obj.groupAdmins)
       ..writeByte(7)
-      ..write(obj.participants);
+      ..write(obj.participants)
+      ..writeByte(8)
+      ..write(obj.hiveGroupChatSaltIV);
   }
 
   @override

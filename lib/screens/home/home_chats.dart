@@ -15,9 +15,17 @@ class HomeChats extends StatelessWidget {
 
   int _indexOf(List<String> iDs, HomeProvider homeProvider,
       {bool isMe = true}) {
-    if (!isMe)
-      return iDs.indexWhere((element) => homeProvider.user.id != element);
-    return iDs.indexWhere((element) => homeProvider.user.id == element);
+    int? index;
+    index = iDs.indexOf(homeProvider.user.id!);
+    if (!isMe) {
+      // index = iDs.indexWhere((element) => homeProvider.user.id != element);
+      index = index == 1 ? 0 : 1;
+    }
+    // index = iDs.indexWhere((element) => homeProvider.user.id == element);
+    // if (index == -1) {
+    //   return 1;
+    // }
+    return index;
   }
 
   @override
@@ -38,21 +46,23 @@ class HomeChats extends StatelessWidget {
             builder: (context, hiveChat, hiveMessage, child) {
               final List<HiveChat> hiveChats =
                   hiveChat!.values.where((element) {
-                final List<String>? _iDs = [
-                  element.participants![0].id!,
-                  element.participants![1].id!
-                ];
-                return homeProvider.isme(_iDs);
+                // final List<String>? _iDs = [
+                //   element.participants![0].id!,
+                //   element.participants![1].id!
+                // ];
+                // return homeProvider.isme(_iDs);
+                return element.participants!
+                    .map((e) => e.id)
+                    .toList()
+                    .contains(homeProvider.user.id);
               }).toList();
 
               return ListView.builder(
                 shrinkWrap: true,
                 itemCount: hiveChats.length,
                 itemBuilder: (context, index) {
-                  final List<String>? _iDs = [
-                    hiveChats[index].participants![0].id!,
-                    hiveChats[index].participants![1].id!
-                  ];
+                  final List<String>? _iDs =
+                      hiveChats.map((e) => e.id!).toList();
                   final List<HiveMessages> hiveMessages = hiveMessage!.values
                       .where((element) =>
                           element.chatID == hiveChats[index].chatId)
@@ -117,11 +127,11 @@ class HomeChats extends StatelessWidget {
                     onTap: () {
                       print(hiveChats[index]
                           .participants![_indexOf(_iDs, homeProvider)]
-                          .id);
+                          .userName);
                       print(hiveChats[index]
                           .participants![
                               _indexOf(_iDs, homeProvider, isMe: false)]
-                          .id);
+                          .userName);
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => ChatsScreen(hiveChats[index]),

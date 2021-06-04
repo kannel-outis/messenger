@@ -119,10 +119,10 @@ class HomeGroup extends StatelessWidget {
                           ),
                         );
                       },
-                      // onLongPress: () {
-                      //   homeProvider
-                      //       .deleteChatAndRemovePrintsFromDB(hiveGroupChats[index]);
-                      // },
+                      onLongPress: () {
+                        homeProvider.deleteChatAndRemovePrintsFromDB(
+                            hiveGroupChats[index]);
+                      },
                     );
                   },
                 );

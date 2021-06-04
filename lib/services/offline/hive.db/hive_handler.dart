@@ -8,19 +8,21 @@ import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 
 import 'models/hive_chat.dart';
+import 'models/hive_group_chat_saltiv.dart';
 import 'models/keypairs.dart';
 
-class HiveHandler extends ManagerHandler<HiveManager> {
+class HiveHandler extends ManagerHandler<IHiveManager> {
   HiveHandler() {
     setManager(HiveManager.instance);
   }
   @override
-  Manager? setManager(HiveManager? newManager) {
-    return super.setManager(newManager);
+  Manager? setManager(newManager) {
+    return super.setManager(newManager as HiveManager);
   }
 
-  Future<void> saveChatToDB(OnlineChat chat) async {
-    await manager!.saveChatToDB(chat);
+  Future<void> saveChatToDB(OnlineChat chat,
+      {HiveGroupChatSaltIV? hiveGroupChatSaltIV}) async {
+    await manager!.saveChatToDB(chat, hiveGroupChatSaltIV: hiveGroupChatSaltIV);
   }
 
   List<HiveChat> loadChatsFromDB() {
@@ -60,8 +62,12 @@ class HiveHandler extends ManagerHandler<HiveManager> {
     manager!.updateAllGroupInfo(group);
   }
 
-  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {
+  Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat) async {
     return await manager!.deleteChatAndMessagesFromLocalStorage(hiveChat);
+  }
+
+  LocalChat loadSingleChat(String id, {bool? isGroupChat = false}) {
+    return manager!.loadSingleChat(id, isGroupChat: isGroupChat);
   }
 
   Future<void> saveMessages(Message message) {

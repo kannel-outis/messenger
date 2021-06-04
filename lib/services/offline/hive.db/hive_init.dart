@@ -1,10 +1,12 @@
 import 'package:hive/hive.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
-import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
-import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
-import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
+import 'models/hive_chat.dart';
+import 'models/hive_messages.dart';
+import 'models/keypairs.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'models/hive_group_chat_saltiv.dart';
 
 class HiveInit {
   static String messagesBoxName = "MessagesBox";
@@ -22,6 +24,7 @@ class HiveInit {
     Hive.registerAdapter(HivePhoneContactsListAdapter());
     Hive.registerAdapter(HiveKeyPairAdapter());
     Hive.registerAdapter(HiveGroupChatAdapter());
+    Hive.registerAdapter(HiveGroupChatSaltIVAdapter());
 
     // await Hive.openBox<User>()
     await Hive.openBox<HiveMessages>(messagesBoxName);

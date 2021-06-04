@@ -61,6 +61,8 @@ class _ChatScreen extends HookWidget {
     final TextEditingController? textEditingController =
         useTextEditingController();
     final scrollController = useScrollController();
+    print(hiveChat.participants![0].userName);
+    print(hiveChat.participants![1].userName);
     return Scaffold(
       appBar: CustomAppBar(
         isGroupChat: false,
@@ -269,6 +271,7 @@ class _HiveGroupChatPage extends HookWidget {
   Widget build(BuildContext context) {
     print(hiveGroupChat.groupCreator.userName);
     var valueListener = useState<String?>("");
+
     final _chatsProvider = Provider.of<ChatsProvider>(context);
     final TextEditingController? textEditingController =
         useTextEditingController();
@@ -425,18 +428,8 @@ class _HiveGroupChatPage extends HookWidget {
                           // }
 
                           ///////////////////////////////////
-                          _chatsProvider.sendMessageT(
-                              receiverIDs: hiveGroupChat.participants!
-                                  .map((e) => e.id!)
-                                  .toList(),
-                              senderID: hiveGroupChat
-                                  .participants![hiveGroupChat.participants!
-                                      .map((e) => e.id!)
-                                      .toList()
-                                      .indexWhere((element) =>
-                                          _chatsProvider.user.id == element)]
-                                  .id!,
-                              chatId: hiveGroupChat.groupID!,
+                          _chatsProvider.sendGroupMessage(
+                              hiveGroupChat: hiveGroupChat,
                               msg: msg,
                               handleExceptionInUi: (e) =>
                                   Fluttertoast.showToast(msg: e));
