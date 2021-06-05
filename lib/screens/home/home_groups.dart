@@ -60,7 +60,7 @@ class HomeGroup extends StatelessWidget {
                         .toList();
                     return ListTile(
                       title: Text(
-                        hiveGroupChats[index].groupName.capitalize() ?? 'Null',
+                        hiveGroupChats[index].groupName.capitalize(),
                         style: TextStyle(fontSize: 18),
                       ),
                       subtitle: hiveMessages.isNotEmpty
@@ -86,7 +86,7 @@ class HomeGroup extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: hiveMessages[0].isRead == false
                                     ? Colors.yellow
-                                    : Colors.white,
+                                    : Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: hiveMessages[0].isRead == false
                                     ? BorderRadius.circular(50)
                                     : null,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -16,6 +18,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late final PageController _pageController;
+  late final StreamController<int?> _streamController;
+  String? count;
   int selectedIndex = 0;
   @override
   void initState() {
@@ -23,16 +27,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // context.read<HomeProvider>().iniState();
     // WidgetsBinding.instance!.addObserver(this);
     _pageController = PageController();
+    _streamController = StreamController<int?>.broadcast();
+    // _streamController.stream.listen((event) {
+    //   setState(() {
+    //     count = event.toString();
+    //   });
+    // });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     context.read<HomeProvider>().iniState();
   }
 
   @override
   void dispose() {
+    _streamController.close();
     super.dispose();
   }
 
@@ -61,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         },
         controller: _pageController,
         children: [
-          HomeChats(_homeProvider),
+          HomeChats(_homeProvider, _streamController),
           HomeGroup(_homeProvider),
         ],
       ),
@@ -131,19 +143,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.yellow,
-        onTap: (value) {
-          setState(() => selectedIndex = value);
-          _pageController.animateToPage(selectedIndex,
-              duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-        },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chats"),
-          BottomNavigationBarItem(icon: Icon(Icons.group), label: "Groups"),
-        ],
-      ),
+      bottomNavigationBar: StreamBuilder<int?>(
+          stream: _streamController.stream,
+          initialData: 0,
+          builder: (context, snapshot) {
+            return BottomNavigationBar(
+              currentIndex: selectedIndex,
+              selectedItemColor: Colors.deepOrange,
+              onTap: (value) {
+                setState(() => selectedIndex = value);
+                _pageController.animateToPage(selectedIndex,
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut);
+              },
+              items: [
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.chat),
+                    label:
+                        "Chats ${snapshot.data == 0 ? ("") : "(${snapshot.data})"}"),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.group), label: "Groups"),
+              ],
+            );
+          }),
     );
   }
 }

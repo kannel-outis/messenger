@@ -166,7 +166,7 @@ class EncryptClass implements IEncryptManager {
       padded.sublist(0, padded.length - PKCS7Padding().padCount(padded));
 
   Uint8List _passphraseToKey(String passPhrase,
-      {String salt = '', int iterations = 30000, required int bitLength}) {
+      {String salt = '', int iterations = 100, required int bitLength}) {
     final numBytes = bitLength ~/ 8;
 
     final kd = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))

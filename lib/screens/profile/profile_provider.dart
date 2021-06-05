@@ -31,9 +31,9 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
     if (!_isDone) {
       _sharedPrefs.setUserData(user);
-      _hiveHandler
-        ..updateUserInHive(user)
-        ..updateUserOnContactsListInHive(user, 0);
+      // _hiveHandler
+      //   ..updateUserInHive(user, 0)
+      //   ..updateUserOnContactsListInHive(user, 0);
     }
   }
 

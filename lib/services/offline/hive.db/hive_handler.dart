@@ -42,8 +42,8 @@ class HiveHandler extends ManagerHandler<IHiveManager> {
     manager!.saveContactsListToDB(phoneContact);
   }
 
-  void updateUserInHive(User user) {
-    manager!.updateUserInHive(user);
+  void updateUserInHive(User user, int index) {
+    manager!.updateUserInHive(user, index);
   }
 
   void updateUserOnContactsListInHive(User user, int index) {

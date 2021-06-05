@@ -168,22 +168,39 @@ class HiveManager implements IHiveManager {
   }
 
   @override
-  void updateUserInHive(User user) {
-    int? index;
-    final _listOfChatsThatUserParticipatesIn = _chatBox.values.where((element) {
-      final listOfIDs = element.participants!.map((e) => e.id).toList();
-      index = listOfIDs.indexOf(user.id);
-      return index! >= 0 ? element.participants![index!].id == user.id : false;
-    }).toList();
+  void updateUserInHive(User user, int index) {
+    // int? index;
+    // final _listOfChatsThatUserParticipatesIn = _chatBox.values.where((element) {
+    //   final listOfIDs = element.participants!.map((e) => e.id!).toList();
+    //   index = listOfIDs.indexOf(user.id!);
+    //   return index! >= 0 ? element.participants![index!].id == user.id : false;
+    // }).toList();
 
-    if (_listOfChatsThatUserParticipatesIn.length >= 0) {
-      for (var element in _listOfChatsThatUserParticipatesIn) {
-        if (element.participants![index!] != user) {
-          element.participants![index!] = user;
-          element.save();
-        }
-      }
-    }
+    // if (_listOfChatsThatUserParticipatesIn.length >= 0) {
+    //   for (var element in _listOfChatsThatUserParticipatesIn) {
+    //     if (element.participants![index!] != user) {
+    //       element.participants![index!] = user;
+    //       element.save();
+    //     }
+    //   }
+    // }
+
+    assert(index < 2);
+    _chatBox.values
+        .where((element) {
+          return element.participants![index].id == user.id;
+        })
+        .toList()
+        .forEach(
+          (element) {
+            if (element.participants![index] != user) {
+              print(element.chatId);
+              element.participants![index] = user;
+              // not Working here
+              element.save();
+            }
+          },
+        );
   }
 
   @override

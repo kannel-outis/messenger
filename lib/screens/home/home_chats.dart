@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -11,21 +13,18 @@ import 'home_provider.dart';
 
 class HomeChats extends StatelessWidget {
   final HomeProvider homeProvider;
-  const HomeChats(this.homeProvider);
+  final StreamController<int?> streamController;
+  const HomeChats(this.homeProvider, this.streamController);
 
   int _indexOf(List<String> iDs, HomeProvider homeProvider,
       {bool isMe = true}) {
-    int? index;
-    index = iDs.indexOf(homeProvider.user.id!);
     if (!isMe) {
-      // index = iDs.indexWhere((element) => homeProvider.user.id != element);
-      index = index == 1 ? 0 : 1;
+      return iDs.indexWhere((element) {
+        print(homeProvider.user.id != element);
+        return homeProvider.user.id != element;
+      });
     }
-    // index = iDs.indexWhere((element) => homeProvider.user.id == element);
-    // if (index == -1) {
-    //   return 1;
-    // }
-    return index;
+    return iDs.indexWhere((element) => homeProvider.user.id == element);
   }
 
   @override
@@ -46,24 +45,29 @@ class HomeChats extends StatelessWidget {
             builder: (context, hiveChat, hiveMessage, child) {
               final List<HiveChat> hiveChats =
                   hiveChat!.values.where((element) {
-                // final List<String>? _iDs = [
-                //   element.participants![0].id!,
-                //   element.participants![1].id!
-                // ];
-                // return homeProvider.isme(_iDs);
-                return element.participants!
-                    .map((e) => e.id)
-                    .toList()
-                    .contains(homeProvider.user.id);
+                final List<String>? _iDs = [
+                  element.participants![0].id!,
+                  element.participants![1].id!
+                ];
+                return homeProvider.isme(_iDs);
               }).toList();
+
+              final l = hiveMessage!.values.isNotEmpty
+                  ? hiveMessage.values
+                      .where((e) => e.isRead == false)
+                      .toList()
+                      .map((e) => e.chatID!)
+                      .toSet()
+                  : Set<String>();
+              streamController.sink.add(l.length);
 
               return ListView.builder(
                 shrinkWrap: true,
                 itemCount: hiveChats.length,
                 itemBuilder: (context, index) {
                   final List<String>? _iDs =
-                      hiveChats.map((e) => e.id!).toList();
-                  final List<HiveMessages> hiveMessages = hiveMessage!.values
+                      hiveChats[index].participants!.map((e) => e.id!).toList();
+                  final List<HiveMessages> hiveMessages = hiveMessage.values
                       .where((element) =>
                           element.chatID == hiveChats[index].chatId)
                       .toList()
@@ -72,14 +76,14 @@ class HomeChats extends StatelessWidget {
                   final List<HiveMessages> isReadMessages = hiveMessages
                       .where((element) => element.isRead == false)
                       .toList();
+                  // print(l.length);
                   return ListTile(
                     title: Text(
                       hiveChats[index]
-                              .participants![
-                                  _indexOf(_iDs!, homeProvider, isMe: false)]
-                              .userName!
-                              .capitalize() ??
-                          'Null',
+                          .participants![
+                              _indexOf(_iDs!, homeProvider, isMe: false)]
+                          .userName!
+                          .capitalize(),
                       style: TextStyle(fontSize: 18),
                     ),
                     subtitle: hiveMessages.isNotEmpty
@@ -105,7 +109,7 @@ class HomeChats extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: hiveMessages[0].isRead == false
                                   ? Colors.yellow
-                                  : Colors.white,
+                                  : Theme.of(context).scaffoldBackgroundColor,
                               borderRadius: hiveMessages[0].isRead == false
                                   ? BorderRadius.circular(50)
                                   : null,

@@ -13,7 +13,7 @@ extension dateFormat on String {
 }
 
 extension capitalizeString on String {
-  String? capitalize() {
+  String capitalize() {
     List<String> listOfChar = this.split("");
     listOfChar.replaceRange(0, 1, [listOfChar.first.toUpperCase()]);
     return listOfChar.join("");

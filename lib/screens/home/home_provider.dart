@@ -47,7 +47,7 @@ class HomeProvider extends ChangeNotifier {
           } else {
             for (var i = 0; i < hiveChat.participants!.length; i++) {
               _hiveHandler
-                ..updateUserInHive(hiveChat.participants![i])
+                ..updateUserInHive(hiveChat.participants![i], i)
                 ..updateUserOnContactsListInHive(hiveChat.participants![i], i);
             }
           }
