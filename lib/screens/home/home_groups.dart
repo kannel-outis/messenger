@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -11,7 +13,8 @@ import '../../utils/_extensions_.dart';
 
 class HomeGroup extends StatelessWidget {
   final HomeProvider homeProvider;
-  const HomeGroup(this.homeProvider);
+  final StreamController<int?> _streamController;
+  const HomeGroup(this.homeProvider, this._streamController);
 
   // int _indexOf(List<String> iDs, HomeProvider homeProvider,
   //     {bool isMe = true}) {
@@ -45,11 +48,20 @@ class HomeGroup extends StatelessWidget {
                   return homeProvider.isme(_iDs);
                 }).toList();
 
+                final l = hiveMessage!.values.isNotEmpty
+                    ? hiveMessage.values
+                        .where((e) => e.isRead == false)
+                        .toList()
+                        .map((e) => e.chatID!)
+                        .toSet()
+                    : Set<String>();
+                _streamController.sink.add(l.length);
+
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: hiveGroupChats.length,
                   itemBuilder: (context, index) {
-                    final List<HiveMessages> hiveMessages = hiveMessage!.values
+                    final List<HiveMessages> hiveMessages = hiveMessage.values
                         .where((element) =>
                             element.chatID == hiveGroupChats[index].groupID)
                         .toList()

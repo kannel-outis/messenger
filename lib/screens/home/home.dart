@@ -18,21 +18,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late final PageController _pageController;
-  late final StreamController<int?> _streamController;
+  late final StreamController<int?> _streamControllerC;
+  late final StreamController<int?> _streamControllerG;
   String? count;
   int selectedIndex = 0;
   @override
   void initState() {
     super.initState();
-    // context.read<HomeProvider>().iniState();
-    // WidgetsBinding.instance!.addObserver(this);
     _pageController = PageController();
-    _streamController = StreamController<int?>.broadcast();
-    // _streamController.stream.listen((event) {
-    //   setState(() {
-    //     count = event.toString();
-    //   });
-    // });
+    _streamControllerC = StreamController<int?>.broadcast();
+    _streamControllerG = StreamController<int?>.broadcast();
   }
 
   @override
@@ -44,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    _streamController.close();
+    _streamControllerC.close();
+    _streamControllerG.close();
     super.dispose();
   }
 
@@ -73,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         },
         controller: _pageController,
         children: [
-          HomeChats(_homeProvider, _streamController),
-          HomeGroup(_homeProvider),
+          HomeChats(_homeProvider, _streamControllerC),
+          HomeGroup(_homeProvider, _streamControllerG),
         ],
       ),
       floatingActionButton: SpeedDial(
@@ -144,28 +140,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ],
       ),
       bottomNavigationBar: StreamBuilder<int?>(
-          stream: _streamController.stream,
-          initialData: 0,
-          builder: (context, snapshot) {
-            return BottomNavigationBar(
-              currentIndex: selectedIndex,
-              selectedItemColor: Colors.deepOrange,
-              onTap: (value) {
-                setState(() => selectedIndex = value);
-                _pageController.animateToPage(selectedIndex,
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOut);
-              },
-              items: [
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.chat),
-                    label:
-                        "Chats ${snapshot.data == 0 ? ("") : "(${snapshot.data})"}"),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.group), label: "Groups"),
-              ],
-            );
-          }),
+        stream: _streamControllerC.stream,
+        initialData: 0,
+        builder: (context, snap) {
+          return StreamBuilder<int?>(
+            stream: _streamControllerG.stream,
+            initialData: 0,
+            builder: (context, shot) {
+              return BottomNavigationBar(
+                currentIndex: selectedIndex,
+                selectedItemColor: Colors.deepOrange,
+                onTap: (value) {
+                  setState(() => selectedIndex = value);
+                  _pageController.animateToPage(selectedIndex,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut);
+                },
+                items: [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.chat),
+                      label:
+                          "Chats ${snap.data == 0 ? ("") : "(${snap.data})"}"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label:
+                          "Groups ${shot.data == 0 ? ("") : "(${shot.data})"}"),
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
