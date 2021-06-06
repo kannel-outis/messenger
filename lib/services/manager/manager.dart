@@ -7,6 +7,7 @@ import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/manager/hive.manager.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_group_chat_saltiv.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
@@ -39,8 +40,11 @@ abstract class IEncryptManager extends Manager {
   RSAAsymmetricKey keysFromString({String? key, required bool isPrivate});
 
   // AES-CBC encryption for group chats
-  Uint8List aesEncrypt(String plaintext, String passPhrase);
-  String aesDecrypt(Uint8List cypherStringText, String passPhrase);
+  Uint8List aesEncrypt(String plaintext, String passPhrase,
+      {required String randomSalt, required Uint8List iv});
+  String aesDecrypt(Uint8List cypherStringText, String passPhrase,
+      {required String randomSalt, required Uint8List iv});
+  Uint8List? generateRandomBytes(int numBytes, {SecureRandom? secureRandom});
 }
 
 abstract class IMQTTManager extends Manager {
@@ -52,18 +56,20 @@ abstract class IMQTTManager extends Manager {
 }
 
 abstract class IHiveManager extends Manager {
-  Future<void> saveChatToDB(OnlineChat chat);
+  Future<void> saveChatToDB(OnlineChat chat,
+      {HiveGroupChatSaltIV? hiveGroupChatSaltIV});
   void updateAllGroupInfo(HiveGroupChat group);
   Future<void> saveMessages(HiveMessages message);
+  LocalChat loadSingleChat(String id, {bool? isGroupChat});
   void updateMessageIsRead(HiveMessages message);
   List<HiveMessages> getMessagesFromDB(String chatID);
   List<HiveChat> loadChatsFromLocalDB();
   bool checkIfChatExists(LocalChat hiveChat);
   List<List<Map<String, dynamic>>> getContactsListFromDB();
   Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact);
-  void updateUserInHive(User user);
+  void updateUserInHive(User user, int index);
   void updateUserOnContactsListInHive(User user, int index);
-  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat);
+  Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat);
 
   Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs);
   MyPrivateKey get getPrivateKeyFromDB => throw UnimplementedError();

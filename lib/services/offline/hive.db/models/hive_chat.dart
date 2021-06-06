@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:hive/hive.dart';
 import 'package:messenger/models/user.dart' as u;
 import 'package:messenger/models/user.dart';
+
+import 'hive_group_chat_saltiv.dart';
 part 'hive_chat.g.dart';
 
 abstract class LocalChat {
@@ -59,17 +61,46 @@ class HiveGroupChat extends LocalChat with HiveObjectMixin {
   final List<u.User>? groupAdmins;
   @HiveField(7)
   final List<u.User>? participants;
+  @HiveField(8)
+  final HiveGroupChatSaltIV? hiveGroupChatSaltIV;
 
-  HiveGroupChat(
-      {this.groupID,
-      required this.groupName,
-      this.groupDescription,
-      this.groupPhotoUrl,
-      required this.groupCreator,
-      this.groupCreationTimeDate,
-      this.groupAdmins,
-      required this.participants})
-      : super(id: groupID);
+  HiveGroupChat({
+    this.groupID,
+    required this.groupName,
+    this.groupDescription,
+    this.groupPhotoUrl,
+    required this.groupCreator,
+    this.groupCreationTimeDate,
+    this.groupAdmins,
+    required this.participants,
+    required this.hiveGroupChatSaltIV,
+  }) : super(id: groupID);
+
+  HiveGroupChat copyWith({
+    String? groupID,
+    String? groupName,
+    String? groupDescription,
+    String? groupPhotoUrl,
+    User? groupCreator,
+    DateTime? groupCreationTimeDate,
+    List<u.User>? groupAdmins,
+    List<u.User>? participants,
+    HiveGroupChatSaltIV? hiveGroupChatSaltIV,
+  }) {
+    return HiveGroupChat(
+      groupName: groupName ?? this.groupName,
+      groupCreator: groupCreator ?? this.groupCreator,
+      participants: participants ?? this.participants,
+      hiveGroupChatSaltIV: hiveGroupChatSaltIV ?? this.hiveGroupChatSaltIV,
+      groupAdmins: groupAdmins ?? this.groupAdmins,
+      groupCreationTimeDate:
+          groupCreationTimeDate ?? this.groupCreationTimeDate,
+      groupDescription: groupDescription ?? this.groupDescription,
+      groupID: groupID ?? this.groupID,
+      groupPhotoUrl: groupPhotoUrl ?? this.groupPhotoUrl,
+    );
+  }
+
   @override
   int get hashCode => hashValues(groupID, hashList(participants));
 
@@ -83,6 +114,7 @@ class HiveGroupChat extends LocalChat with HiveObjectMixin {
         typedOther.groupName == groupName &&
         typedOther.groupPhotoUrl == groupPhotoUrl &&
         typedOther.groupCreator == groupCreator &&
-        typedOther.participants == participants;
+        typedOther.participants == participants &&
+        typedOther.hiveGroupChatSaltIV == hiveGroupChatSaltIV;
   }
 }

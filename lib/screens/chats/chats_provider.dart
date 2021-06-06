@@ -8,6 +8,7 @@ import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/encryption_class.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
@@ -65,25 +66,35 @@ class ChatsProvider extends ChangeNotifier {
     return SharedPrefs.instance.getUserData();
   }
 
-  void sendMessageT(
-      {required String chatId,
-      required String senderID,
-      required List<String> receiverIDs,
+  void sendGroupMessage(
+      // {required String groupID,
+      // required String senderID,
+      // required List<String> receiverIDs,
+      {required HiveGroupChat hiveGroupChat,
       required String msg,
       required VoidExceptionCallBack? handleExceptionInUi}) {
     try {
+      final encryptedMessage = _encryptClassHandler.aesEncrypt(
+          msg, hiveGroupChat.groupID!,
+          randomSalt: hiveGroupChat.hiveGroupChatSaltIV!.salt!,
+          iv: hiveGroupChat.hiveGroupChatSaltIV!.iv!);
       final Message message = Message(
-        chatID: chatId,
-        message: msg,
+        chatID: hiveGroupChat.groupID,
+        message: String.fromCharCodes(encryptedMessage),
         messageType: 'text',
-        senderID: senderID,
-        receiverIDs: receiverIDs,
+        senderID: hiveGroupChat
+            .participants![hiveGroupChat.participants!
+                .map((e) => e.id!)
+                .toList()
+                .indexWhere((element) => user.id == element)]
+            .id!,
+        receiverIDs: hiveGroupChat.participants!.map((e) => e.id!).toList(),
         timeOfMessage: DateTime.now(),
         messageID: Uuid().v4(),
         isGroup: true,
       );
       _hiveHandler.saveMessages(message.copyWith(message: msg));
-      _mqttHandler.publish(chatId, message);
+      _mqttHandler.publish(hiveGroupChat.groupID!, message);
     } on MessengerError catch (e) {
       handleExceptionInUi!(e.message);
     }
@@ -94,4 +105,8 @@ class ChatsProvider extends ChangeNotifier {
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
     return iDs!.contains(prefUser.id);
   }
+
+  // LocalChat? local(LocalChat local) {
+  //   return _hiveHandler.loadSingleChat(local);
+  // }
 }

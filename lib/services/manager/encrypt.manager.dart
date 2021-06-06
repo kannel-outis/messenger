@@ -166,7 +166,7 @@ class EncryptClass implements IEncryptManager {
       padded.sublist(0, padded.length - PKCS7Padding().padCount(padded));
 
   Uint8List _passphraseToKey(String passPhrase,
-      {String salt = '', int iterations = 30000, required int bitLength}) {
+      {String salt = '', int iterations = 100, required int bitLength}) {
     final numBytes = bitLength ~/ 8;
 
     final kd = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64))
@@ -176,7 +176,8 @@ class EncryptClass implements IEncryptManager {
     return kd.process(utf8.encode(passPhrase) as Uint8List);
   }
 
-  Uint8List? _generateRandomBytes(int numBytes, {SecureRandom? secureRandom}) {
+  @override
+  Uint8List? generateRandomBytes(int numBytes, {SecureRandom? secureRandom}) {
     if (secureRandom == null) {
       secureRandom = FortunaRandom();
 
@@ -193,10 +194,11 @@ class EncryptClass implements IEncryptManager {
   }
 
   @override
-  Uint8List aesEncrypt(String plaintext, String passPhrase) {
-    final randomSalt = latin1.decode(_generateRandomBytes(32)!);
+  Uint8List aesEncrypt(String plaintext, String passPhrase,
+      {required String randomSalt, required Uint8List iv}) {
+    // final randomSalt = latin1.decode(generateRandomBytes(32)!);
 
-    final iv = _generateRandomBytes(128 ~/ 8)!;
+    // final iv = generateRandomBytes(128 ~/ 8)!;
     return _aesCbcEncrypt(
         _passphraseToKey(passPhrase, salt: randomSalt, bitLength: 256),
         iv,
@@ -204,11 +206,8 @@ class EncryptClass implements IEncryptManager {
   }
 
   @override
-  String aesDecrypt(Uint8List cypherStringText, String passPhrase) {
-    final randomSalt = latin1.decode(_generateRandomBytes(32)!);
-
-    final iv = _generateRandomBytes(128 ~/ 8)!;
-
+  String aesDecrypt(Uint8List cypherStringText, String passPhrase,
+      {required String randomSalt, required Uint8List iv}) {
     final decrypted = _aesCbcDecrypt(
         _passphraseToKey(passPhrase, salt: randomSalt, bitLength: 256),
         iv,

@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_group_chat_saltiv.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
@@ -28,7 +30,8 @@ class HiveManager implements IHiveManager {
   final _hiveGroupChatBox =
       Hive.box<HiveGroupChat>(HiveInit.hiveGroupChatsBoxName);
   @override
-  Future<void> saveChatToDB(OnlineChat chat) async {
+  Future<void> saveChatToDB(OnlineChat chat,
+      {HiveGroupChatSaltIV? hiveGroupChatSaltIV}) async {
     if (chat is Chat) {
       final _hiveChat = HiveChat(
           chatId: chat.chatID,
@@ -49,7 +52,11 @@ class HiveManager implements IHiveManager {
         groupDescription: chat.groupDescription,
         groupID: chat.groupID,
         groupPhotoUrl: chat.groupPhotoUrl,
+        hiveGroupChatSaltIV: hiveGroupChatSaltIV!,
       );
+      if (checkIfChatExists(hiveGroupChat)) {
+        return;
+      }
       await _hiveGroupChatBox.add(hiveGroupChat);
     }
   }
@@ -95,15 +102,27 @@ class HiveManager implements IHiveManager {
   //   }
   // }
   @override
-  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {
-    await _chatBox.delete(hiveChat.key).then((value) {
-      _messageBox.values
-          .where((element) => hiveChat.chatId == element.chatID)
-          .toList()
-          .forEach((element) async {
-        await _messageBox.delete(element.key);
+  Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat) async {
+    if (hiveChat is HiveChat) {
+      await _chatBox.delete(hiveChat.key).then((value) {
+        _messageBox.values
+            .where((element) => hiveChat.chatId == element.chatID)
+            .toList()
+            .forEach((element) async {
+          await _messageBox.delete(element.key);
+        });
       });
-    });
+    } else {
+      hiveChat as HiveGroupChat;
+      await _hiveGroupChatBox.delete(hiveChat.key).then((value) {
+        _messageBox.values
+            .where((element) => hiveChat.groupID == element.chatID)
+            .toList()
+            .forEach((element) async {
+          await _messageBox.delete(element.key);
+        });
+      });
+    }
   }
 
   @override
@@ -149,61 +168,58 @@ class HiveManager implements IHiveManager {
   }
 
   @override
-  void updateUserInHive(User user) {
-    int? index;
-    final _listOfChatsThatUserParticipatesIn = _chatBox.values.where((element) {
-      final listOfIDs = element.participants!.map((e) => e.id).toList();
-      index = listOfIDs.indexOf(user.id);
-      return index! >= 0 ? element.participants![index!].id == user.id : false;
-    }).toList();
-
-    if (_listOfChatsThatUserParticipatesIn.length >= 0) {
-      for (var element in _listOfChatsThatUserParticipatesIn) {
-        if (element.participants![index!] != user) {
-          element.participants![index!] = user;
-          element.save();
-        }
-      }
-    }
-
-    // final _listOfGroupChatsThatUserParticipatesIn =
-    //     _hiveGroupChatBox.values.where((element) {
-    //   final listOfIDs = element.participants!.map((e) => e.id).toList();
-    //   index = listOfIDs.indexOf(user.id);
+  void updateUserInHive(User user, int index) {
+    // int? index;
+    // final _listOfChatsThatUserParticipatesIn = _chatBox.values.where((element) {
+    //   final listOfIDs = element.participants!.map((e) => e.id!).toList();
+    //   index = listOfIDs.indexOf(user.id!);
     //   return index! >= 0 ? element.participants![index!].id == user.id : false;
     // }).toList();
-    // if (_listOfGroupChatsThatUserParticipatesIn.length >= 0) {
-    //   for (var element in _listOfGroupChatsThatUserParticipatesIn) {
+
+    // if (_listOfChatsThatUserParticipatesIn.length >= 0) {
+    //   for (var element in _listOfChatsThatUserParticipatesIn) {
     //     if (element.participants![index!] != user) {
-    //       print(element.groupID);
     //       element.participants![index!] = user;
     //       element.save();
     //     }
     //   }
     // }
 
-    // _hiveGroupChatBox.values
-    //     .where((element) {
-    //       return element.participants![index].id == user.id;
-    //     })
-    //     .toList()
-    //     .forEach(
-    //       (element) {
-    //         if (element.participants![index] != user) {
-    //           print(element.groupID);
-    //           element.participants![index] = user;
-    //           // not Working here
-    //           element.save();
-    //         }
-    //       },
-    //     );
+    assert(index < 2);
+    _chatBox.values
+        .where((element) {
+          return element.participants![index].id == user.id;
+        })
+        .toList()
+        .forEach(
+          (element) {
+            if (element.participants![index] != user) {
+              print(element.chatId);
+              element.participants![index] = user;
+              // not Working here
+              element.save();
+            }
+          },
+        );
   }
 
   @override
   void updateAllGroupInfo(HiveGroupChat group) {
-    final _list =
-        _hiveGroupChatBox.values.where((element) => element.id == group.id);
-    if (_list.isNotEmpty) _hiveGroupChatBox.put(_list.single.key, group);
+    _hiveGroupChatBox.values
+        .where((element) => element.id == group.id)
+        .forEach((element) {
+      // final e = element.copyWith(
+      //   groupAdmins: group.groupAdmins,
+      //   groupCreationTimeDate: group.groupCreationTimeDate,
+      //   groupCreator: group.groupCreator,
+      //   groupDescription: group.groupDescription,
+      //   groupName: group.groupName,
+      //   groupPhotoUrl: group.groupPhotoUrl,
+      //   // hiveGroupChatSaltIV: group
+      //   participants: group.participants,
+      // );
+      _hiveGroupChatBox.put(element.key, group);
+    });
   }
 
   @override
@@ -260,6 +276,7 @@ class HiveManager implements IHiveManager {
   }
 
   @override
+  @protected
   MyPrivateKey get getPrivateKeyFromDB {
     final _keyHelper = RsaKeyHelper();
 
@@ -279,5 +296,20 @@ class HiveManager implements IHiveManager {
   @override
   void dispose() {
     // TODO: implement dispose
+  }
+
+  @override
+  LocalChat loadSingleChat(String id, {bool? isGroupChat}) {
+    if (isGroupChat == false) {
+      return _chatBox.values
+          .where((element) => element.chatId == id)
+          .toList()
+          .single;
+    } else {
+      return _hiveGroupChatBox.values
+          .where((element) => element.groupID == id)
+          .toList()
+          .single;
+    }
   }
 }

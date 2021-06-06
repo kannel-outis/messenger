@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
@@ -10,14 +11,14 @@ import 'package:provider/provider.dart';
 import '../../customs/widgets/custom_appbar.dart';
 import '../../utils/utils.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import '../../utils/_extensions_.dart';
 
 import 'chats_provider.dart';
 
-// ignore: must_be_immutable
 class ChatsScreen extends StatelessWidget {
   final LocalChat _localChat;
 
-  ChatsScreen(this._localChat);
+  const ChatsScreen(this._localChat);
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +95,9 @@ class _ChatScreen extends HookWidget {
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   itemBuilder: (context, index) {
-                    //  scrollController.position
-
                     bool isMe =
                         hiveMessages[index].senderID == _chatsProvider.user.id;
                     _chatsProvider.updateMessageIsRead(hiveMessages[index]);
-                    // print(hiveMessages[index])
                     return Row(
                       mainAxisAlignment: isMe
                           ? MainAxisAlignment.end
@@ -265,10 +263,21 @@ class _HiveGroupChatPage extends HookWidget {
     Key? key,
     required this.hiveGroupChat,
   }) : super(key: key);
+
+  String _username(List<User> listOfParts, String id) {
+    return listOfParts
+            .where((element) => element.id == id)
+            .toList()
+            .map((e) => e.userName)
+            .first ??
+        "emir";
+  }
+
   @override
   Widget build(BuildContext context) {
     print(hiveGroupChat.groupCreator.userName);
     var valueListener = useState<String?>("");
+
     final _chatsProvider = Provider.of<ChatsProvider>(context);
     final TextEditingController? textEditingController =
         useTextEditingController();
@@ -325,6 +334,7 @@ class _HiveGroupChatPage extends HookWidget {
                                     ? Alignment.centerLeft
                                     : Alignment.centerRight,
                                 child: Container(
+                                  // height: 100,
                                   constraints: BoxConstraints(
                                     maxWidth: Utils.blockWidth * 55,
                                     minWidth: Utils.blockWidth * 15,
@@ -342,38 +352,72 @@ class _HiveGroupChatPage extends HookWidget {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(10)),
                                   ),
-                                  child: Text(
-                                    hiveMessages[index].msg!,
-                                    style: TextStyle(
-                                        fontSize: Utils.blockWidth * 3.5),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: isMe
+                                        ? CrossAxisAlignment.end
+                                        : CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _username(hiveGroupChat.participants!,
+                                                hiveMessages[index].senderID!)
+                                            .capitalize(),
+                                        style: TextStyle(
+                                            fontSize: Utils.blockWidth * 3.0,
+                                            color: Colors.grey),
+                                      ),
+                                      SizedBox(height: 7),
+                                      Text(
+                                        hiveMessages[index].msg!,
+                                        style: TextStyle(
+                                            fontSize: Utils.blockWidth * 3.5),
+                                      ),
+                                      SizedBox(height: 7),
+                                      Text(
+                                        DateFormat('HH:mm a').format(DateTime(
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .year,
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .month,
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .day,
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .hour,
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .minute,
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .second,
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .millisecond,
+                                                hiveMessages[index]
+                                                    .dateTime!
+                                                    .microsecond)
+                                            .toLocal()),
+                                        textAlign: isMe
+                                            ? TextAlign.right
+                                            : TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: Utils.blockWidth * 2.8,
+                                            color: Colors.grey),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                               SizedBox(height: 15),
-                              Container(
-                                width: Utils.blockWidth * 45,
-                                child: Text(
-                                  DateFormat('HH:mm a').format(DateTime(
-                                          hiveMessages[index].dateTime!.year,
-                                          hiveMessages[index].dateTime!.month,
-                                          hiveMessages[index].dateTime!.day,
-                                          hiveMessages[index].dateTime!.hour,
-                                          hiveMessages[index].dateTime!.minute,
-                                          hiveMessages[index].dateTime!.second,
-                                          hiveMessages[index]
-                                              .dateTime!
-                                              .millisecond,
-                                          hiveMessages[index]
-                                              .dateTime!
-                                              .microsecond)
-                                      .toLocal()),
-                                  textAlign:
-                                      isMe ? TextAlign.right : TextAlign.left,
-                                  style: TextStyle(
-                                      fontSize: Utils.blockWidth * 3.3),
-                                ),
-                              ),
-                              SizedBox(height: 30),
+                              // Container(
+                              //   width: Utils.blockWidth * 45,
+                              //   child:
+                              // ),
+                              // SizedBox(height: 30),
                             ],
                           ),
                         ),
@@ -425,18 +469,8 @@ class _HiveGroupChatPage extends HookWidget {
                           // }
 
                           ///////////////////////////////////
-                          _chatsProvider.sendMessageT(
-                              receiverIDs: hiveGroupChat.participants!
-                                  .map((e) => e.id!)
-                                  .toList(),
-                              senderID: hiveGroupChat
-                                  .participants![hiveGroupChat.participants!
-                                      .map((e) => e.id!)
-                                      .toList()
-                                      .indexWhere((element) =>
-                                          _chatsProvider.user.id == element)]
-                                  .id!,
-                              chatId: hiveGroupChat.groupID!,
+                          _chatsProvider.sendGroupMessage(
+                              hiveGroupChat: hiveGroupChat,
                               msg: msg,
                               handleExceptionInUi: (e) =>
                                   Fluttertoast.showToast(msg: e));

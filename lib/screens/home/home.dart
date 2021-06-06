@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -16,23 +18,29 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late final PageController _pageController;
+  late final StreamController<int?> _streamControllerC;
+  late final StreamController<int?> _streamControllerG;
+  String? count;
   int selectedIndex = 0;
   @override
   void initState() {
     super.initState();
-    // context.read<HomeProvider>().iniState();
-    // WidgetsBinding.instance!.addObserver(this);
     _pageController = PageController();
+    _streamControllerC = StreamController<int?>.broadcast();
+    _streamControllerG = StreamController<int?>.broadcast();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     context.read<HomeProvider>().iniState();
   }
 
   @override
   void dispose() {
+    _streamControllerC.close();
+    _streamControllerG.close();
     super.dispose();
   }
 
@@ -61,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         },
         controller: _pageController,
         children: [
-          HomeChats(_homeProvider),
-          HomeGroup(_homeProvider),
+          HomeChats(_homeProvider, _streamControllerC),
+          HomeGroup(_homeProvider, _streamControllerG),
         ],
       ),
       floatingActionButton: SpeedDial(
@@ -131,18 +139,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.yellow,
-        onTap: (value) {
-          setState(() => selectedIndex = value);
-          _pageController.animateToPage(selectedIndex,
-              duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      bottomNavigationBar: StreamBuilder<int?>(
+        stream: _streamControllerC.stream,
+        initialData: 0,
+        builder: (context, snap) {
+          return StreamBuilder<int?>(
+            stream: _streamControllerG.stream,
+            initialData: 0,
+            builder: (context, shot) {
+              return BottomNavigationBar(
+                currentIndex: selectedIndex,
+                selectedItemColor: Colors.deepOrange,
+                onTap: (value) {
+                  setState(() => selectedIndex = value);
+                  _pageController.animateToPage(selectedIndex,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut);
+                },
+                items: [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.chat),
+                      label:
+                          "Chats ${snap.data == 0 ? ("") : "(${snap.data})"}"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label:
+                          "Groups ${shot.data == 0 ? ("") : "(${shot.data})"}"),
+                ],
+              );
+            },
+          );
         },
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chats"),
-          BottomNavigationBarItem(icon: Icon(Icons.group), label: "Groups"),
-        ],
       ),
     );
   }
