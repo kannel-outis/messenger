@@ -83,29 +83,26 @@ class FireStoreService extends Online {
         .set(newChat.toMap());
   }
 
-  // @override
-  // Stream<QuerySnapshot> getAllOnGoingchats() {
-  //   return _cloud
-  //       .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-  //       .snapshots();
-  // }
+  @override
+  Future<void> createNewGroupChat(GroupChat newGroupChat) {
+    print("Creating...");
+    return _cloud
+        .collection(OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS)
+        .doc(newGroupChat.groupID)
+        .set(newGroupChat.toMap());
+  }
 
   @override
-  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) {
+  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user,
+      {bool isGroup = false}) {
+    // super.listenWhenAUserInitializesAChat(user, isGroup: isGroup);
     return _cloud
-        .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
+        .collection(isGroup
+            ? OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS
+            : OnlineConstants.FIRESTORE_ONGOING_CHATS)
         .where('participantsIDs', arrayContains: user.id)
         .snapshots();
   }
-
-  // @override
-  // Stream<DocumentSnapshot> listenToUserConnectionUpdate(String userId) {
-  //   // return super.listenToUserConnectionUpdate(user);
-  //   return _cloud
-  //       .collection(OnlineConstants.FIRESTORE_USER_REF)
-  //       .doc(userId)
-  //       .snapshots();
-  // }
 
   @override
   Future<bool> updateUserInCloud({User? user}) async {
@@ -116,49 +113,79 @@ class FireStoreService extends Online {
         .doc(user!.id!)
         .update(user.toMap())
         .then(
-      (value) async {
-        await _cloud
-            .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
-            .where('participantsIDs', arrayContains: user.id)
-            .get()
-            .then(
-          (value) async {
-            value.docs.forEach(
-              (element) async {
-                final Chat chat = Chat.froMap(element.data()!);
-                late Chat newChat;
-
-                final Map<String, dynamic>? secondUserMap =
-                    chat.participants?.last!;
-
-                if (chat.participants![1]!['id'] == user.id) {
-                  newChat = Chat(
-                      chatID: chat.chatID,
-                      participantsIDs: chat.participantsIDs,
-                      participants: [chat.participants?.first!, user.toMap()]);
-                } else if (chat.participants![1]!['id'] == user.id &&
-                    chat.participants![0]!['id'] == user.id) {
-                  newChat = Chat(
-                      chatID: chat.chatID,
-                      participantsIDs: chat.participantsIDs,
-                      participants: [user.toMap(), user.toMap()]);
-                } else {
-                  newChat = Chat(
-                      chatID: chat.chatID,
-                      participantsIDs: chat.participantsIDs,
-                      participants: [user.toMap(), secondUserMap]);
-                }
-
-                await element.reference.update(newChat.toMap()).then((value) {
-                  return success = true;
-                });
-              },
-            );
-          },
-        );
+      (value) {
+        _updateOnGoingChats(user).then((value) => success = true);
+        _updateOnGoingGroupChats(user).then((value) => success = true);
       },
     );
     return success;
   }
+
+  Future<void> _updateOnGoingChats(User user) async {
+    await _cloud
+        .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
+        .where('participantsIDs', arrayContains: user.id)
+        .get()
+        .then(
+      (value) async {
+        for (var element in value.docs) {
+          final Chat chat = Chat.froMap(element.data()!);
+          late Chat newChat;
+
+          final Map<String, dynamic>? secondUserMap = chat.participants.last!;
+
+          if (chat.participants[1]!['id'] == user.id) {
+            newChat = Chat(
+                chatID: chat.chatID,
+                participantsIDs: chat.participantsIDs,
+                participants: [chat.participants.first!, user.toMap()]);
+          } else if (chat.participants[1]!['id'] == user.id &&
+              chat.participants[0]!['id'] == user.id) {
+            newChat = Chat(
+                chatID: chat.chatID,
+                participantsIDs: chat.participantsIDs,
+                participants: [user.toMap(), user.toMap()]);
+          } else {
+            newChat = Chat(
+                chatID: chat.chatID,
+                participantsIDs: chat.participantsIDs,
+                participants: [user.toMap(), secondUserMap]);
+          }
+
+          await element.reference.update(newChat.toMap());
+        }
+      },
+    );
+  }
+
+  Future<void> _updateOnGoingGroupChats(User user) async {
+    await _cloud
+        .collection(OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS)
+        .where('participantsIDs', arrayContains: user.id)
+        .get()
+        .then((value) async {
+      for (var element in value.docs) {
+        final GroupChat groupChat = GroupChat.froMap(element.data()!);
+        late GroupChat newGroupChat;
+        int index = groupChat.participants
+            .indexWhere((element) => element!.containsValue(user.id));
+        int adminIndex = groupChat.groupAdmins!
+            .indexWhere((element) => element.containsValue(user.id));
+        late final User _user;
+        if (user.id == groupChat.groupCreator['id']) _user = user;
+
+        if (adminIndex != -1) {
+          groupChat.groupAdmins![adminIndex] = user.toMap();
+        }
+
+        groupChat.participants[index] = user.toMap();
+        newGroupChat = groupChat.copyWith(
+          groupCreator: _user.toMap(),
+          participants: groupChat.participants,
+          groupAdmins: groupChat.groupAdmins,
+        );
+        await element.reference.update(newGroupChat.toMap());
+      }
+    });
+  }
 }
-// TODO: implement user online and offline status ...create a stream to user listen to changes from firestore

@@ -2,16 +2,19 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
+import 'package:messenger/models/chat.dart';
+import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/encryption_class.dart';
-import 'package:messenger/services/manager/encrypt.manager.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
+import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
+import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:messenger/utils/typedef.dart';
 import 'package:uuid/uuid.dart';
@@ -27,9 +30,6 @@ class ChatsProvider extends ChangeNotifier {
       required String? msg,
       required String publicKey,
       required VoidExceptionCallBack? handleExceptionInUi}) {
-    // print(SharedPrefs.instance.getUserData().id);
-    print(publicKey);
-    // return;
     try {
       final rsaPublicKey =
           _encryptClassHandler.keysFromString(isPrivate: false, key: publicKey);
@@ -41,9 +41,10 @@ class ChatsProvider extends ChangeNotifier {
         message: String.fromCharCodes(secureMessage),
         messageType: 'text',
         senderID: senderID,
-        receiverID: receiverID,
+        receiverIDs: [receiverID],
         timeOfMessage: DateTime.now(),
         messageID: Uuid().v4(),
+        isGroup: false,
       );
       _hiveHandler.saveMessages(message.copyWith(message: msg));
       _mqttHandler.publish(chatId, message);
@@ -61,10 +62,42 @@ class ChatsProvider extends ChangeNotifier {
     return _hiveHandler.getMessagesFromDB(chatID);
   }
 
-  //
-
   User get user {
     return SharedPrefs.instance.getUserData();
+  }
+
+  void sendGroupMessage(
+      // {required String groupID,
+      // required String senderID,
+      // required List<String> receiverIDs,
+      {required HiveGroupChat hiveGroupChat,
+      required String msg,
+      required VoidExceptionCallBack? handleExceptionInUi}) {
+    try {
+      final encryptedMessage = _encryptClassHandler.aesEncrypt(
+          msg, hiveGroupChat.groupID!,
+          randomSalt: hiveGroupChat.hiveGroupChatSaltIV!.salt!,
+          iv: hiveGroupChat.hiveGroupChatSaltIV!.iv!);
+      final Message message = Message(
+        chatID: hiveGroupChat.groupID,
+        message: String.fromCharCodes(encryptedMessage),
+        messageType: 'text',
+        senderID: hiveGroupChat
+            .participants![hiveGroupChat.participants!
+                .map((e) => e.id!)
+                .toList()
+                .indexWhere((element) => user.id == element)]
+            .id!,
+        receiverIDs: hiveGroupChat.participants!.map((e) => e.id!).toList(),
+        timeOfMessage: DateTime.now(),
+        messageID: Uuid().v4(),
+        isGroup: true,
+      );
+      _hiveHandler.saveMessages(message.copyWith(message: msg));
+      _mqttHandler.publish(hiveGroupChat.groupID!, message);
+    } on MessengerError catch (e) {
+      handleExceptionInUi!(e.message);
+    }
   }
 
   bool isme(List<String>? iDs) {
@@ -72,4 +105,8 @@ class ChatsProvider extends ChangeNotifier {
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
     return iDs!.contains(prefUser.id);
   }
+
+  // LocalChat? local(LocalChat local) {
+  //   return _hiveHandler.loadSingleChat(local);
+  // }
 }

@@ -14,13 +14,15 @@ class HiveMessages extends HiveObject {
   @HiveField(4)
   final String? senderID;
   @HiveField(5)
-  final String? receiverID;
+  final List<String>? receiverIDs;
   @HiveField(6)
   final String? messageID;
 
   ///  messsage if is read or not
   @HiveField(7)
   final bool? isRead;
+  @HiveField(8)
+  final bool? isGroup;
 
   HiveMessages({
     this.chatID,
@@ -28,9 +30,10 @@ class HiveMessages extends HiveObject {
     this.messageType,
     this.dateTime,
     this.senderID,
-    this.receiverID,
+    this.receiverIDs,
     required this.messageID,
     required this.isRead,
+    required this.isGroup,
   });
 
   HiveMessages copyWith({
@@ -39,24 +42,25 @@ class HiveMessages extends HiveObject {
     String? messageType,
     DateTime? dateTime,
     String? senderID,
-    String? receiverID,
+    List<String>? receiverIDs,
     String? messageID,
     bool? isRead,
+    bool? isGroup,
   }) {
     return HiveMessages(
-      chatID: chatID ?? this.chatID,
-      dateTime: dateTime ?? this.dateTime,
-      messageType: messageType ?? this.messageType,
-      msg: msg ?? this.msg,
-      receiverID: receiverID ?? this.receiverID,
-      senderID: senderID ?? this.senderID,
-      messageID: messageID ?? this.messageID,
-      isRead: isRead ?? this.isRead,
-    );
+        chatID: chatID ?? this.chatID,
+        dateTime: dateTime ?? this.dateTime,
+        messageType: messageType ?? this.messageType,
+        msg: msg ?? this.msg,
+        receiverIDs: receiverIDs ?? this.receiverIDs,
+        senderID: senderID ?? this.senderID,
+        messageID: messageID ?? this.messageID,
+        isRead: isRead ?? this.isRead,
+        isGroup: isGroup ?? this.isGroup);
   }
 
   @override
   String toString() {
-    return '$chatID,  $dateTime, $msg, $senderID, $receiverID, $messageType, $messageID';
+    return '$chatID,  $dateTime, $msg, $senderID, $receiverIDs, $messageType, $messageID';
   }
 }

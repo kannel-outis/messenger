@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
-import 'package:messenger/screens/set_name/set_name_screen.dart';
+import 'package:messenger/screens/auth/set_name_screen.dart';
 import 'package:provider/provider.dart';
 
 class VerifyOTPScreen extends HookWidget {

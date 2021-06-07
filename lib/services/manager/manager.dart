@@ -7,6 +7,7 @@ import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/manager/hive.manager.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_group_chat_saltiv.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keypairs.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
@@ -22,58 +23,67 @@ abstract class Manager {
     return '${this.runtimeType}';
   }
 
-  Future<MqttClient?> login() => throw UnimplementedError();
-  Future<void> connectMQTTClient() => throw UnimplementedError();
-  void disconnectMQTTClient() => throw UnimplementedError();
-  bool subscribe(String topic) => throw UnimplementedError();
-  Future<void> publish(String topic, Map<String, dynamic> message) =>
-      throw UnimplementedError();
-
 // hive manager
-  Future<void> saveChatToDB(Chat chat) => throw UnimplementedError();
-  Future<void> saveMessages(HiveMessages message) => throw UnimplementedError();
-  void updateMessageIsRead(HiveMessages message) => throw UnimplementedError();
-  List<HiveMessages> getMessagesFromDB(String chatID) =>
-      throw UnimplementedError();
-  List<HiveChat> loadChatsFromLocalDB() => throw UnimplementedError();
-  bool checkIfChatExists(HiveChat hiveChat) => throw UnimplementedError();
-  List<List<Map<String, dynamic>>> getContactsListFromDB() =>
-      throw UnimplementedError();
-  Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact) =>
-      throw UnimplementedError();
-  void updateUserInHive(User user, int index) => throw UnimplementedError();
-  void updateUserOnContactsListInHive(User user, int index) =>
-      throw UnimplementedError();
-  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async =>
-      throw UnimplementedError();
-
-  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs) =>
-      throw UnimplementedError();
-  MyPrivateKey get getPrivateKeyFromDB => throw UnimplementedError();
 
   //EncryptClass
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) =>
-      throw UnimplementedError();
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) =>
-      throw UnimplementedError();
-  AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
-          {SecureRandom? secureRandom, int bitLength = 2048}) =>
-      throw UnimplementedError();
 
-  String? keyToString({RSAAsymmetricKey? key}) => throw UnimplementedError();
-  RSAAsymmetricKey keysFromString({String? key, required bool isPrivate}) =>
-      throw UnimplementedError();
+}
+
+abstract class IEncryptManager extends Manager {
+  // RSA Encyption for one-on-one Chats
+  Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt);
+  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText);
+  AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
+      {SecureRandom? secureRandom, int bitLength = 2048});
+
+  String? keyToString({RSAAsymmetricKey? key});
+  RSAAsymmetricKey keysFromString({String? key, required bool isPrivate});
+
+  // AES-CBC encryption for group chats
+  Uint8List aesEncrypt(String plaintext, String passPhrase,
+      {required String randomSalt, required Uint8List iv});
+  String aesDecrypt(Uint8List cypherStringText, String passPhrase,
+      {required String randomSalt, required Uint8List iv});
+  Uint8List? generateRandomBytes(int numBytes, {SecureRandom? secureRandom});
+}
+
+abstract class IMQTTManager extends Manager {
+  Future<MqttClient?> login();
+  Future<void> connectMQTTClient();
+  void disconnectMQTTClient();
+  bool subscribe(String topic);
+  Future<void> publish(String topic, Map<String, dynamic> message);
+}
+
+abstract class IHiveManager extends Manager {
+  Future<void> saveChatToDB(OnlineChat chat,
+      {HiveGroupChatSaltIV? hiveGroupChatSaltIV});
+  void updateAllGroupInfo(HiveGroupChat group);
+  Future<void> saveMessages(HiveMessages message);
+  LocalChat loadSingleChat(String id, {bool? isGroupChat});
+  void updateMessageIsRead(HiveMessages message);
+  List<HiveMessages> getMessagesFromDB(String chatID);
+  List<HiveChat> loadChatsFromLocalDB();
+  bool checkIfChatExists(LocalChat hiveChat);
+  List<List<Map<String, dynamic>>> getContactsListFromDB();
+  Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact);
+  void updateUserInHive(User user, int index);
+  void updateUserOnContactsListInHive(User user, int index);
+  Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat);
+
+  Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs);
+  MyPrivateKey get getPrivateKeyFromDB => throw UnimplementedError();
 }
 
 abstract class ManagerHandler<T extends Manager?> {
-  Manager? _manager;
+  T? _manager;
 
   @protected
-  Manager? get manager => _manager;
+  T? get manager => _manager;
 
   @protected
   @mustCallSuper
-  Manager? setManager(Manager? newManager) {
+  Manager? setManager(T? newManager) {
     if (_manager == null) {
       _manager = newManager;
     }

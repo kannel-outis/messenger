@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:messenger/services/offline/hive.db/models/keys.dart';
 part 'keypairs.g.dart';
 
 @HiveType(typeId: 7)

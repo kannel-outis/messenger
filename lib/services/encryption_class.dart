@@ -7,22 +7,13 @@ import 'package:messenger/services/manager/encrypt.manager.dart';
 import 'package:messenger/services/manager/manager.dart';
 import "package:pointycastle/export.dart";
 
-abstract class EncryptionC {
-  AsymmetricKeyPair<MyPublicKey, MyPrivateKey> generateKeyPairs(
-      {SecureRandom? secureRandom, int bitLength = 2048});
-
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt);
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText);
-  String? keyToString({RSAAsymmetricKey? key});
-}
-
-class EncryptClassHandler extends ManagerHandler<EncryptClass?> {
+class EncryptClassHandler extends ManagerHandler<IEncryptManager?> {
   EncryptClassHandler() {
     setManager(EncryptClass.instance);
   }
 
-  Manager? setManager(Manager? newManager) {
-    return super.setManager(newManager);
+  Manager? setManager(newManager) {
+    return super.setManager(newManager as EncryptClass);
   }
 
   Uint8List rsaEncrypt(RSAPublicKey myPublic, String dataToEncrypt) {
@@ -50,6 +41,11 @@ class EncryptClassHandler extends ManagerHandler<EncryptClass?> {
     }
   }
 
+  Uint8List? generateRandomBytes(int numBytes, {SecureRandom? secureRandom}) {
+    return manager!.generateRandomBytes(numBytes,
+        secureRandom: secureRandom ?? _exampleSecureRandom());
+  }
+
   SecureRandom _exampleSecureRandom() {
     final secureRandom = FortunaRandom();
 
@@ -69,5 +65,17 @@ class EncryptClassHandler extends ManagerHandler<EncryptClass?> {
 
   String? keyToString({RSAAsymmetricKey? key}) {
     return manager!.keyToString(key: key);
+  }
+
+  Uint8List aesEncrypt(String plaintext, String passPhrase,
+      {required String randomSalt, required Uint8List iv}) {
+    return manager!
+        .aesEncrypt(plaintext, passPhrase, randomSalt: randomSalt, iv: iv);
+  }
+
+  String aesDecrypt(Uint8List cypherStringText, String passPhrase,
+      {required String randomSalt, required Uint8List iv}) {
+    return manager!.aesDecrypt(cypherStringText, passPhrase,
+        randomSalt: randomSalt, iv: iv);
   }
 }

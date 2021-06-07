@@ -8,26 +8,28 @@ import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 
 import 'models/hive_chat.dart';
+import 'models/hive_group_chat_saltiv.dart';
 import 'models/keypairs.dart';
 
-class HiveHandler extends ManagerHandler<Manager> {
+class HiveHandler extends ManagerHandler<IHiveManager> {
   HiveHandler() {
     setManager(HiveManager.instance);
   }
   @override
-  Manager? setManager(Manager? newManager) {
-    return super.setManager(newManager);
+  Manager? setManager(newManager) {
+    return super.setManager(newManager as HiveManager);
   }
 
-  Future<void> saveChatToDB(Chat chat) async {
-    await manager!.saveChatToDB(chat);
+  Future<void> saveChatToDB(OnlineChat chat,
+      {HiveGroupChatSaltIV? hiveGroupChatSaltIV}) async {
+    await manager!.saveChatToDB(chat, hiveGroupChatSaltIV: hiveGroupChatSaltIV);
   }
 
   List<HiveChat> loadChatsFromDB() {
     return manager!.loadChatsFromLocalDB();
   }
 
-  bool checkIfchatExists(HiveChat hiveChat) {
+  bool checkIfchatExists(LocalChat hiveChat) {
     return manager!.checkIfChatExists(hiveChat);
   }
 
@@ -56,8 +58,16 @@ class HiveHandler extends ManagerHandler<Manager> {
     manager!.updateMessageIsRead(message);
   }
 
-  Future<void> deleteChatAndMessagesFromLocalStorage(HiveChat hiveChat) async {
+  void updateAllGroupInfo(HiveGroupChat group) {
+    manager!.updateAllGroupInfo(group);
+  }
+
+  Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat) async {
     return await manager!.deleteChatAndMessagesFromLocalStorage(hiveChat);
+  }
+
+  LocalChat loadSingleChat(String id, {bool? isGroupChat = false}) {
+    return manager!.loadSingleChat(id, isGroupChat: isGroupChat);
   }
 
   Future<void> saveMessages(Message message) {
@@ -67,10 +77,11 @@ class HiveHandler extends ManagerHandler<Manager> {
         dateTime: message.timeOfMessage,
         messageType: message.messageType,
         msg: message.message,
-        receiverID: message.receiverID,
+        receiverIDs: message.receiverIDs,
         senderID: message.senderID,
         messageID: message.messageID,
         isRead: false,
+        isGroup: message.isGroup,
       ),
     );
   }
