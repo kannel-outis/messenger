@@ -44,7 +44,6 @@ class ProfileProvider extends ChangeNotifier {
           _firebaseStorage.saveImageToFireStore(user!.id, value).then(
             (value) {
               _imageUrl = value;
-              print(_imageUrl);
               notifyListeners();
             },
           );

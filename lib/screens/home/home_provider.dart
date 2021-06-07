@@ -100,7 +100,6 @@ class HomeProvider extends ChangeNotifier {
               _hiveHandler.saveChatToDB(chat,
                   hiveGroupChatSaltIV: hiveChat.hiveGroupChatSaltIV);
             } else {
-              // TODO:update group Info in local db
               _hiveHandler..updateAllGroupInfo(hiveChat);
             }
             _mqttHandler
@@ -116,8 +115,6 @@ class HomeProvider extends ChangeNotifier {
     });
     _mqttHandler.messageController.listen((event) {
       _list.add(event);
-      print(_list.length);
-      print(_list.last!["senderID"]);
       try {
         if (_list.last!['isGroup'] == false) {
           if (!isme([_list.last!["senderID"]])) {

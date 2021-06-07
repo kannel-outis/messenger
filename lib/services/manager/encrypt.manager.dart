@@ -64,7 +64,6 @@ class EncryptClass implements IEncryptManager {
   @override
   Uint8List rsaDecrypt(RSAPrivateKey myPrivate, String cipherText) {
     try {
-      print(cipherText);
       final decryptor = OAEPEncoding(RSAEngine())
         ..init(false,
             PrivateKeyParameter<RSAPrivateKey>(myPrivate)); // false=decrypt

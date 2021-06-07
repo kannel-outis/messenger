@@ -20,7 +20,6 @@ class HomeChats extends StatelessWidget {
       {bool isMe = true}) {
     if (!isMe) {
       return iDs.indexWhere((element) {
-        print(homeProvider.user.id != element);
         return homeProvider.user.id != element;
       });
     }
@@ -129,13 +128,6 @@ class HomeChats extends StatelessWidget {
                           )
                         : SizedBox(),
                     onTap: () {
-                      print(hiveChats[index]
-                          .participants![_indexOf(_iDs, homeProvider)]
-                          .userName);
-                      print(hiveChats[index]
-                          .participants![
-                              _indexOf(_iDs, homeProvider, isMe: false)]
-                          .userName);
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => ChatsScreen(hiveChats[index]),

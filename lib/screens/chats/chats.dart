@@ -365,13 +365,16 @@ class _HiveGroupChatPage extends HookWidget {
                                             .capitalize(),
                                         style: TextStyle(
                                             fontSize: Utils.blockWidth * 3.0,
-                                            color: Colors.grey),
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor),
                                       ),
                                       SizedBox(height: 7),
                                       Text(
                                         hiveMessages[index].msg!,
                                         style: TextStyle(
-                                            fontSize: Utils.blockWidth * 3.5),
+                                          fontSize: Utils.blockWidth * 3.5,
+                                          color: Color(0xff404040),
+                                        ),
                                       ),
                                       SizedBox(height: 7),
                                       Text(
@@ -405,8 +408,9 @@ class _HiveGroupChatPage extends HookWidget {
                                             ? TextAlign.right
                                             : TextAlign.left,
                                         style: TextStyle(
-                                            fontSize: Utils.blockWidth * 2.8,
-                                            color: Colors.grey),
+                                          fontSize: Utils.blockWidth * 2.8,
+                                          color: Color(0xffB3B3B3B3),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -431,7 +435,7 @@ class _HiveGroupChatPage extends HookWidget {
           ),
           Container(
             height: 70,
-            color: Colors.white,
+            color: Theme.of(context).scaffoldBackgroundColor,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -484,7 +488,7 @@ class _HiveGroupChatPage extends HookWidget {
                     width: 100,
                     height: 50,
                     decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.all(Radius.circular(50))),
                     child: Center(
                       child: Text(

@@ -52,7 +52,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Messenger',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+            // scaffoldBackgroundColor: Colors.black,
+            // brightness: Brightness.light,
+            ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primarySwatch: Colors.red,
+          primaryColor: Colors.red,
         ),
         home: SharedPrefs.instance.getUserData().id != null
             ? HomeScreen()

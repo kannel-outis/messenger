@@ -77,7 +77,9 @@ class HomeGroup extends StatelessWidget {
                       ),
                       subtitle: hiveMessages.isNotEmpty
                           ? Text(
-                              hiveMessages[0].msg ?? "cannot load this message",
+                              hiveMessages[0].senderID == homeProvider.user.id
+                                  ? "you: ${hiveMessages[0].msg}"
+                                  : "${hiveGroupChats[index].participants!.where((element) => element.id == hiveMessages[0].senderID).single.userName}: ${hiveMessages[0].msg}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -118,13 +120,6 @@ class HomeGroup extends StatelessWidget {
                             )
                           : SizedBox(),
                       onTap: () {
-                        // print(hiveGroupChats[index]
-                        //     .participants![_indexOf(_iDs, homeProvider)]
-                        //     .id);
-                        // print(hiveGroupChats[index]
-                        //     .participants![
-                        //         _indexOf(_iDs, homeProvider, isMe: false)]
-                        //     .id);
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => ChatsScreen(hiveGroupChats[index]),

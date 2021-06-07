@@ -194,9 +194,7 @@ class HiveManager implements IHiveManager {
         .forEach(
           (element) {
             if (element.participants![index] != user) {
-              print(element.chatId);
               element.participants![index] = user;
-              // not Working here
               element.save();
             }
           },
