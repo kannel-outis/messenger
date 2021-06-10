@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:messenger/screens/contacts/first_launch_contact.dart';
+import 'package:messenger/screens/contacts/contacts.dart';
 import 'package:messenger/screens/group/create_group_screen.dart';
 import 'package:messenger/screens/home/home_provider.dart';
+import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 import '../../screens/settings/settings.dart';
 import 'home_chats.dart';
@@ -20,11 +21,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late final PageController _pageController;
   late final StreamController<int?> _streamControllerC;
   late final StreamController<int?> _streamControllerG;
+  late final FocusNode _focusNode;
+  late final TextEditingController _textEditingController;
   String? count;
   int selectedIndex = 0;
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
+    _textEditingController = TextEditingController();
     _pageController = PageController();
     _streamControllerC = StreamController<int?>.broadcast();
     _streamControllerG = StreamController<int?>.broadcast();
@@ -41,6 +46,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void dispose() {
     _streamControllerC.close();
     _streamControllerG.close();
+    _textEditingController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -49,29 +56,79 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final _homeProvider = Provider.of<HomeProvider>(context);
 
     ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-    final size = MediaQuery.of(context).size.height / 100;
+    final h = MediaQuery.of(context).size.height / 100;
+    final w = MediaQuery.of(context).size.width / 100;
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: size * 7 > 100 ? 100 : size * 7,
+        toolbarHeight: h * 7 > 100 ? 100 : h * 7,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0.0,
         title: Text(
-          '',
+          'Conversations',
           style: TextStyle(
-              fontSize: 35, fontWeight: FontWeight.bold, color: Colors.black),
+              fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: PageView(
-        physics: NeverScrollableScrollPhysics(),
-        onPageChanged: (index) {
-          setState(() => selectedIndex = index);
-        },
-        controller: _pageController,
-        children: [
-          HomeChats(_homeProvider, _streamControllerC),
-          HomeGroup(_homeProvider, _streamControllerG),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              height: 120,
+              // color: Colors.pink,
+              child: Center(
+                child: Container(
+                  height: 50,
+                  width: w * 80,
+                  padding: EdgeInsets.symmetric(horizontal: 25),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: TextField(
+                    focusNode: _focusNode,
+                    controller: _textEditingController,
+                    decoration: InputDecoration(
+                      // prefixIcon: Icon(Icons.search),
+                      // suffixIconConstraints: BoxConstraints(
+                      //   minHeight: 32,
+                      //   minWidth: 32,
+                      //   maxHeight: 32,
+                      //   maxWidth: 32,
+                      // ),
+                      hintText: "Search Conversation",
+                      alignLabelWithHint: true,
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.grey,
+                      ),
+                      focusedBorder:
+                          UnderlineInputBorder(borderSide: BorderSide.none),
+                      border: UnderlineInputBorder(borderSide: BorderSide.none),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              height: (MediaQuery.of(context).size.height / 100) * 75,
+              // color: Colors.white,
+              child: PageView(
+                physics: NeverScrollableScrollPhysics(),
+                onPageChanged: (index) {
+                  setState(() => selectedIndex = index);
+                },
+                controller: _pageController,
+                children: [
+                  HomeChats(
+                      _homeProvider, _streamControllerC, _streamControllerG),
+                  HomeGroup(_homeProvider),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: SpeedDial(
         marginEnd: 18,
@@ -82,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         activeIcon: Icons.remove, openCloseDial: isDialOpen,
         useRotationAnimation: true,
 
-        buttonSize: 56.0,
+        buttonSize: Utils.blockWidth * 15 > 56.0 ? 56.0 : Utils.blockWidth * 15,
         visible: true,
         closeManually: true,
 
@@ -120,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               isDialOpen.value = false;
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => FirstLaunchContactScreen(fromHome: true),
+                  builder: (_) => ContactsScreen(fromHome: true),
                 ),
               );
             },

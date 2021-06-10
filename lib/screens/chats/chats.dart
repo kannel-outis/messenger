@@ -135,7 +135,10 @@ class _ChatScreen extends HookWidget {
                                   child: Text(
                                     hiveMessages[index].msg!,
                                     style: TextStyle(
-                                        fontSize: Utils.blockWidth * 3.5),
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                      fontSize: Utils.blockWidth * 3.5,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -177,7 +180,7 @@ class _ChatScreen extends HookWidget {
           ),
           Container(
             height: 70,
-            color: Colors.white,
+            color: Theme.of(context).scaffoldBackgroundColor,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -231,10 +234,16 @@ class _ChatScreen extends HookWidget {
                           print(textEditingController!.text.length);
                         },
                   child: Container(
-                    width: 100,
-                    height: 50,
+                    width: Utils.blockWidth * 25.0,
+                    height: Utils.blockHeight * 5.0,
+                    constraints: BoxConstraints(
+                      maxHeight: 50,
+                      maxWidth: 100,
+                      minWidth: 70,
+                      minHeight: 35,
+                    ),
                     decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: Colors.red,
                         borderRadius: BorderRadius.all(Radius.circular(50))),
                     child: Center(
                       child: Text(
@@ -485,14 +494,21 @@ class _HiveGroupChatPage extends HookWidget {
                           print(textEditingController!.text.length);
                         },
                   child: Container(
-                    width: 100,
-                    height: 50,
+                    width: Utils.blockWidth * 25.0,
+                    height: Utils.blockHeight * 5.0,
+                    constraints: BoxConstraints(
+                      maxHeight: 50,
+                      maxWidth: 100,
+                      minWidth: 70,
+                      minHeight: 35,
+                    ),
                     decoration: BoxDecoration(
                         color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.all(Radius.circular(50))),
                     child: Center(
                       child: Text(
                         'SEND',
+                        // textScaleFactor: .6,
                         style: TextStyle(
                           fontSize: Utils.blockWidth * 4.0,
                           color: Colors.white,

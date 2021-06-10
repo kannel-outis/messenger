@@ -19,7 +19,6 @@ class ProfileScreen extends HookWidget {
     TextEditingController? _statusTextController =
         useTextEditingController(text: user!.status!);
     var _profileProvider = Provider.of<ProfileProvider>(context);
-
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pop(
@@ -142,27 +141,24 @@ class _Bottom extends StatelessWidget {
           _buildTextField(controllers![0], enabled: enabled),
           _buildTextField(controllers![1]),
           _buildTextField(controllers![2]),
-          InkWell(
-            onTap: () {
-              profileProvider!.updateAllDataInCloud(
-                status: controllers![2]!.text,
-                username: controllers![1]!.text,
-              );
-            },
-            child: Padding(
+          Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Container(
-                height: 50,
-                color: Colors.blue,
-                child: Center(
-                  child: Text(
-                    'Update',
-                    style: TextStyle(fontSize: 23, color: Colors.white),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all<Size>(
+                    Size(0, 50),
                   ),
                 ),
-              ),
-            ),
-          ),
+                onPressed: () {
+                  profileProvider!.updateAllDataInCloud(
+                    status: controllers![2]!.text,
+                    username: controllers![1]!.text,
+                  );
+                },
+                child: Center(
+                  child: Text("Update"),
+                ),
+              )),
         ],
       ),
     );

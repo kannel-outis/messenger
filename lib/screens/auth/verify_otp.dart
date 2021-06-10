@@ -11,91 +11,89 @@ class VerifyOTPScreen extends HookWidget {
     final TextEditingController? _otpController = useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: Container(
-                    child: Text(
-                      'Verify OTP',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                  child: Text(
+                    'Verify OTP',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
-                FittedBox(
-                  alignment: Alignment.center,
-                  child: Text('Enter Verification code.'),
-                ),
-                SizedBox(height: 30),
-                Center(
-                  child: Container(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - 120,
-                      height: 35,
-                      child: Container(
-                        child: TextField(
-                          keyboardType: TextInputType.phone,
-                          controller: _otpController,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(bottom: 15),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 40),
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      _authProvider.verifyOTP(int.parse(_otpController!.text),
-                          () {
-                        Fluttertoast.showToast(msg: "Verification Successfull");
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => SetNameScreen(),
-                          ),
-                        );
-                      }, handleExceptionInUi: (e) {
-                        Fluttertoast.showToast(
-                            msg: e, toastLength: Toast.LENGTH_LONG);
-                      });
-                    },
+              ),
+              // SizedBox(height: 30),
+              SizedBox(height: 30),
+              Center(
+                child: Container(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    // height: 35,
                     child: Container(
-                      height: MediaQuery.of(context).size.width / 9,
-                      width: MediaQuery.of(context).size.width / 3,
-                      color: Colors.blue,
-                      child: Center(
-                        child: Consumer<AuthProvider>(
-                          builder: (context, authProvider, child) {
-                            final bool? isVerifying =
-                                authProvider.isTryingToVerify;
-                            return isVerifying == true
-                                ? Text(
-                                    'Verifying...',
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                : Text(
-                                    'Confirm',
-                                    style: TextStyle(color: Colors.white),
-                                  );
-                          },
+                      child: TextField(
+                        keyboardType: TextInputType.phone,
+                        controller: _otpController,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          hintText: "Enter OTP to Verify",
+                          border:
+                              UnderlineInputBorder(borderSide: BorderSide.none),
+                          focusColor: Colors.red,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all<Size>(
+                      Size(0, 50),
+                    ),
+                  ),
+                  onPressed: () {
+                    _authProvider.verifyOTP(int.parse(_otpController!.text),
+                        () {
+                      Fluttertoast.showToast(msg: "Verification Successfull");
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => SetNameScreen(),
+                        ),
+                      );
+                    }, handleExceptionInUi: (e) {
+                      Fluttertoast.showToast(
+                          msg: e, toastLength: Toast.LENGTH_LONG);
+                    });
+                  },
+                  child: Center(
+                    child: Consumer<AuthProvider>(
+                      builder: (context, authProvider, child) {
+                        final bool? isVerifying = authProvider.isTryingToVerify;
+                        return isVerifying == true
+                            ? Text(
+                                'Verifying...',
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : Text(
+                                'Confirm',
+                                style: TextStyle(color: Colors.white),
+                              );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -6,7 +6,8 @@ class CountryDropDown extends StatelessWidget {
 
   final CountryCode? value;
   final Function(CountryCode?)? onChanged;
-  const CountryDropDown({Key? key, this.listOfCodes, this.value, this.onChanged})
+  const CountryDropDown(
+      {Key? key, this.listOfCodes, this.value, this.onChanged})
       : super(key: key);
 
   @override
@@ -14,6 +15,7 @@ class CountryDropDown extends StatelessWidget {
     return Center(
       child: Container(
         child: DropdownButton<CountryCode>(
+          dropdownColor: Colors.grey,
           value: value ?? listOfCodes![0],
           underline: SizedBox(),
           elevation: 0,

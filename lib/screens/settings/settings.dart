@@ -14,7 +14,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  /// return a User object on pop adn compare it to the user from settings page then update
   @override
   Widget build(BuildContext context) {
     User? user = context.read<HomeProvider>().user;
@@ -43,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 height: 40,
                 width: 150,
                 decoration: BoxDecoration(
-                  color: Colors.yellow,
+                  color: Colors.red,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Center(
@@ -110,7 +109,7 @@ class _ProfileTopSec extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
                   border: Border.all(
-                      color: Colors.yellow, style: BorderStyle.solid, width: 2),
+                      color: Colors.red, style: BorderStyle.solid, width: 2),
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: CachedNetworkImageProvider(

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
-import 'package:messenger/screens/contacts/first_launch_contact.dart';
+import 'package:messenger/screens/contacts/contacts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class SetNameScreen extends HookWidget {
@@ -12,6 +13,7 @@ class SetNameScreen extends HookWidget {
     final TextEditingController? _userNameController =
         useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
@@ -20,29 +22,30 @@ class SetNameScreen extends HookWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Center(
-                  child: Container(
-                    child: Text(
-                      'Set Your Username',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                      ),
-                    ),
-                  ),
-                ),
+                // Center(
+                //   child: Container(
+                //     child: Text(
+                //       'Set Your Username',
+                //       style: TextStyle(
+                //         color: Colors.grey,
+                //         fontWeight: FontWeight.bold,
+                //         fontSize: 25,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: 30),
                 FittedBox(
                   alignment: Alignment.center,
                   child: Text(
                     'Enter a name you want to go by. This name appers on your Profile.',
                     style: TextStyle(
+                      color: Colors.grey,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 40),
                 Center(
                   child: Container(
                     // height: 50,
@@ -55,14 +58,21 @@ class SetNameScreen extends HookWidget {
                           return Stack(
                             children: [
                               Container(
-                                height: 100,
-                                width: 100,
+                                height: Utils.blockHeight * 10,
+                                width: Utils.blockHeight * 10,
+                                constraints: BoxConstraints(
+                                  minHeight: 50,
+                                  minWidth: 50,
+                                  maxHeight: 85,
+                                  maxWidth: 85,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
                                   border: Border.all(
-                                      width: 3,
-                                      style: BorderStyle.solid,
-                                      color: Colors.blue),
+                                    width: 1,
+                                    style: BorderStyle.solid,
+                                    color: Colors.red,
+                                  ),
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
                                     image: (auth.imageUrl == null &&
@@ -102,7 +112,11 @@ class SetNameScreen extends HookWidget {
                                 child: TextField(
                                   controller: _userNameController,
                                   decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.only(bottom: 15),
+                                    hintText: "Enter OTP to Verify",
+                                    border: UnderlineInputBorder(
+                                        borderSide: BorderSide.none),
+                                    focusColor: Colors.red,
+                                    // contentPadding: EdgeInsets.only(bottom: 15),
                                   ),
                                 ),
                               ),
@@ -113,7 +127,7 @@ class SetNameScreen extends HookWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 25),
+                // SizedBox(height: 25),
                 Consumer<AuthProvider>(
                   builder: (context, auth, child) {
                     return auth.uploadingImageToStore != true
@@ -123,8 +137,13 @@ class SetNameScreen extends HookWidget {
                 ),
                 SizedBox(height: 15),
                 Center(
-                  child: GestureDetector(
-                    onTap: _authProvider.uploadingImageToStore != true
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all<Size>(
+                        Size(0, 40),
+                      ),
+                    ),
+                    onPressed: _authProvider.uploadingImageToStore != true
                         ? () {
                             _authProvider
                                 .saveNewUserToCloudAndSetPrefs(
@@ -135,7 +154,7 @@ class SetNameScreen extends HookWidget {
                               (value) {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => FirstLaunchContactScreen(),
+                                    builder: (_) => ContactsScreen(),
                                   ),
                                 );
                               },
@@ -143,28 +162,23 @@ class SetNameScreen extends HookWidget {
                             // _authProvider.signOut;
                           }
                         : null,
-                    child: Container(
-                      height: MediaQuery.of(context).size.width / 9,
-                      width: MediaQuery.of(context).size.width / 3,
-                      color: Colors.blue,
-                      child: Center(
-                        child: Consumer<AuthProvider>(
-                          builder: (context, provider, child) {
-                            final bool? isLoading = provider.isLoading;
-                            return isLoading != true
-                                ? Text(
-                                    'Save',
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                : CircularProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                    strokeWidth: 1.5,
-                                    value: 1.2,
-                                    // valueColor: AlwaysStoppedAnimation<Color>(
-                                    //     Colors.blue),
+                    child: Center(
+                      child: Consumer<AuthProvider>(
+                        builder: (context, provider, child) {
+                          final bool? isLoading = provider.isLoading;
+                          return isLoading != true
+                              ? Text(
+                                  'Save',
+                                  style: TextStyle(color: Colors.white),
+                                )
+                              : CircularProgressIndicator(
+                                  // backgroundColor: Colors.white,
+                                  // strokeWidth: 1.5,
+                                  // value: 1.2,
+                                  // // valueColor: AlwaysStoppedAnimation<Color>(
+                                  // //     Colors.blue),
                                   );
-                          },
-                        ),
+                        },
                       ),
                     ),
                   ),

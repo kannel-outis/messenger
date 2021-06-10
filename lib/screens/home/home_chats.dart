@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messenger/customs/double_listenable.dart';
+import 'package:messenger/customs/widgets/custom_chat_list_tile.dart';
 import 'package:messenger/screens/chats/chats.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
@@ -14,17 +16,9 @@ import 'home_provider.dart';
 class HomeChats extends StatelessWidget {
   final HomeProvider homeProvider;
   final StreamController<int?> streamController;
-  const HomeChats(this.homeProvider, this.streamController);
-
-  int _indexOf(List<String> iDs, HomeProvider homeProvider,
-      {bool isMe = true}) {
-    if (!isMe) {
-      return iDs.indexWhere((element) {
-        return homeProvider.user.id != element;
-      });
-    }
-    return iDs.indexWhere((element) => homeProvider.user.id == element);
-  }
+  final StreamController<int?> streamControllerG;
+  const HomeChats(
+      this.homeProvider, this.streamController, this.streamControllerG);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +27,7 @@ class HomeChats extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 25),
             child: SizedBox(),
           ),
           DoubleValueListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
@@ -50,15 +44,9 @@ class HomeChats extends StatelessWidget {
                 ];
                 return homeProvider.isme(_iDs);
               }).toList();
-
-              final l = hiveMessage!.values.isNotEmpty
-                  ? hiveMessage.values
-                      .where((e) => e.isRead == false)
-                      .toList()
-                      .map((e) => e.chatID!)
-                      .toSet()
-                  : Set<String>();
-              streamController.sink.add(l.length);
+              streamControllerG.sink
+                  .add(messages(message: hiveMessage!, isGroup: true).length);
+              streamController.sink.add(messages(message: hiveMessage).length);
 
               return ListView.builder(
                 shrinkWrap: true,
@@ -75,58 +63,27 @@ class HomeChats extends StatelessWidget {
                   final List<HiveMessages> isReadMessages = hiveMessages
                       .where((element) => element.isRead == false)
                       .toList();
-                  // print(l.length);
-                  return ListTile(
-                    title: Text(
-                      hiveChats[index]
-                          .participants![
-                              _indexOf(_iDs!, homeProvider, isMe: false)]
-                          .userName!
-                          .capitalize(),
-                      style: TextStyle(fontSize: 18),
-                    ),
+
+                  final title = hiveChats[index]
+                      .participants![_indexOf(_iDs!, homeProvider, isMe: false)]
+                      .userName!
+                      .capitalize();
+                  final photoUrl = hiveChats[index]
+                      .participants![_indexOf(_iDs, homeProvider, isMe: false)]
+                      .photoUrl;
+                  return CustomChatListTile(
+                    title: title,
                     subtitle: hiveMessages.isNotEmpty
-                        ? Text(
-                            hiveMessages[0].msg ?? "cannot load this message",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontWeight: hiveMessages[0].isRead == false
-                                  ? FontWeight.w900
-                                  : FontWeight.normal,
-                              color: hiveMessages[0].isRead == false
-                                  ? Colors.black
-                                  : Colors.grey,
-                              fontSize: 16,
-                            ),
-                          )
+                        ? hiveMessages[0].msg
+                        : "Tap to Start a direct message with $title",
+                    messageCount:
+                        hiveMessages.isNotEmpty ? isReadMessages.length : 0,
+                    photoUrl: photoUrl,
+                    isRead:
+                        hiveMessages.isNotEmpty ? hiveMessages[0].isRead : null,
+                    dateTime: hiveMessages.isNotEmpty
+                        ? hiveMessages[0].dateTime
                         : null,
-                    trailing: hiveMessages.isNotEmpty
-                        ? Container(
-                            height: 30,
-                            width: 30,
-                            decoration: BoxDecoration(
-                              color: hiveMessages[0].isRead == false
-                                  ? Colors.yellow
-                                  : Theme.of(context).scaffoldBackgroundColor,
-                              borderRadius: hiveMessages[0].isRead == false
-                                  ? BorderRadius.circular(50)
-                                  : null,
-                            ),
-                            child: Center(
-                              child: hiveMessages[0].isRead == false
-                                  ? Text(
-                                      "${isReadMessages.length}",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    )
-                                  : SizedBox(),
-                            ),
-                          )
-                        : SizedBox(),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -134,15 +91,68 @@ class HomeChats extends StatelessWidget {
                         ),
                       );
                     },
-                    onLongPress: () {
-                      homeProvider
-                          .deleteChatAndRemovePrintsFromDB(hiveChats[index]);
+                    // onLongPress: () => homeProvider
+                    //     .deleteChatAndRemovePrintsFromDB(hiveChats[index]),
+                    onLongPress: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return _BottomModalSheet();
+                        },
+                      );
                     },
                   );
                 },
               );
             },
           ),
+        ],
+      ),
+    );
+  }
+}
+
+int _indexOf(List<String> iDs, HomeProvider homeProvider, {bool isMe = true}) {
+  if (!isMe) {
+    return iDs.indexWhere((element) {
+      return homeProvider.user.id != element;
+    });
+  }
+  return iDs.indexWhere((element) => homeProvider.user.id == element);
+}
+
+Set<String> messages(
+    {bool isGroup = false, required Box<HiveMessages> message}) {
+  return message.values.isNotEmpty
+      ? message.values
+          .where((e) => e.isRead == false && e.isGroup == false)
+          .toList()
+          .map((e) => e.chatID!)
+          .toSet()
+      : Set<String>();
+}
+
+class _BottomModalSheet extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 500,
+      width: double.infinity,
+      child: Column(
+        children: [
+          Container(
+            height: 50,
+            // color: Colors.yellow,
+            width: double.infinity,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Delete Conversation",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 25,
+              ),
+            ),
+          )
         ],
       ),
     );

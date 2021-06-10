@@ -85,28 +85,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                       fontWeight: FontWeight.w600,
                                       color: Colors.white),
                                 ),
-                                SizedBox(height: isGroupChat ? 10 : 0),
+                                SizedBox(height: isGroupChat ? 7 : 0),
                                 isGroupChat && preferredSize.height > 150
                                     ? Container(
                                         width:
                                             (MediaQuery.of(context).size.width /
                                                     2) -
                                                 50,
-                                        height: 90,
+                                        height: Utils.blockWidth * 15,
                                         constraints: BoxConstraints(
-                                            maxHeight: 90,
-                                            minWidth: 200,
-                                            maxWidth: 300,
-                                            minHeight: 90),
+                                          maxHeight: 90,
+                                          minWidth: 200,
+                                          maxWidth: 300,
+                                          minHeight: 50,
+                                        ),
                                         // color: Colors.red,
                                         child: Stack(
                                           alignment: Alignment.centerLeft,
                                           children: [
                                             Positioned(
-                                              left: 30,
+                                              left: 40,
                                               child: Container(
-                                                height: 70,
-                                                width: 70,
+                                                height: Utils.blockWidth * 15,
+                                                width: Utils.blockWidth * 15,
                                                 decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -123,10 +124,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                               ),
                                             ),
                                             Positioned(
-                                              left: 70,
+                                              left: 60,
                                               child: Container(
-                                                height: 70,
-                                                width: 70,
+                                                height: Utils.blockWidth * 15,
+                                                width: Utils.blockWidth * 15,
                                                 decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -143,10 +144,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                               ),
                                             ),
                                             Positioned(
-                                              left: 110,
+                                              left: 80,
                                               child: Container(
-                                                height: 70,
-                                                width: 70,
+                                                height: Utils.blockWidth * 15,
+                                                width: Utils.blockWidth * 15,
                                                 decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -163,10 +164,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                               ),
                                             ),
                                             Positioned(
-                                              left: 140,
+                                              left: 100,
                                               child: Container(
-                                                height: 70,
-                                                width: 70,
+                                                height: Utils.blockWidth * 15,
+                                                width: Utils.blockWidth * 15,
                                                 child: Center(
                                                     child: Text("+" +
                                                         (listOfParticipants!

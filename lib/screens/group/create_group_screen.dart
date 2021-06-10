@@ -1,10 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import "package:flutter/material.dart";
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
-import 'package:messenger/screens/chats/chats_provider.dart';
 import 'package:messenger/utils/constants.dart';
+import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 import 'group_provider.dart';
@@ -38,7 +37,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
   @override
   Widget build(BuildContext context) {
     var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
-    // var _chatProvider = Provider.of<ChatsProvider>(context);
     var _groupProvider = Provider.of<GroupProvider>(context);
 
     return WillPopScope(
@@ -54,7 +52,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          elevation: 0.0,
+          title: Text("Create New Group"),
+          toolbarHeight:
+              kToolbarHeight + MediaQuery.of(context).padding.top / 2,
+          elevation: 1.0,
           actions: [
             _selectingMode
                 ? TextButton(
@@ -65,6 +66,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                     child: Text('Cancel'),
                   )
                 : SizedBox(),
+            TextButton(
+              onPressed: () {},
+              child: Text('Done'),
+            ),
           ],
         ),
         body: Column(
@@ -74,7 +79,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                 Container(
                   height: 100,
                   width: double.infinity,
-                  padding: EdgeInsets.only(left: 30, right: 50),
+                  padding: EdgeInsets.only(left: 15, right: 50),
                   child: Row(
                     children: [
                       InkWell(
@@ -83,14 +88,21 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                           _groupProvider.pickeImageAndSaveToCloudStorage();
                         },
                         child: Container(
-                          height: 85,
-                          width: 85,
+                          height: Utils.blockHeight * 5,
+                          width: Utils.blockHeight * 5,
+                          constraints: BoxConstraints(
+                            maxHeight: 85,
+                            maxWidth: 85,
+                            minHeight: 60,
+                            minWidth: 60,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             border: Border.all(
-                                width: 3,
-                                style: BorderStyle.solid,
-                                color: Colors.blue),
+                              width: 2,
+                              style: BorderStyle.solid,
+                              color: Colors.red,
+                            ),
                             image: DecorationImage(
                               fit: BoxFit.scaleDown,
                               image: image(_groupProvider),
@@ -103,11 +115,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                         child: TextField(
                           controller: _controller,
                           decoration: InputDecoration(
-                            hintText: "Enter Group Name Here",
+                            hintText: "Choose a group name ",
                             enabledBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid),
+                              borderSide: BorderSide.none,
                             ),
                           ),
                         ),
@@ -115,153 +125,194 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(left: 30, right: 50),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          // final newGroupChat = new GroupChat(
-                          //   groupName: _controller.text,
-                          //   groupCreator: _chatProvider.user.id!,
-                          //   participantsIDs: _selected.map((e) => e.user.id).toList(),
-                          //   participants:
-                          //       _selected.map((e) => e.user.toMap()).toList(),
-                          // );
-                          if (_controller.text.isNotEmpty) {
-                            _groupProvider.createGroupChat(
-                                groupName: _controller.text,
-                                selected: _selected);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg: "A group name must be given");
-                          }
-                        },
-                        child: Container(
-                          height: 60,
-                          width: 60,
-                          child: Center(
-                            child: Icon(Icons.done, color: Colors.white),
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            // SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                _selected.isNotEmpty
-                    ? TextButton(
-                        onPressed: () {
-                          _selected.clear();
-                          _animatedListKey = GlobalKey<AnimatedListState>();
-                          setState(() {});
-                        },
-                        child: Text("cancel"),
-                      )
-                    : SizedBox(),
               ],
             ),
             Expanded(
-              child: ListView(
-                shrinkWrap: true,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    height: _selected.isEmpty ? 1 : 100,
-                    width: double.infinity,
-                    child: AnimatedList(
-                      key: _animatedListKey,
-                      initialItemCount: 0,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index, animation) {
-                        return _ScaleAndSlide(
-                            selected: _selected,
-                            index: index,
-                            animation: animation);
-                      },
-                    ),
+                  Expanded(
+                    child: _listOfContacts.isEmpty
+                        ? CircularProgressIndicator.adaptive()
+                        : ListView.builder(
+                            itemCount: _listOfContacts[0].length,
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onLongPress: () {
+                                  _selectingMode = true;
+                                  setState(() {});
+                                  if (!_selected.contains(
+                                          _listOfContacts[0][index]) &&
+                                      _selected.length < 2) {
+                                    _animatedListKey.currentState!.insertItem(
+                                        _selected.isEmpty
+                                            ? 0
+                                            : _selected.length,
+                                        duration:
+                                            const Duration(milliseconds: 300));
+                                    _selected.add(_listOfContacts[0][index]
+                                        as RegisteredPhoneContacts);
+                                    print(_selected.length);
+                                  }
+                                },
+                                onTap: () {
+                                  if (!_selected.contains(
+                                          _listOfContacts[0][index]) &&
+                                      _selectingMode &&
+                                      _selected.length < 2) {
+                                    _animatedListKey.currentState!.insertItem(
+                                        _selected.length,
+                                        duration:
+                                            const Duration(milliseconds: 300));
+                                    _selected.add(_listOfContacts[0][index]
+                                        as RegisteredPhoneContacts);
+                                    setState(() {});
+                                    print(_selected.length);
+                                  } else if (_selected.contains(
+                                          _listOfContacts[0][index]) &&
+                                      _selectingMode) {
+                                    var r = _listOfContacts[0][index]
+                                        as RegisteredPhoneContacts;
+                                    _animatedListKey.currentState!.removeItem(
+                                        _selected.indexOf(r),
+                                        (context, animation) => Container(),
+                                        duration:
+                                            const Duration(milliseconds: 300));
+                                    _selected.remove(r);
+                                    setState(() {});
+                                  }
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(bottom: 20, left: 10),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        height: Utils.blockHeight * 5,
+                                        width: Utils.blockHeight * 5,
+                                        constraints: BoxConstraints(
+                                          maxHeight: 70,
+                                          maxWidth: 70,
+                                          minHeight: 50,
+                                          minWidth: 50,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          image: DecorationImage(
+                                              image: CachedNetworkImageProvider(
+                                                  (_listOfContacts[0][index]
+                                                              as RegisteredPhoneContacts)
+                                                          .user
+                                                          .photoUrl ??
+                                                      GeneralConstants
+                                                          .DEFAULT_PHOTOURL),
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: BuildContactTile(
+                                          fromHome: false,
+                                          element: _listOfContacts[0][index],
+                                          isGroup: true,
+                                        ),
+                                      ),
+                                      _selectingMode == true
+                                          ? Checkbox(
+                                              activeColor: Colors.red,
+                                              value: _selected.contains(
+                                                  _listOfContacts[0][index]),
+                                              onChanged: (e) {
+                                                if (!_selected.contains(
+                                                        _listOfContacts[0]
+                                                            [index]) &&
+                                                    _selectingMode &&
+                                                    _selected.length < 2) {
+                                                  _animatedListKey.currentState!
+                                                      .insertItem(
+                                                          _selected.length,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      300));
+                                                  _selected.add(_listOfContacts[
+                                                          0][index]
+                                                      as RegisteredPhoneContacts);
+                                                  setState(() {});
+                                                  print(_selected.length);
+                                                } else if (_selected.contains(
+                                                        _listOfContacts[0]
+                                                            [index]) &&
+                                                    _selectingMode) {
+                                                  var r = _listOfContacts[0]
+                                                          [index]
+                                                      as RegisteredPhoneContacts;
+                                                  _animatedListKey.currentState!
+                                                      .removeItem(
+                                                          _selected.indexOf(r),
+                                                          (context,
+                                                                  animation) =>
+                                                              Container(),
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      300));
+                                                  _selected.remove(r);
+                                                  setState(() {});
+                                                }
+                                              },
+                                              tristate: true,
+                                            )
+                                          : SizedBox(),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                   ),
-                  ..._listOfContacts.first.map((e) {
-                    return InkWell(
-                      onLongPress: () {
-                        _selectingMode = true;
-                        setState(() {});
-                        if (!_selected.contains(e) && _selected.length < 2) {
-                          _animatedListKey.currentState!.insertItem(
-                              _selected.isEmpty ? 0 : _selected.length,
-                              duration: const Duration(milliseconds: 300));
-                          _selected.add(e as RegisteredPhoneContacts);
-                          print(_selected.length);
-                        }
-                      },
-                      onTap: () {
-                        if (!_selected.contains(e) &&
-                            _selectingMode &&
-                            _selected.length < 2) {
-                          _animatedListKey.currentState!.insertItem(
-                              _selected.length,
-                              duration: const Duration(milliseconds: 300));
-                          _selected.add(e as RegisteredPhoneContacts);
-                          setState(() {});
-                          print(_selected.length);
-                        } else if (_selected.contains(e) && _selectingMode) {
-                          e as RegisteredPhoneContacts;
-                          _animatedListKey.currentState!.removeItem(
-                              _selected.indexOf(e),
-                              (context, animation) => Container(),
-                              duration: const Duration(milliseconds: 300));
-                          _selected.remove(e);
-                          setState(() {});
-                        }
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(bottom: 20, left: 10),
+                  Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              height: 70,
-                              width: 70,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                image: DecorationImage(
-                                    image: CachedNetworkImageProvider(
-                                        (e as RegisteredPhoneContacts)
-                                                .user
-                                                .photoUrl ??
-                                            GeneralConstants.DEFAULT_PHOTOURL),
-                                    fit: BoxFit.cover),
-                              ),
+                            Text(
+                              "${_selected.length} participants",
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            Expanded(
-                              child: BuildContactTile(
-                                fromHome: false,
-                                element: e,
-                                isGroup: true,
-                              ),
-                            ),
-                            _selectingMode == true
-                                ? Checkbox(
-                                    value: _selected.contains(e),
-                                    onChanged: (e) =>
-                                        print("something Happend"),
-                                    tristate: true,
+                            _selected.isNotEmpty
+                                ? TextButton(
+                                    onPressed: () {
+                                      _selected.clear();
+                                      _animatedListKey =
+                                          GlobalKey<AnimatedListState>();
+                                      setState(() {});
+                                    },
+                                    child: Text("cancel"),
                                   )
                                 : SizedBox(),
                           ],
                         ),
                       ),
-                    );
-                    // return Text("Emir");
-                  }).toList(),
+                      Container(
+                        height: _selected.isEmpty ? 1 : 100,
+                        width: double.infinity,
+                        child: AnimatedList(
+                          key: _animatedListKey,
+                          initialItemCount: 0,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index, animation) {
+                            return _ScaleAndSlide(
+                                selected: _selected,
+                                index: index,
+                                animation: animation);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

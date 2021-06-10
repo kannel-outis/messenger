@@ -63,7 +63,7 @@ class RegistrationScreen extends HookWidget {
                     child: Text(
                       'Verify Your PhoneNumber',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.grey,
                         fontWeight: FontWeight.bold,
                         fontSize: 25,
                       ),
@@ -91,7 +91,7 @@ class RegistrationScreen extends HookWidget {
                         ),
                         SizedBox(width: 10),
                         SizedBox(
-                          width: 200,
+                          width: 150,
                           height: 40,
                           child: Container(
                             child: TextField(
@@ -109,7 +109,10 @@ class RegistrationScreen extends HookWidget {
                                 return SizedBox();
                               },
                               decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(bottom: 15),
+                                hintText: "Enter phone number",
+                                border: UnderlineInputBorder(
+                                    borderSide: BorderSide.none),
+                                focusColor: Colors.red,
                               ),
                             ),
                           ),
@@ -120,38 +123,30 @@ class RegistrationScreen extends HookWidget {
                 ),
                 SizedBox(height: 40),
                 Center(
-                  child: GestureDetector(
-                    onTap: () {
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all<Size>(
+                        Size(0, 40),
+                      ),
+                    ),
+                    onPressed: () {
                       _checkPlatformAndExecute(
                           _authProvider, context, _phoneController);
 
                       print(
                           "${_authProvider.countrycode.dialCode}${_phoneController!.text.toString()}");
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                      ),
-                      constraints: BoxConstraints(
-                        maxHeight: 70,
-                        maxWidth: 200,
-                        minHeight: 50,
-                        minWidth: 70,
-                      ),
-                      height: Utils.blockHeight * 5,
-                      width: Utils.blockWidth * 25,
-                      child: Center(
-                        child: Consumer<AuthProvider>(
-                            builder: (context, provider, child) {
-                          String _label = isloadinState(
-                              provider.isLoading ?? false,
-                              provider.isTryingToVerify ?? false)!;
-                          return Text(
-                            _label,
-                            style: TextStyle(color: Colors.white),
-                          );
-                        }),
-                      ),
+                    child: Center(
+                      child: Consumer<AuthProvider>(
+                          builder: (context, provider, child) {
+                        String _label = isloadinState(
+                            provider.isLoading ?? false,
+                            provider.isTryingToVerify ?? false)!;
+                        return Text(
+                          _label,
+                          style: TextStyle(color: Colors.white),
+                        );
+                      }),
                     ),
                   ),
                 ),

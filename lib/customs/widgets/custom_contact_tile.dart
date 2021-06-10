@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/screens/contacts/contacts_provider.dart';
 import 'package:messenger/screens/home/home.dart';
+import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 
 class BuildContactTile extends StatelessWidget {
@@ -64,12 +65,12 @@ class BuildContactTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final _contactModel = Provider.of<ContactProvider>(context);
 
-    final size = MediaQuery.of(context).size;
     if (element is RegisteredPhoneContacts) {
       var e = element as RegisteredPhoneContacts;
       // return Text("${e.contact.givenName ?? e.contact.displayName}");
       return Container(
-        height: (size.height / 100) * 5,
+        margin: EdgeInsets.only(bottom: 10),
+        height: Utils.blockHeight * 5,
         constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Row(
@@ -118,9 +119,13 @@ class BuildContactTile extends StatelessWidget {
                     },
                     child: Container(
                       height: 40,
-                      width: size.width / 5,
+                      width: Utils.blockWidth * 35,
+                      constraints: BoxConstraints(
+                        maxHeight: 40,
+                        maxWidth: 150,
+                      ),
                       decoration: BoxDecoration(
-                        color: Colors.pink,
+                        color: Colors.grey,
                         borderRadius: BorderRadius.all(
                           Radius.circular(7),
                         ),
@@ -145,7 +150,8 @@ class BuildContactTile extends StatelessWidget {
       // return Text("${e.contact?.givenName ?? e.contact?.displayName}");
       if (isGroup) return SizedBox();
       return Container(
-        height: (size.height / 100) * 5,
+        margin: EdgeInsets.only(bottom: 10),
+        height: Utils.blockHeight * 5,
         constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: Row(
@@ -177,9 +183,13 @@ class BuildContactTile extends StatelessWidget {
               onTap: () {},
               child: Container(
                 height: 40,
-                width: size.width / 5,
+                width: Utils.blockWidth * 35,
+                constraints: BoxConstraints(
+                  maxHeight: 40,
+                  maxWidth: 150,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.pink,
+                  color: Colors.grey,
                   borderRadius: BorderRadius.all(
                     Radius.circular(7),
                   ),

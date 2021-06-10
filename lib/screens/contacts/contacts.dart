@@ -5,19 +5,43 @@ import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/screens/home/home.dart';
 import 'package:provider/provider.dart';
 
-class FirstLaunchContactScreen extends StatefulWidget {
+class ContactsScreen extends StatefulWidget {
   final bool? fromHome;
 
-  const FirstLaunchContactScreen({Key? key, this.fromHome}) : super(key: key);
+  const ContactsScreen({Key? key, this.fromHome}) : super(key: key);
 
   @override
-  _FirstLaunchContactScreenState createState() =>
-      _FirstLaunchContactScreenState();
+  _ContactsScreenState createState() => _ContactsScreenState();
 }
 
-class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
+class _ContactsScreenState extends State<ContactsScreen>
+    with TickerProviderStateMixin {
   bool? _registeredCollapse;
   bool? _unRegisteredCollapse;
+  late final AnimationController _controller;
+  late final AnimationController _controller2;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      value: 0,
+      duration: Duration(milliseconds: 300),
+    );
+    _controller2 = AnimationController(
+      vsync: this,
+      value: 0,
+      duration: Duration(milliseconds: 300),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _controller2.dispose();
+    super.dispose();
+  }
 
   double _calcExpansionTileSpace(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -50,8 +74,8 @@ class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
         toolbarHeight: 100,
         textTheme: TextTheme(
           headline6: TextStyle(
-            color: Colors.black,
-            fontSize: 25,
+            color: Colors.grey,
+            fontSize: 35,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -89,9 +113,21 @@ class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
                   child: Column(
                     children: [
                       ExpansionTile(
+                        trailing: AnimatedIcon(
+                          icon: AnimatedIcons.menu_close,
+                          progress: _controller2,
+                          color: Colors.grey,
+                        ),
                         maintainState: true,
                         onExpansionChanged: (boolean) {
                           _registeredCollapse = boolean;
+                          if (_registeredCollapse == true) {
+                            _controller2.forward();
+                          } else if (_registeredCollapse == false) {
+                            _controller2.reverse();
+                          } else {
+                            _controller2.reset();
+                          }
                           print(_registeredCollapse);
                           setState(() {});
                         },
@@ -166,8 +202,21 @@ class _FirstLaunchContactScreenState extends State<FirstLaunchContactScreen> {
                     children: [
                       ExpansionTile(
                         maintainState: true,
+                        // collapsedBackgroundColor: Colors.red,
+                        trailing: AnimatedIcon(
+                          icon: AnimatedIcons.menu_close,
+                          color: Colors.grey,
+                          progress: _controller,
+                        ),
                         onExpansionChanged: (boolean) {
                           _unRegisteredCollapse = boolean;
+                          if (_unRegisteredCollapse == true) {
+                            _controller.forward();
+                          } else if (_unRegisteredCollapse == false) {
+                            _controller.reverse();
+                          } else {
+                            _controller.reset();
+                          }
                           setState(() {});
                         },
                         title: Container(
