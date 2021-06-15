@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import "package:flutter/material.dart";
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/utils/constants.dart';
@@ -67,7 +68,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                   )
                 : SizedBox(),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                if (_controller.text.isNotEmpty) {
+                  _groupProvider.createGroupChat(
+                      groupName: _controller.text, selected: _selected);
+                } else {
+                  Fluttertoast.showToast(msg: "A group name must be given");
+                }
+              },
               child: Text('Done'),
             ),
           ],

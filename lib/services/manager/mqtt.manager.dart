@@ -49,6 +49,13 @@ class MQTTManager implements IMQTTManager {
     _client!.connectionMessage = connMess;
     _client!.autoReconnect = true;
     _client!.resubscribeOnAutoReconnect = true;
+    _client!.onConnected = () {
+      print('connected');
+    };
+    _client!.onDisconnected = () {
+      print('Disconnected');
+    };
+    _client!.onSubscribed = (topic) => print(topic);
 
     _client!.onAutoReconnect = () {
       print(":::::::::::::::::::::::Reconnecting ::::::::::::::::::::::::");
@@ -124,15 +131,17 @@ class MQTTManager implements IMQTTManager {
 
   bool subscribe(String? topic) {
     if (_client!.connectionStatus!.state == MqttConnectionState.connected) {
-      _client!.onConnected = () {
-        print('connected');
-      };
-      _client!.onDisconnected = () {
-        print('Disconnected');
-      };
-      _client!.onSubscribed = (topic) => print(topic);
-
       _client!.subscribe(topic!, MqttQos.exactlyOnce);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  bool unsubscribe(String topic) {
+    if (_client!.connectionStatus!.state == MqttConnectionState.connected) {
+      _client!.unsubscribe(topic);
       return true;
     } else {
       return false;

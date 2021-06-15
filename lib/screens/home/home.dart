@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    context.read<HomeProvider>().iniState();
     _focusNode = FocusNode();
     _textEditingController = TextEditingController();
     _pageController = PageController();
@@ -39,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    context.read<HomeProvider>().iniState();
+    // context.read<HomeProvider>().iniState();
   }
 
   @override
@@ -56,12 +57,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final _homeProvider = Provider.of<HomeProvider>(context);
 
     ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-    final h = MediaQuery.of(context).size.height / 100;
-    final w = MediaQuery.of(context).size.width / 100;
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: h * 7 > 100 ? 100 : h * 7,
+        toolbarHeight:
+            Utils.blockHeight * 7 > 100 ? 100 : Utils.blockHeight * 7,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0.0,
         title: Text(
@@ -70,65 +70,56 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              height: 120,
-              // color: Colors.pink,
-              child: Center(
-                child: Container(
-                  height: 50,
-                  width: w * 80,
-                  padding: EdgeInsets.symmetric(horizontal: 25),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: TextField(
-                    focusNode: _focusNode,
-                    controller: _textEditingController,
-                    decoration: InputDecoration(
-                      // prefixIcon: Icon(Icons.search),
-                      // suffixIconConstraints: BoxConstraints(
-                      //   minHeight: 32,
-                      //   minWidth: 32,
-                      //   maxHeight: 32,
-                      //   maxWidth: 32,
-                      // ),
-                      hintText: "Search Conversation",
-                      alignLabelWithHint: true,
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.grey,
-                      ),
-                      focusedBorder:
-                          UnderlineInputBorder(borderSide: BorderSide.none),
-                      border: UnderlineInputBorder(borderSide: BorderSide.none),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            // height: 100,
+            // color: Colors.pink,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width / 100 * 80,
+                padding: EdgeInsets.symmetric(horizontal: 25),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: TextField(
+                  focusNode: _focusNode,
+                  controller: _textEditingController,
+                  style: TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: "Search Conversation",
+                    alignLabelWithHint: true,
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.grey,
                     ),
+                    focusedBorder:
+                        UnderlineInputBorder(borderSide: BorderSide.none),
+                    border: UnderlineInputBorder(borderSide: BorderSide.none),
                   ),
                 ),
               ),
             ),
-            Container(
-              height: (MediaQuery.of(context).size.height / 100) * 75,
-              // color: Colors.white,
-              child: PageView(
-                physics: NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  setState(() => selectedIndex = index);
-                },
-                controller: _pageController,
-                children: [
-                  HomeChats(
-                      _homeProvider, _streamControllerC, _streamControllerG),
-                  HomeGroup(_homeProvider),
-                ],
-              ),
+          ),
+          Expanded(
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() => selectedIndex = index);
+              },
+              controller: _pageController,
+              children: [
+                HomeChats(
+                    _homeProvider, _streamControllerC, _streamControllerG),
+                HomeGroup(_homeProvider),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: SpeedDial(
         marginEnd: 18,

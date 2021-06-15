@@ -6,10 +6,12 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messenger/customs/double_listenable.dart';
 import 'package:messenger/customs/widgets/custom_chat_list_tile.dart';
+import 'package:messenger/customs/widgets/modal_dialog.dart';
 import 'package:messenger/screens/chats/chats.dart';
 import 'package:messenger/services/offline/hive.db/hive_init.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
+import 'package:messenger/utils/constants.dart';
 import '../../utils/_extensions_.dart';
 import 'home_provider.dart';
 
@@ -30,81 +32,90 @@ class HomeChats extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: SizedBox(),
           ),
-          DoubleValueListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
-            valueListenable:
-                Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
-            valueListenable2:
-                Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
-            builder: (context, hiveChat, hiveMessage, child) {
-              final List<HiveChat> hiveChats =
-                  hiveChat!.values.where((element) {
-                final List<String>? _iDs = [
-                  element.participants![0].id!,
-                  element.participants![1].id!
-                ];
-                return homeProvider.isme(_iDs);
-              }).toList();
-              streamControllerG.sink
-                  .add(messages(message: hiveMessage!, isGroup: true).length);
-              streamController.sink.add(messages(message: hiveMessage).length);
+          Expanded(
+            child:
+                DoubleValueListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
+              valueListenable:
+                  Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
+              valueListenable2:
+                  Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
+              builder: (context, hiveChat, hiveMessage, child) {
+                final List<HiveChat> hiveChats =
+                    hiveChat!.values.where((element) {
+                  final List<String>? _iDs = [
+                    element.participants![0].id!,
+                    element.participants![1].id!
+                  ];
+                  return homeProvider.contains(_iDs);
+                }).toList();
+                streamControllerG.sink
+                    .add(messages(message: hiveMessage!, isGroup: true).length);
+                streamController.sink
+                    .add(messages(message: hiveMessage).length);
 
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: hiveChats.length,
-                itemBuilder: (context, index) {
-                  final List<String>? _iDs =
-                      hiveChats[index].participants!.map((e) => e.id!).toList();
-                  final List<HiveMessages> hiveMessages = hiveMessage.values
-                      .where((element) =>
-                          element.chatID == hiveChats[index].chatId)
-                      .toList()
-                      .reversed
-                      .toList();
-                  final List<HiveMessages> isReadMessages = hiveMessages
-                      .where((element) => element.isRead == false)
-                      .toList();
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: hiveChats.length,
+                  itemBuilder: (context, index) {
+                    final List<String>? _iDs = hiveChats[index]
+                        .participants!
+                        .map((e) => e.id!)
+                        .toList();
+                    final List<HiveMessages> hiveMessages = hiveMessage.values
+                        .where((element) =>
+                            element.chatID == hiveChats[index].chatId)
+                        .toList()
+                        .reversed
+                        .toList();
+                    final List<HiveMessages> isReadMessages = hiveMessages
+                        .where((element) => element.isRead == false)
+                        .toList();
 
-                  final title = hiveChats[index]
-                      .participants![_indexOf(_iDs!, homeProvider, isMe: false)]
-                      .userName!
-                      .capitalize();
-                  final photoUrl = hiveChats[index]
-                      .participants![_indexOf(_iDs, homeProvider, isMe: false)]
-                      .photoUrl;
-                  return CustomChatListTile(
-                    title: title,
-                    subtitle: hiveMessages.isNotEmpty
-                        ? hiveMessages[0].msg
-                        : "Tap to Start a direct message with $title",
-                    messageCount:
-                        hiveMessages.isNotEmpty ? isReadMessages.length : 0,
-                    photoUrl: photoUrl,
-                    isRead:
-                        hiveMessages.isNotEmpty ? hiveMessages[0].isRead : null,
-                    dateTime: hiveMessages.isNotEmpty
-                        ? hiveMessages[0].dateTime
-                        : null,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => ChatsScreen(hiveChats[index]),
-                        ),
-                      );
-                    },
-                    // onLongPress: () => homeProvider
-                    //     .deleteChatAndRemovePrintsFromDB(hiveChats[index]),
-                    onLongPress: () async {
-                      await showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return _BottomModalSheet();
-                        },
-                      );
-                    },
-                  );
-                },
-              );
-            },
+                    final title = hiveChats[index]
+                        .participants![
+                            _indexOf(_iDs!, homeProvider, isMe: false)]
+                        .userName!
+                        .capitalize();
+                    final photoUrl = hiveChats[index]
+                            .participants![
+                                _indexOf(_iDs, homeProvider, isMe: false)]
+                            .photoUrl ??
+                        GeneralConstants.DEFAULT_PHOTOURL;
+
+                    return CustomChatListTile(
+                      title: title,
+                      subtitle: hiveMessages.isNotEmpty
+                          ? hiveMessages[0].msg
+                          : "Tap to Start a direct message with $title",
+                      messageCount:
+                          hiveMessages.isNotEmpty ? isReadMessages.length : 0,
+                      photoUrl: photoUrl,
+                      isRead: hiveMessages.isNotEmpty
+                          ? hiveMessages[0].isRead
+                          : null,
+                      dateTime: hiveMessages.isNotEmpty
+                          ? hiveMessages[0].dateTime
+                          : null,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ChatsScreen(hiveChats[index]),
+                          ),
+                        );
+                      },
+                      onLongPress: () async {
+                        await showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return BottomModalSheet(chat: hiveChats[index]);
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -130,31 +141,4 @@ Set<String> messages(
           .map((e) => e.chatID!)
           .toSet()
       : Set<String>();
-}
-
-class _BottomModalSheet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 500,
-      width: double.infinity,
-      child: Column(
-        children: [
-          Container(
-            height: 50,
-            // color: Colors.yellow,
-            width: double.infinity,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "Delete Conversation",
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 25,
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
 }

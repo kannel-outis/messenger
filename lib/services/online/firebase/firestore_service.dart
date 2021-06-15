@@ -84,6 +84,20 @@ class FireStoreService extends Online {
   }
 
   @override
+  Future<void> deleteChat({required String id, bool isGroup = false}) async {
+    if (isGroup) {
+      return _cloud
+          .collection(OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS)
+          .doc(id)
+          .delete();
+    }
+    return _cloud
+        .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
+        .doc(id)
+        .delete();
+  }
+
+  @override
   Future<void> createNewGroupChat(GroupChat newGroupChat) {
     print("Creating...");
     return _cloud

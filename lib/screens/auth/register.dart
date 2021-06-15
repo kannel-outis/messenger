@@ -65,14 +65,17 @@ class RegistrationScreen extends HookWidget {
                       style: TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.bold,
-                        fontSize: 25,
+                        fontSize: 28,
                       ),
                     ),
                   ),
                 ),
                 SizedBox(height: 30),
                 Center(
-                  child: Text('Enter your Phone Number'),
+                  child: Text(
+                    'Enter your Phone Number',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
                 SizedBox(height: 30),
                 Center(

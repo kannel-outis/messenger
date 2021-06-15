@@ -36,12 +36,14 @@ class CustomChatListTile extends StatelessWidget {
     // DateTime.now().subtract(Duration(minutes: dateTime.minute));
     return Column(
       children: [
-        InkWell(
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
           onTap: onTap,
           onLongPress: onLongPress,
           child: Container(
             height: Utils.blockHeight * 7,
             constraints: BoxConstraints(
+              minHeight: 70,
               maxHeight: 90,
             ),
             width: double.infinity,
@@ -53,8 +55,8 @@ class CustomChatListTile extends StatelessWidget {
                   constraints: BoxConstraints(
                     maxHeight: 85,
                     maxWidth: 85,
-                    minHeight: 50,
-                    minWidth: 50,
+                    minHeight: 60,
+                    minWidth: 60,
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),

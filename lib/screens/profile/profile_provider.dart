@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/image_picker.dart';
 import 'package:messenger/services/offline/offline.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
@@ -57,4 +58,13 @@ class ProfileProvider extends ChangeNotifier {
   User get userPrefData => _sharedPrefs.getUserData();
   bool get isDone => _isDone;
   String? get imageUrl => _imageUrl;
+}
+
+class ProfileInfoProvider extends ProfileProvider {
+  HiveMessages? getLastMessage(
+      {String? userId, required String chatId, bool? isGroup = false}) {
+    return super
+        ._hiveHandler
+        .getLastMessage(userId: userId, chatId: chatId, isGroup: isGroup);
+  }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:messenger/customs/error/error.dart';
+import 'package:messenger/customs/custom_scroll_config.dart';
+import 'package:messenger/screens/auth/set_name_screen.dart';
+import 'package:messenger/screens/auth/verify_otp.dart';
 import 'package:messenger/screens/contacts/contacts_provider.dart';
 import 'package:messenger/screens/group/group_provider.dart';
 import 'package:messenger/screens/home/home.dart';
@@ -48,6 +51,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ChatsProvider>(create: (_) => ChatsProvider()),
         ChangeNotifierProvider<ProfileProvider>(
             create: (_) => ProfileProvider()),
+        ChangeNotifierProvider<ProfileInfoProvider>(
+            create: (_) => ProfileInfoProvider()),
       ],
       child: MaterialApp(
         title: 'Messenger',
@@ -66,7 +71,15 @@ class MyApp extends StatelessWidget {
             : RegistrationScreen(),
         builder: (context, child) {
           Utils.getBlockHeightAndWidth(context);
-          return child!;
+          final MediaQueryData data = MediaQuery.of(context);
+          return ScrollConfiguration(
+            behavior: NoEffectScrollConfig(),
+            child: MediaQuery(
+              data: data.copyWith(textScaleFactor: .7),
+              child: child!,
+            ),
+          );
+          // return child!;
         },
       ),
     );

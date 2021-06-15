@@ -22,7 +22,7 @@ class HomeProvider extends ChangeNotifier {
   HiveHandler _hiveHandler = HiveHandler();
   EncryptClassHandler _encryptClassHandler = EncryptClassHandler();
   List<Map<String, dynamic>?> _list = [];
-  bool isme(List<String>? iDs) {
+  bool contains(List<String>? iDs) {
     final User prefUser = User.fromMap(
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
     return iDs!.contains(prefUser.id);
@@ -117,7 +117,7 @@ class HomeProvider extends ChangeNotifier {
       _list.add(event);
       try {
         if (_list.last!['isGroup'] == false) {
-          if (!isme([_list.last!["senderID"]])) {
+          if (!contains([_list.last!["senderID"]])) {
             // print(String.fromCharCodes(_encryptClassHandler.rsaDecrypt(
             //     _hiveHandler.myPrivateKeyFromDB, event!['message'])));
             _hiveHandler.saveMessages(
@@ -155,16 +155,24 @@ class HomeProvider extends ChangeNotifier {
     });
   }
 
+  // bool isme(List<String>? iDs) {
+  //   final User prefUser = User.fromMap(
+  //       json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
+  //   return iDs!.contains(prefUser.id);
+  // }
+
   int _index(List<String> users) {
     return users.indexWhere((element) => user.id == element);
   }
 
-  // Future<void> updateConnectionStatus(String userId) async {
-
-  // }
-
-  Future<void> deleteChatAndRemovePrintsFromDB(LocalChat hiveChat) async {
-    await _hiveHandler.deleteChatAndMessagesFromLocalStorage(hiveChat);
+  Future<void> deleteChatAndRemovePrintsFromDB(LocalChat hiveChat,
+      {bool? isGroup}) async {
+    await _storeService.deleteChat(id: hiveChat.id!, isGroup: isGroup!).then(
+      (value) async {
+        _mqttHandler.unsubscribe(hiveChat.id!);
+        await _hiveHandler.deleteChatAndMessagesFromLocalStorage(hiveChat);
+      },
+    );
   }
 
   void iniState() {

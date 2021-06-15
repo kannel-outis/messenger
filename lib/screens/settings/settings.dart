@@ -28,7 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             InkWell(
               onTap: () async {
                 User? returnUserValue = await Navigator.of(context).push(
-                  CustomRoute(
+                  CustomRoute<User>(
                     builder: (_) => ProfileScreen(user: user),
                   ),
                 );

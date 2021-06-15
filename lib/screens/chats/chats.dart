@@ -137,7 +137,12 @@ class _ChatScreen extends HookWidget {
                                     style: TextStyle(
                                       color: Theme.of(context)
                                           .scaffoldBackgroundColor,
-                                      fontSize: Utils.blockWidth * 3.5,
+                                      // fontSize: Utils.blockWidth * 3.3 > 25
+                                      //     ? 25
+                                      //     : Utils.blockWidth * 3.3 < 18
+                                      //         ? 18
+                                      //         : Utils.blockWidth * 3.3,
+                                      fontSize: 20,
                                     ),
                                   ),
                                 ),
@@ -163,7 +168,13 @@ class _ChatScreen extends HookWidget {
                                   textAlign:
                                       isMe ? TextAlign.right : TextAlign.left,
                                   style: TextStyle(
-                                      fontSize: Utils.blockWidth * 3.3),
+                                    // fontSize: Utils.blockWidth * 3 > 22
+                                    //     ? 22
+                                    //     : Utils.blockWidth * 3 < 17
+                                    //         ? 17
+                                    //         : Utils.blockWidth * 3,
+                                    fontSize: 20,
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 30),
@@ -192,9 +203,14 @@ class _ChatScreen extends HookWidget {
                       valueListener.value = value;
                     },
                     style: TextStyle(
-                        fontSize:
-                            Utils.blockWidth * 4.0 //will give 18 by default,
-                        ),
+                      // fontSize: Utils.blockWidth * 3.3 > 25
+                      //     ? 25
+                      //     : Utils.blockWidth * 3.3 < 18
+                      //         ? 18
+                      //         : Utils.blockWidth *
+                      //             3.3, //will give 18 by default,
+                      fontSize: 20,
+                    ),
                     decoration: InputDecoration(
                       hintText: "Write a Message",
                       border: InputBorder.none,
@@ -249,7 +265,12 @@ class _ChatScreen extends HookWidget {
                       child: Text(
                         'SEND',
                         style: TextStyle(
-                          fontSize: Utils.blockWidth * 4.0,
+                          // fontSize: Utils.blockWidth * 3.3 > 25
+                          //     ? 25
+                          //     : Utils.blockWidth * 3.3 < 18
+                          //         ? 18
+                          //         : Utils.blockWidth * 3.3,
+                          fontSize: 20,
                           color: Colors.white,
                         ),
                       ),
@@ -381,7 +402,7 @@ class _HiveGroupChatPage extends HookWidget {
                                       Text(
                                         hiveMessages[index].msg!,
                                         style: TextStyle(
-                                          fontSize: Utils.blockWidth * 3.5,
+                                          fontSize: 20,
                                           color: Color(0xff404040),
                                         ),
                                       ),
@@ -417,7 +438,7 @@ class _HiveGroupChatPage extends HookWidget {
                                             ? TextAlign.right
                                             : TextAlign.left,
                                         style: TextStyle(
-                                          fontSize: Utils.blockWidth * 2.8,
+                                          fontSize: 18,
                                           color: Color(0xffB3B3B3B3),
                                         ),
                                       ),
@@ -426,11 +447,6 @@ class _HiveGroupChatPage extends HookWidget {
                                 ),
                               ),
                               SizedBox(height: 15),
-                              // Container(
-                              //   width: Utils.blockWidth * 45,
-                              //   child:
-                              // ),
-                              // SizedBox(height: 30),
                             ],
                           ),
                         ),
@@ -456,9 +472,8 @@ class _HiveGroupChatPage extends HookWidget {
                       valueListener.value = value;
                     },
                     style: TextStyle(
-                        fontSize:
-                            Utils.blockWidth * 4.0 //will give 18 by default,
-                        ),
+                      fontSize: 20, //will give 18 by default,
+                    ),
                     decoration: InputDecoration(
                       hintText: "Write a Message",
                       border: InputBorder.none,
@@ -471,16 +486,6 @@ class _HiveGroupChatPage extends HookWidget {
                       ? () {
                           String? msg = valueListener.value;
                           Fluttertoast.showToast(msg: msg!);
-
-                          //                         int _indexOf(ChatsProvider _chatsProvider, {bool isMe = true}) {
-                          //   final List<String> iDs = hiveGroupChat.participants!.map((e) => e.id!).toList();
-                          //   if (isMe == false){
-
-                          //     return iDs.indexWhere((element) => _chatsProvider.user.id != element);
-                          //   }
-                          //   return iDs.indexWhere((element) => _chatsProvider.user.id == element);
-                          // }
-
                           ///////////////////////////////////
                           _chatsProvider.sendGroupMessage(
                               hiveGroupChat: hiveGroupChat,
@@ -510,7 +515,7 @@ class _HiveGroupChatPage extends HookWidget {
                         'SEND',
                         // textScaleFactor: .6,
                         style: TextStyle(
-                          fontSize: Utils.blockWidth * 4.0,
+                          fontSize: 20,
                           color: Colors.white,
                         ),
                       ),

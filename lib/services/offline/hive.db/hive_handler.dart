@@ -90,5 +90,11 @@ class HiveHandler extends ManagerHandler<IHiveManager> {
     return await manager!.saveKeyPairs(hiveKeyPairs);
   }
 
+  HiveMessages? getLastMessage(
+      {String? userId, required String chatId, bool? isGroup}) {
+    return manager!
+        .getLastMessage(userId: userId, chatId: chatId, isGroup: isGroup);
+  }
+
   MyPrivateKey get myPrivateKeyFromDB => manager!.getPrivateKeyFromDB;
 }

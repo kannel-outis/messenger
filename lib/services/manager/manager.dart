@@ -52,10 +52,13 @@ abstract class IMQTTManager extends Manager {
   Future<void> connectMQTTClient();
   void disconnectMQTTClient();
   bool subscribe(String topic);
+  bool unsubscribe(String topic);
   Future<void> publish(String topic, Map<String, dynamic> message);
 }
 
 abstract class IHiveManager extends Manager {
+  HiveMessages? getLastMessage(
+      {String? userId, required String chatId, bool? isGroup});
   Future<void> saveChatToDB(OnlineChat chat,
       {HiveGroupChatSaltIV? hiveGroupChatSaltIV});
   void updateAllGroupInfo(HiveGroupChat group);

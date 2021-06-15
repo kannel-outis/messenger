@@ -41,6 +41,7 @@ class SetNameScreen extends HookWidget {
                     'Enter a name you want to go by. This name appers on your Profile.',
                     style: TextStyle(
                       color: Colors.grey,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

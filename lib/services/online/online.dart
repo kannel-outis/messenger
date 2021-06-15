@@ -59,7 +59,8 @@ abstract class Online {
   ) async =>
       throw UnimplementedError();
   Future<QuerySnapshot> queryInfo(dynamic query) => throw UnimplementedError();
-
+  Future<void> deleteChat({required String id, bool isGroup = false}) =>
+      throw UnimplementedError();
   Future<void> createNewChat(Chat chat) => throw UnimplementedError();
   Future<void> createNewGroupChat(GroupChat groupChat) =>
       throw UnimplementedError();

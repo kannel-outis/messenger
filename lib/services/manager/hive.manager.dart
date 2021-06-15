@@ -310,4 +310,23 @@ class HiveManager implements IHiveManager {
           .single;
     }
   }
+
+  @override
+  HiveMessages? getLastMessage(
+      {String? userId, required String chatId, bool? isGroup}) {
+    if (isGroup!) {
+      print("shiy");
+      final message = _messageBox.values
+          .where((element) => element.chatID == chatId)
+          .toList();
+      if (message.isEmpty) return null;
+      return message.last;
+    }
+    final message = _messageBox.values
+        .where(
+            (element) => element.senderID == userId && element.chatID == chatId)
+        .toList();
+    if (message.isEmpty) return null;
+    return message.last;
+  }
 }

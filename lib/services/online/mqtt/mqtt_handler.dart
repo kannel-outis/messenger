@@ -43,6 +43,10 @@ class MQTThandler extends ManagerHandler<IMQTTManager> {
     return manager!.subscribe(topic!);
   }
 
+  bool unsubscribe(String topic) {
+    return manager!.unsubscribe(topic);
+  }
+
   @override
   dispose() {
     super.dispose();

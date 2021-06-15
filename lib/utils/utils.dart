@@ -5,7 +5,13 @@ class Utils {
   static late double blockWidth;
 
   static getBlockHeightAndWidth(BuildContext context) {
-    blockHeight = MediaQuery.of(context).size.height / 100;
-    blockWidth = MediaQuery.of(context).size.width / 100;
+    final query = MediaQuery.of(context);
+    if (query.orientation == Orientation.landscape) {
+      blockHeight = query.size.width / 100;
+      blockWidth = query.size.height / 100;
+    } else {
+      blockHeight = query.size.height / 100;
+      blockWidth = query.size.width / 100;
+    }
   }
 }
