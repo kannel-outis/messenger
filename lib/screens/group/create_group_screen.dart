@@ -5,6 +5,7 @@ import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:messenger/utils/utils.dart';
+import '../../customs/widgets/scaleAndSlide.dart';
 import 'package:provider/provider.dart';
 
 import 'group_provider.dart';
@@ -47,6 +48,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
           setState(() {});
           return false;
         }
+        Navigator.pop(context, _selected);
         return true;
       },
       child: Scaffold(
@@ -312,7 +314,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                           initialItemCount: 0,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index, animation) {
-                            return _ScaleAndSlide(
+                            return ScaleAndSlide(
                                 selected: _selected,
                                 index: index,
                                 animation: animation);
@@ -324,50 +326,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ScaleAndSlide extends StatelessWidget {
-  const _ScaleAndSlide({
-    Key? key,
-    required this.animation,
-    required this.index,
-    required List<RegisteredPhoneContacts> selected,
-  })   : _selected = selected,
-        super(key: key);
-  final int index;
-  final Animation<double> animation;
-  final List<RegisteredPhoneContacts> _selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return ScaleTransition(
-      alignment: Alignment.bottomCenter,
-      scale: animation,
-      child: SizeTransition(
-        sizeFactor: animation,
-        axis: Axis.horizontal,
-        child: Column(
-          children: [
-            Container(
-              height: 70,
-              width: 70,
-              margin: EdgeInsets.only(left: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                image: DecorationImage(
-                    image: CachedNetworkImageProvider(
-                        _selected[index].user.photoUrl ??
-                            GeneralConstants.DEFAULT_PHOTOURL),
-                    fit: BoxFit.cover),
-              ),
-            ),
-            Text(_selected[index].contact.givenName ??
-                _selected[index].contact.displayName!),
           ],
         ),
       ),

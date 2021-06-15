@@ -26,10 +26,6 @@ class CustomChatListTile extends StatelessWidget {
     this.isGroup = false,
   });
 
-  doSomthtong() {
-    print(title);
-  }
-
   @override
   Widget build(BuildContext context) {
     // final DateTime? _dateTime =

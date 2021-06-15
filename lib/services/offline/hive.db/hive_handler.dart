@@ -96,5 +96,10 @@ class HiveHandler extends ManagerHandler<IHiveManager> {
         .getLastMessage(userId: userId, chatId: chatId, isGroup: isGroup);
   }
 
+  // void updateHiveGroupChat(
+  //     GroupChat groupChat, HiveGroupChatSaltIV hiveGroupChatSaltIV) {
+  //   manager!.updateHiveGroupChat(groupChat, hiveGroupChatSaltIV);
+  // }
+
   MyPrivateKey get myPrivateKeyFromDB => manager!.getPrivateKeyFromDB;
 }

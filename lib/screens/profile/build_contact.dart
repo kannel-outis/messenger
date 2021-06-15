@@ -8,8 +8,6 @@ class _BuildParticipantsTile extends StatelessWidget {
   double? width;
   @override
   Widget build(BuildContext context) {
-    print(Utils.blockWidth * 3);
-    // return Text(_user.userName!);
     if (MediaQuery.of(context).orientation == Orientation.landscape) {
       width = Utils.blockHeight * 100;
     } else {

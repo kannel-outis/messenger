@@ -379,6 +379,28 @@ class _GroupProfileInfoPage extends StatelessWidget {
                           ],
                         ),
                       ),
+                      l.contains(_providerInfoProvider.userPrefData.id!)
+                          ? Positioned(
+                              top: 20 + MediaQuery.of(context).padding.top,
+                              right: 15,
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.add,
+                                  size: 35,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () async {
+                                  Navigator.of(context).push(
+                                    CupertinoPageRoute(
+                                      maintainState: true,
+                                      builder: (_) => AddParticipantsPage(
+                                          hiveGroupChat: _chat),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
@@ -588,12 +610,3 @@ class _GroupProfileInfoPage extends StatelessWidget {
     );
   }
 }
-
-// Prefix	Mr.
-// First Name	Afolabi
-// Last Name	Kolawole
-// Organization	comercial secondary school akure
-// Position/Title	pricipal
-// Relationship	boss
-// Telephone	+234 803 479 1588
-// Email	www.afolabikolawole@gmail.com

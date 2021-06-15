@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:messenger/customs/error/error.dart';
+import 'package:messenger/models/chat.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
@@ -66,5 +67,10 @@ class ProfileInfoProvider extends ProfileProvider {
     return super
         ._hiveHandler
         .getLastMessage(userId: userId, chatId: chatId, isGroup: isGroup);
+  }
+
+  void updateGroupChat(GroupChat groupChat) async {
+    await _cloud.updateGroupChat(groupChat);
+    return;
   }
 }

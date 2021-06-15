@@ -9,22 +9,20 @@ import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/encryption_class.dart';
 import 'package:messenger/services/offline/hive.db/hive_handler.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_group_chat_saltiv.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/offline/image_picker.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/services/online/firebase/firebase_storage.dart';
 import 'package:messenger/services/online/firebase/firestore_service.dart';
-// import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import 'package:messenger/services/online/online.dart';
 import 'package:messenger/utils/constants.dart';
-// import 'package:messenger/utils/typedef.dart';
 import 'package:uuid/uuid.dart';
 
 class GroupProvider extends ChangeNotifier {
   final Online _firebaseStorage = MessengerFirebaseStorage();
   Online _cloudService = FireStoreService();
-  // MQTThandler _mqttHandler = MQTThandler();
   EncryptClassHandler _encryptClassHandler = EncryptClassHandler();
 
   HiveHandler _hiveHandler = HiveHandler();
@@ -67,7 +65,6 @@ class GroupProvider extends ChangeNotifier {
       "iv": String.fromCharCodes(iv!),
     };
     final String stringifyMap = json.encode(_mapSaltAndIv);
-    // TODO: generate salt and iv for
     final newGroupChat = new GroupChat(
       groupCreator: user.toMap(),
       groupName: groupName,
@@ -111,11 +108,62 @@ class GroupProvider extends ChangeNotifier {
         textToEncrypt!));
   }
 
+  Future<void> updateGroupInfo(
+      {required List<User> selected,
+      required HiveGroupChat oldGroupChat,
+      required String groupName,
+      VoidCallback? onCreatedSuccessful}) async {
+    final String generateSalt = oldGroupChat.hiveGroupChatSaltIV!.salt!;
+    final iv = oldGroupChat.hiveGroupChatSaltIV!.iv;
+    final Map<String, String> _mapSaltAndIv = {
+      "salt": generateSalt,
+      "iv": String.fromCharCodes(iv!),
+    };
+    final String stringifyMap = json.encode(_mapSaltAndIv);
+    final newGroupChat = new GroupChat(
+      groupCreator: oldGroupChat.groupCreator.toMap(),
+      groupName: groupName,
+      participants: [...selected.map((e) => e.toMap()).toList()],
+      participantsIDs: [...selected.map((e) => e.id).toList()],
+      groupAdmins: oldGroupChat.groupAdmins!.map((e) => e.toMap()).toList(),
+      groupCreationTimeDate: oldGroupChat.groupCreationTimeDate,
+      groupDescription: "This is a New group created by ${user.userName}",
+      groupID: oldGroupChat.groupID,
+      groupPhotoUrl: _imageUrl ?? oldGroupChat.groupPhotoUrl,
+      usersEncrytedKey: [
+        ...selected
+            .map((e) => _encryptKeyWithIndividualPublicKey(
+                publicKey: e.publicKey, textToEncrypt: stringifyMap))
+            .toList(),
+      ],
+    );
+    await _cloudService.updateGroupChat(newGroupChat).then((value) {
+      Map<String, dynamic> decoded = json.decode(stringifyMap);
+      Map<String, String> stringToString =
+          decoded.map((key, value) => MapEntry(key, value as String));
+
+      HiveGroupChat hiveGroupChat = HiveGroupChat(
+        groupID: newGroupChat.groupID,
+        participants:
+            newGroupChat.participants.map((e) => User.fromMap(e!)).toList(),
+        groupCreator: User.fromMap(newGroupChat.groupCreator),
+        groupName: newGroupChat.groupName,
+        groupAdmins:
+            newGroupChat.groupAdmins!.map((e) => User.fromMap(e)).toList(),
+        groupCreationTimeDate: newGroupChat.groupCreationTimeDate,
+        groupDescription: newGroupChat.groupDescription,
+        groupPhotoUrl: newGroupChat.groupPhotoUrl,
+        hiveGroupChatSaltIV: HiveGroupChatSaltIV.fromMap(stringToString),
+      );
+      return _hiveHandler.updateAllGroupInfo(hiveGroupChat);
+    });
+    onCreatedSuccessful!();
+    return;
+  }
+
   User get user {
     return SharedPrefs.instance.getUserData();
   }
-
-  // TODO:Change later
 
   File? get internalImage => _internalImage;
   String? get imageUrl => _imageUrl;

@@ -206,17 +206,20 @@ class HiveManager implements IHiveManager {
     _hiveGroupChatBox.values
         .where((element) => element.id == group.id)
         .forEach((element) {
-      // final e = element.copyWith(
-      //   groupAdmins: group.groupAdmins,
-      //   groupCreationTimeDate: group.groupCreationTimeDate,
-      //   groupCreator: group.groupCreator,
-      //   groupDescription: group.groupDescription,
-      //   groupName: group.groupName,
-      //   groupPhotoUrl: group.groupPhotoUrl,
-      //   // hiveGroupChatSaltIV: group
-      //   participants: group.participants,
-      // );
-      _hiveGroupChatBox.put(element.key, group);
+      final key = element.key;
+
+      _hiveGroupChatBox.put(
+        key,
+        element.copyWith(
+          groupAdmins: group.groupAdmins,
+          groupDescription: group.groupDescription,
+          groupName: group.groupName,
+          groupPhotoUrl: group.groupPhotoUrl,
+          participants: group.participants,
+          hiveGroupChatSaltIV: group.hiveGroupChatSaltIV,
+        ),
+      );
+      _hiveGroupChatBox.put(key, group);
     });
   }
 
@@ -329,4 +332,14 @@ class HiveManager implements IHiveManager {
     if (message.isEmpty) return null;
     return message.last;
   }
+
+  // @override
+  // void updateHiveGroupChat(
+  //     GroupChat groupChat, HiveGroupChatSaltIV hiveGroupChatSaltIV) {
+  //   final hiveGroupChat = _hiveGroupChatBox.values
+  //       .where((element) => groupChat.groupID == element.id)
+  //       .toList()
+  //       .single;
+
+  // }
 }

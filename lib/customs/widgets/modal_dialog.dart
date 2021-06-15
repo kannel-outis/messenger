@@ -46,7 +46,7 @@ class BottomModalSheet extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: Utils.blockWidth * 3 > 20
-                          ? 25
+                          ? 20
                           : Utils.blockWidth * 3 < 18
                               ? 18
                               : Utils.blockWidth * 3,
@@ -97,10 +97,10 @@ class BottomModalSheet extends StatelessWidget {
                     "Delete Conversation",
                     style: TextStyle(
                       color: Colors.red,
-                      fontSize: Utils.blockWidth * 3 > 25
+                      fontSize: Utils.blockWidth * 3 > 20
                           ? 25
-                          : Utils.blockWidth * 3 < 25
-                              ? 25
+                          : Utils.blockWidth * 3 < 18
+                              ? 18
                               : Utils.blockWidth * 3,
                     ),
                   ),
@@ -130,7 +130,6 @@ class _AlertDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context);
 
-    print((Utils.blockWidth * 85 > 368.0));
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),

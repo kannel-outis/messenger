@@ -76,6 +76,9 @@ abstract class IHiveManager extends Manager {
 
   Future<HiveKeyPair?> saveKeyPairs(HiveKeyPair hiveKeyPairs);
   MyPrivateKey get getPrivateKeyFromDB => throw UnimplementedError();
+  // void updateHiveGroupChat(
+  //         GroupChat groupChat, HiveGroupChatSaltIV hiveGroupChatSaltIV) =>
+  //     throw UnimplementedError();
 }
 
 abstract class ManagerHandler<T extends Manager?> {
