@@ -303,6 +303,10 @@ class _HiveGroupChatPage extends HookWidget {
         "emir";
   }
 
+  List<String> get _participantsIDs {
+    return hiveGroupChat.participants!.map((e) => e.id!).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     print(hiveGroupChat.groupCreator.userName);
@@ -458,73 +462,88 @@ class _HiveGroupChatPage extends HookWidget {
               },
             ),
           ),
-          Container(
-            height: 70,
-            color: Theme.of(context).scaffoldBackgroundColor,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: textEditingController,
-                    onChanged: (value) {
-                      valueListener.value = value;
-                    },
-                    style: TextStyle(
-                      fontSize: 20, //will give 18 by default,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "Write a Message",
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.only(right: 20),
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: valueListener.value!.length > 0
-                      ? () {
-                          String? msg = valueListener.value;
-                          Fluttertoast.showToast(msg: msg!);
-                          ///////////////////////////////////
-                          _chatsProvider.sendGroupMessage(
-                              hiveGroupChat: hiveGroupChat,
-                              msg: msg,
-                              handleExceptionInUi: (e) =>
-                                  Fluttertoast.showToast(msg: e));
-                          textEditingController!.clear();
-                          valueListener.value = "";
-                        }
-                      : () {
-                          print(textEditingController!.text.length);
-                        },
-                  child: Container(
-                    width: Utils.blockWidth * 25.0,
-                    height: Utils.blockHeight * 5.0,
-                    constraints: BoxConstraints(
-                      maxHeight: 50,
-                      maxWidth: 100,
-                      minWidth: 70,
-                      minHeight: 35,
-                    ),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    child: Center(
-                      child: Text(
-                        'SEND',
-                        // textScaleFactor: .6,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
+          _chatsProvider.contains(_participantsIDs)
+              ? Container(
+                  height: 70,
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: textEditingController,
+                          onChanged: (value) {
+                            valueListener.value = value;
+                          },
+                          style: TextStyle(
+                            fontSize: 20, //will give 18 by default,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: "Write a Message",
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.only(right: 20),
+                          ),
                         ),
+                      ),
+                      GestureDetector(
+                        onTap: valueListener.value!.length > 0
+                            ? () {
+                                String? msg = valueListener.value;
+                                Fluttertoast.showToast(msg: msg!);
+                                ///////////////////////////////////
+                                _chatsProvider.sendGroupMessage(
+                                    hiveGroupChat: hiveGroupChat,
+                                    msg: msg,
+                                    handleExceptionInUi: (e) =>
+                                        Fluttertoast.showToast(msg: e));
+                                textEditingController!.clear();
+                                valueListener.value = "";
+                              }
+                            : () {
+                                print(textEditingController!.text.length);
+                              },
+                        child: Container(
+                          width: Utils.blockWidth * 25.0,
+                          height: Utils.blockHeight * 5.0,
+                          constraints: BoxConstraints(
+                            maxHeight: 50,
+                            maxWidth: 100,
+                            minWidth: 70,
+                            minHeight: 35,
+                          ),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50))),
+                          child: Center(
+                            child: Text(
+                              'SEND',
+                              // textScaleFactor: .6,
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Container(
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+                  child: Center(
+                    child: Text(
+                      "You can no longer chat in this group because you left. You will no longer see any update or changes made to this group except messages",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.grey,
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
         ],
       ),
     );

@@ -104,6 +104,7 @@ class HiveManager implements IHiveManager {
   @override
   Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat) async {
     if (hiveChat is HiveChat) {
+      // TODO: remove
       await _chatBox.delete(hiveChat.key).then((value) {
         _messageBox.values
             .where((element) => hiveChat.chatId == element.chatID)

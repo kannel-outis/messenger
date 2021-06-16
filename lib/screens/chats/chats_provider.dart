@@ -100,7 +100,8 @@ class ChatsProvider extends ChangeNotifier {
     }
   }
 
-  bool isme(List<String>? iDs) {
+  // TODO: extension
+  bool contains(List<String>? iDs) {
     final User prefUser = User.fromMap(
         json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
     return iDs!.contains(prefUser.id);

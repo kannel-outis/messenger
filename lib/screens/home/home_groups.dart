@@ -38,12 +38,14 @@ class HomeGroup extends StatelessWidget {
                     Hive.box<HiveMessages>(HiveInit.messagesBoxName)
                         .listenable(),
                 builder: (context, hiveChat, hiveMessage, child) {
+                  // final List<HiveGroupChat> hiveGroupChats =
+                  //     hiveChat!.values.where((element) {
+                  //   final List<String> _iDs =
+                  //       element.participants!.map((e) => e.id!).toList();
+                  //   return homeProvider.contains(_iDs);
+                  // }).toList();
                   final List<HiveGroupChat> hiveGroupChats =
-                      hiveChat!.values.where((element) {
-                    final List<String> _iDs =
-                        element.participants!.map((e) => e.id!).toList();
-                    return homeProvider.contains(_iDs);
-                  }).toList();
+                      hiveChat!.values.toList();
 
                   // final l = hiveMessage!.values.isNotEmpty
                   //     ? hiveMessage.values

@@ -98,7 +98,7 @@ class FireStoreService extends Online {
   }
 
   @override
-  Future<void> createNewGroupChat(GroupChat groupChat) {
+  Future<void> saveGroupChat(GroupChat groupChat) {
     print("Creating...");
     return _cloud
         .collection(OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS)
@@ -106,13 +106,13 @@ class FireStoreService extends Online {
         .set(groupChat.toMap());
   }
 
-  @override
-  Future<void> updateGroupChat(covariant GroupChat newGroupChat) {
-    return _cloud
-        .collection(OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS)
-        .doc(newGroupChat.groupID)
-        .set(newGroupChat.toMap());
-  }
+  // @override
+  // Future<void> updateGroupChat(covariant GroupChat newGroupChat) {
+  //   return _cloud
+  //       .collection(OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS)
+  //       .doc(newGroupChat.groupID)
+  //       .set(newGroupChat.toMap());
+  // }
 
   @override
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user,

@@ -123,15 +123,6 @@ class _UserProfileInfoPage extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Text(
-                                    //   "Phone Number",
-                                    //   style: TextStyle(
-                                    //     color: Colors.grey,
-                                    //     fontSize: Utils.blockWidth * 5 > 35
-                                    //         ? 35
-                                    //         : Utils.blockWidth * 5,
-                                    //   ),
-                                    // ),
                                     SizedBox(height: 15),
                                     Row(
                                       crossAxisAlignment:

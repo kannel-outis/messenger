@@ -31,8 +31,8 @@ class GroupProvider extends ChangeNotifier {
   String? _imageUrl;
   bool _uploadingImageToStore = false;
 
-  Future<void> pickeImageAndSaveToCloudStorage() async {
-    _groupID = Uuid().v4();
+  Future<void> pickeImageAndSaveToCloudStorage([String? id]) async {
+    _groupID = id ?? Uuid().v4();
     try {
       await MessengerImagePicker.pickeImage().then(
         (value) async {
@@ -49,6 +49,7 @@ class GroupProvider extends ChangeNotifier {
         },
       );
     } on MessengerError catch (e) {
+      _imageUrl = null;
       print(e.message);
     }
   }
@@ -87,7 +88,7 @@ class GroupProvider extends ChangeNotifier {
             .toList(),
       ],
     );
-    await _cloudService.createNewGroupChat(newGroupChat).then((value) {
+    await _cloudService.saveGroupChat(newGroupChat).then((value) {
       Map<String, dynamic> decoded = json.decode(stringifyMap);
       Map<String, String> stringToString =
           decoded.map((key, value) => MapEntry(key, value as String));
@@ -108,11 +109,13 @@ class GroupProvider extends ChangeNotifier {
         textToEncrypt!));
   }
 
-  Future<void> updateGroupInfo(
+  Future<HiveGroupChat> updateGroupInfo(
       {required List<User> selected,
       required HiveGroupChat oldGroupChat,
       required String groupName,
       VoidCallback? onCreatedSuccessful}) async {
+    late final _hiveGroupChat;
+
     final String generateSalt = oldGroupChat.hiveGroupChatSaltIV!.salt!;
     final iv = oldGroupChat.hiveGroupChatSaltIV!.iv;
     final Map<String, String> _mapSaltAndIv = {
@@ -137,7 +140,7 @@ class GroupProvider extends ChangeNotifier {
             .toList(),
       ],
     );
-    await _cloudService.updateGroupChat(newGroupChat).then((value) {
+    await _cloudService.saveGroupChat(newGroupChat).then((value) {
       Map<String, dynamic> decoded = json.decode(stringifyMap);
       Map<String, String> stringToString =
           decoded.map((key, value) => MapEntry(key, value as String));
@@ -155,10 +158,11 @@ class GroupProvider extends ChangeNotifier {
         groupPhotoUrl: newGroupChat.groupPhotoUrl,
         hiveGroupChatSaltIV: HiveGroupChatSaltIV.fromMap(stringToString),
       );
+      _hiveGroupChat = hiveGroupChat;
       return _hiveHandler.updateAllGroupInfo(hiveGroupChat);
     });
     onCreatedSuccessful!();
-    return;
+    return _hiveGroupChat;
   }
 
   User get user {

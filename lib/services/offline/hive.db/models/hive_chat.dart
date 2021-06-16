@@ -7,7 +7,7 @@ import 'package:messenger/models/user.dart';
 import 'hive_group_chat_saltiv.dart';
 part 'hive_chat.g.dart';
 
-abstract class LocalChat {
+abstract class LocalChat with HiveObjectMixin {
   // String? name = "";
   final String? id;
 
@@ -15,7 +15,7 @@ abstract class LocalChat {
 }
 
 @HiveType(typeId: 1)
-class HiveChat extends LocalChat with HiveObjectMixin {
+class HiveChat extends LocalChat {
   @HiveField(0)
   final String? chatId;
   @HiveField(1)
@@ -44,7 +44,7 @@ class HiveChat extends LocalChat with HiveObjectMixin {
 }
 
 @HiveType(typeId: 10)
-class HiveGroupChat extends LocalChat with HiveObjectMixin {
+class HiveGroupChat extends LocalChat {
   @HiveField(0)
   final String? groupID;
   @HiveField(1)

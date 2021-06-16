@@ -180,9 +180,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                       height: Utils.blockWidth * 10,
                                       width: Utils.blockWidth * 10,
                                       child: Center(
-                                          child: Text("+" +
+                                        child: Text(
+                                          "+" +
                                               (listOfParticipants!.length - 3)
-                                                  .toString())),
+                                                  .toString(),
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(50),
                                         color: Colors.white.withOpacity(0.8),
@@ -345,11 +349,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                                 height: Utils.blockWidth * 15,
                                                 width: Utils.blockWidth * 15,
                                                 child: Center(
-                                                    child: Text("+" +
+                                                  child: Text(
+                                                    "+" +
                                                         (listOfParticipants!
                                                                     .length -
                                                                 3)
-                                                            .toString())),
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                  ),
+                                                ),
                                                 decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(50),
@@ -390,6 +399,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                       child: Center(
                                         child: Text(
                                           "+${(listOfParticipants!.length - 1).toString()}",
+                                          style: TextStyle(color: Colors.black),
                                         ),
                                       ),
                                     ),

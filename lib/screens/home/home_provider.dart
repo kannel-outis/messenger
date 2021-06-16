@@ -171,6 +171,7 @@ class HomeProvider extends ChangeNotifier {
       (value) async {
         _mqttHandler.unsubscribe(hiveChat.id!);
         await _hiveHandler.deleteChatAndMessagesFromLocalStorage(hiveChat);
+        // hiveChat.delete();
       },
     );
   }

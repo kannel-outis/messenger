@@ -193,14 +193,35 @@ class _AlertDialog extends StatelessWidget {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          homeProvider
-                              .deleteChatAndRemovePrintsFromDB(hiveChat,
-                                  isGroup: isGroup)
-                              .then(
-                                (value) => Fluttertoast.showToast(
-                                    msg: "Conversation Deleted"),
-                              );
+                          if (hiveChat is HiveGroupChat) {
+                            if ((hiveChat as HiveGroupChat)
+                                .groupAdmins!
+                                .contains(homeProvider.user.id)) {
+                              Navigator.popUntil(
+                                  context, (route) => route.isFirst);
+
+                              homeProvider
+                                  .deleteChatAndRemovePrintsFromDB(hiveChat,
+                                      isGroup: isGroup)
+                                  .then(
+                                    (value) => Fluttertoast.showToast(
+                                        msg: "Conversation Deleted"),
+                                  );
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          } else {
+                            Navigator.popUntil(
+                                context, (route) => route.isFirst);
+
+                            homeProvider
+                                .deleteChatAndRemovePrintsFromDB(hiveChat,
+                                    isGroup: isGroup)
+                                .then(
+                                  (value) => Fluttertoast.showToast(
+                                      msg: "Conversation Deleted"),
+                                );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(150, 40),

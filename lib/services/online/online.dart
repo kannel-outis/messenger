@@ -62,10 +62,9 @@ abstract class Online {
   Future<void> deleteChat({required String id, bool isGroup = false}) =>
       throw UnimplementedError();
   Future<void> createNewChat(Chat chat) => throw UnimplementedError();
-  Future<void> createNewGroupChat(GroupChat groupChat) =>
-      throw UnimplementedError();
-  Future<void> updateGroupChat(OnlineChat groupChat) =>
-      throw UnimplementedError();
+  Future<void> saveGroupChat(GroupChat groupChat) => throw UnimplementedError();
+  // Future<void> updateGroupChat(OnlineChat groupChat) =>
+  //     throw UnimplementedError();
   // Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
   Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user,
           {bool isGroup = false}) =>
