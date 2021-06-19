@@ -153,7 +153,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                                   setState(() {});
                                   if (!_selected.contains(
                                           _listOfContacts[0][index]) &&
-                                      _selected.length < 2) {
+                                      _selected.length < 5) {
                                     _animatedListKey.currentState!.insertItem(
                                         _selected.isEmpty
                                             ? 0
@@ -169,7 +169,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                                   if (!_selected.contains(
                                           _listOfContacts[0][index]) &&
                                       _selectingMode &&
-                                      _selected.length < 2) {
+                                      _selected.length < 5) {
                                     _animatedListKey.currentState!.insertItem(
                                         _selected.length,
                                         duration:
@@ -237,7 +237,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                                                         _listOfContacts[0]
                                                             [index]) &&
                                                     _selectingMode &&
-                                                    _selected.length < 2) {
+                                                    _selected.length < 5) {
                                                   _animatedListKey.currentState!
                                                       .insertItem(
                                                           _selected.length,

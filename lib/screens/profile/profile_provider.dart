@@ -14,6 +14,7 @@ import 'package:messenger/services/offline/offline.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 import 'package:messenger/services/online/firebase/firebase_storage.dart';
 import 'package:messenger/services/online/firebase/firestore_service.dart';
+import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
 import 'package:messenger/services/online/online.dart';
 
 class ProfileProvider extends ChangeNotifier {
@@ -86,9 +87,9 @@ class ProfileInfoProvider extends ProfileProvider {
     final groupChat = GroupChat(
       groupID: hiveGroupChat.groupID,
       groupName: hiveGroupChat.groupName,
-      groupCreator: hiveGroupChat.groupCreator.toMap(),
+      groupCreator: hiveGroupChat.groupCreator.map,
       participantsIDs: hiveGroupChat.participants!.map((e) => e.id!).toList(),
-      participants: hiveGroupChat.participants!.map((e) => e.toMap()).toList(),
+      participants: hiveGroupChat.participants!.map((e) => e.map).toList(),
       usersEncrytedKey: [
         ...hiveGroupChat.participants!
             .map((e) => _encryptKeyWithIndividualPublicKey(
@@ -97,7 +98,7 @@ class ProfileInfoProvider extends ProfileProvider {
       ],
       groupAdmins: _manageGroupAdmin(
               hiveGroupChat.groupAdmins!, hiveGroupChat.participants!)
-          .map((e) => e.toMap())
+          .map((e) => e.map)
           .toList(),
       groupCreationTimeDate: hiveGroupChat.groupCreationTimeDate,
       groupDescription: hiveGroupChat.groupDescription,
@@ -111,19 +112,28 @@ class ProfileInfoProvider extends ProfileProvider {
       List<User> groupAdmins, List<User> groupParticipants) {
     final List<String> pIds = groupParticipants.map((e) => e.id!).toList();
     final List<String> aIds = groupAdmins.map((e) => e.id!).toList();
-    late final List<String> newAdmins;
+    late final Set<String> newAdmins;
     for (var id in aIds) {
       if (!pIds.contains(id) && aIds.length == 1) {
-        newAdmins = [pIds.first];
-        // }else if(!pIds.contains(id) && aIds.length > 1){
-        //   newAdmins = [pIds.first];
+        newAdmins = {pIds.first};
       } else {
-        newAdmins = [...aIds];
+        newAdmins = {...aIds};
       }
     }
     return groupParticipants
         .where((element) => newAdmins.contains(element.id))
         .toList();
+  }
+
+  bool deleteChatsAndMsssagesFromDB(HiveGroupChat hiveChat) {
+    final _mqttClassHandler = MQTThandler();
+    try {
+      _mqttClassHandler.unsubscribe(hiveChat.groupID!);
+      _hiveHandler.deleteChatAndMessagesFromLocalStorage(hiveChat);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   String _encryptKeyWithIndividualPublicKey(

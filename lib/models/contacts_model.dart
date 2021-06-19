@@ -17,11 +17,11 @@ class RegisteredPhoneContacts extends PhoneContacts {
     required this.user,
   }) : super(contact);
 
-  Map<String, Map<String, dynamic>> toMap() {
-    print(user.toMap());
+  Map<String, Map<String, dynamic>> get map {
+    print(user.map);
     return {
       'contact': contact.toMap().cast<String, dynamic>(),
-      'user': user.toMap(),
+      'user': user.map,
     };
   }
 
@@ -44,7 +44,7 @@ class UnRegisteredPhoneContacts extends PhoneContacts {
   final Contact? contact;
   UnRegisteredPhoneContacts({this.contact}) : super(contact);
 
-  Map<String, Map<String, dynamic>> toMap() {
+  Map<String, Map<String, dynamic>> get map {
     return {
       'contact': contact!.toMap().cast<String, dynamic>(),
     };

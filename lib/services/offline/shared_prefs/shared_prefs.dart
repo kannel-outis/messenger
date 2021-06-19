@@ -49,7 +49,7 @@ class SharedPrefs extends Offline {
 
   @override
   Future<bool> setUserData(User user) async {
-    final String value = json.encode(user.toMap());
+    final String value = json.encode(user.map);
     return _prefs.setString(OfflineConstants.MY_DATA, value).then((value) {
       _prefs.reload();
       return value;

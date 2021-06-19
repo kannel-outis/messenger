@@ -50,8 +50,8 @@ class ContactProvider extends ChangeNotifier {
       chatID: _chatID(),
       participantsIDs: [myUser.id, friendUser.id],
       participants: [
-        myUser.toMap(),
-        friendUser.toMap(),
+        myUser.map,
+        friendUser.map,
       ],
     );
     if (await _checkIfChatExistAlready(participants: _chat.participantsIDs)) {

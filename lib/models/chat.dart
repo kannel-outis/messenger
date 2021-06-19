@@ -13,7 +13,7 @@ class Chat extends OnlineChat {
     required this.participantsIDs,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> get map {
     return {
       "chatID": chatID,
       "participantsIDs": participantsIDs,
@@ -79,7 +79,7 @@ class GroupChat extends OnlineChat {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> get map {
     return {
       "groupID": groupID,
       "participantsIDs": participantsIDs,

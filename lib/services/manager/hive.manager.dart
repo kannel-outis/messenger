@@ -87,43 +87,18 @@ class HiveManager implements IHiveManager {
     return _hiveKeyPairs;
   }
 
-  // bool checkIfExistObjExist(Object obj) {
-  //   if (obj is HiveChat) {
-  //     print('this is a Hive chat object');
-  // return _chatBox.values
-  //     .where((element) => obj.chatId == element.chatId)
-  //     .isNotEmpty;
-  //   } else if (obj is HiveMessages) {
-  //     return _messageBox.values
-  //         .where((element) => obj.messageID == element.messageID)
-  //         .isNotEmpty;
-  //   } else {
-  //     return false;
-  //   }
-  // }
   @override
   Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat) async {
-    if (hiveChat is HiveChat) {
-      // TODO: remove
-      await _chatBox.delete(hiveChat.key).then((value) {
-        _messageBox.values
-            .where((element) => hiveChat.chatId == element.chatID)
-            .toList()
-            .forEach((element) async {
-          await _messageBox.delete(element.key);
-        });
-      });
-    } else {
-      hiveChat as HiveGroupChat;
-      await _hiveGroupChatBox.delete(hiveChat.key).then((value) {
-        _messageBox.values
-            .where((element) => hiveChat.groupID == element.chatID)
-            .toList()
-            .forEach((element) async {
-          await _messageBox.delete(element.key);
-        });
-      });
-    }
+    hiveChat.delete().then(
+      (value) {
+        final messages = _messageBox.values
+            .where((element) => hiveChat.id == element.chatID)
+            .toList();
+        for (var message in messages) {
+          message.delete();
+        }
+      },
+    );
   }
 
   @override
@@ -170,22 +145,6 @@ class HiveManager implements IHiveManager {
 
   @override
   void updateUserInHive(User user, int index) {
-    // int? index;
-    // final _listOfChatsThatUserParticipatesIn = _chatBox.values.where((element) {
-    //   final listOfIDs = element.participants!.map((e) => e.id!).toList();
-    //   index = listOfIDs.indexOf(user.id!);
-    //   return index! >= 0 ? element.participants![index!].id == user.id : false;
-    // }).toList();
-
-    // if (_listOfChatsThatUserParticipatesIn.length >= 0) {
-    //   for (var element in _listOfChatsThatUserParticipatesIn) {
-    //     if (element.participants![index!] != user) {
-    //       element.participants![index!] = user;
-    //       element.save();
-    //     }
-    //   }
-    // }
-
     assert(index < 2);
     _chatBox.values
         .where((element) {
@@ -262,9 +221,9 @@ class HiveManager implements IHiveManager {
     phoneContact.forEach((element) {
       element.forEach((element) {
         if (element is RegisteredPhoneContacts) {
-          _registered.add(element.toMap());
+          _registered.add(element.map);
         } else {
-          _unRegistered.add((element as UnRegisteredPhoneContacts).toMap());
+          _unRegistered.add((element as UnRegisteredPhoneContacts).map);
         }
       });
     });
@@ -296,9 +255,7 @@ class HiveManager implements IHiveManager {
   bool get checkIfChatBoxExistAlready => _hiveContactsList.isNotEmpty;
 
   @override
-  void dispose() {
-    // TODO: implement dispose
-  }
+  void dispose() {}
 
   @override
   LocalChat loadSingleChat(String id, {bool? isGroupChat}) {
@@ -333,14 +290,4 @@ class HiveManager implements IHiveManager {
     if (message.isEmpty) return null;
     return message.last;
   }
-
-  // @override
-  // void updateHiveGroupChat(
-  //     GroupChat groupChat, HiveGroupChatSaltIV hiveGroupChatSaltIV) {
-  //   final hiveGroupChat = _hiveGroupChatBox.values
-  //       .where((element) => groupChat.groupID == element.id)
-  //       .toList()
-  //       .single;
-
-  // }
 }

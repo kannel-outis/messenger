@@ -36,7 +36,7 @@ class MQTThandler extends ManagerHandler<IMQTTManager> {
   }
 
   Future<void> publish(String topic, Message message) async {
-    manager!.publish(topic, message.toMap());
+    manager!.publish(topic, message.map);
   }
 
   Future<bool> subscribe(String? topic) async {

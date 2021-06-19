@@ -67,17 +67,15 @@ class GroupProvider extends ChangeNotifier {
     };
     final String stringifyMap = json.encode(_mapSaltAndIv);
     final newGroupChat = new GroupChat(
-      groupCreator: user.toMap(),
+      groupCreator: user.map,
       groupName: groupName,
-      participants: [
-        user.toMap(),
-        ...selected.map((e) => e.user.toMap()).toList()
-      ],
+      participants: [user.map, ...selected.map((e) => e.user.map).toList()],
       participantsIDs: [user.id!, ...selected.map((e) => e.user.id).toList()],
-      groupAdmins: [user.toMap()],
+      groupAdmins: [user.map],
       groupCreationTimeDate: DateTime.now(),
       groupDescription: "This is a New group created by ${user.userName}",
-      groupID: _groupID ?? Uuid().v4(),
+      // groupID: _groupID ?? Uuid().v4(),
+      groupID: Uuid().v4(),
       groupPhotoUrl: _imageUrl ?? GeneralConstants.DEFAULT_PHOTOURL,
       usersEncrytedKey: [
         _encryptKeyWithIndividualPublicKey(
@@ -124,11 +122,11 @@ class GroupProvider extends ChangeNotifier {
     };
     final String stringifyMap = json.encode(_mapSaltAndIv);
     final newGroupChat = new GroupChat(
-      groupCreator: oldGroupChat.groupCreator.toMap(),
+      groupCreator: oldGroupChat.groupCreator.map,
       groupName: groupName,
-      participants: [...selected.map((e) => e.toMap()).toList()],
+      participants: [...selected.map((e) => e.map).toList()],
       participantsIDs: [...selected.map((e) => e.id).toList()],
-      groupAdmins: oldGroupChat.groupAdmins!.map((e) => e.toMap()).toList(),
+      groupAdmins: oldGroupChat.groupAdmins!.map((e) => e.map).toList(),
       groupCreationTimeDate: oldGroupChat.groupCreationTimeDate,
       groupDescription: "This is a New group created by ${user.userName}",
       groupID: oldGroupChat.groupID,

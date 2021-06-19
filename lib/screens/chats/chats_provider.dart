@@ -101,11 +101,11 @@ class ChatsProvider extends ChangeNotifier {
   }
 
   // TODO: extension
-  bool contains(List<String>? iDs) {
-    final User prefUser = User.fromMap(
-        json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
-    return iDs!.contains(prefUser.id);
-  }
+  // bool contains(List<String>? iDs) {
+  //   final User prefUser = User.fromMap(
+  //       json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
+  //   return iDs!.contains(prefUser.id);
+  // }
 
   // LocalChat? local(LocalChat local) {
   //   return _hiveHandler.loadSingleChat(local);

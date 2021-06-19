@@ -294,17 +294,13 @@ class _HiveGroupChatPage extends HookWidget {
     required this.hiveGroupChat,
   }) : super(key: key);
 
-  String _username(List<User> listOfParts, String id) {
-    return listOfParts
-            .where((element) => element.id == id)
-            .toList()
-            .map((e) => e.userName)
-            .first ??
-        "emir";
-  }
+  String _username(List<User> listOfParts, String id, BuildContext context) {
+    final me = context.read<ChatsProvider>().user;
+    if (me.id == id) return me.userName!;
 
-  List<String> get _participantsIDs {
-    return hiveGroupChat.participants!.map((e) => e.id!).toList();
+    final user = listOfParts.where((element) => element.id == id).toList();
+    if (user.length == 0) return "Deleted User";
+    return user.map((e) => e.userName).first ?? "unknown user";
   }
 
   @override
@@ -394,8 +390,10 @@ class _HiveGroupChatPage extends HookWidget {
                                         : CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _username(hiveGroupChat.participants!,
-                                                hiveMessages[index].senderID!)
+                                        _username(
+                                                hiveGroupChat.participants!,
+                                                hiveMessages[index].senderID!,
+                                                context)
                                             .capitalize(),
                                         style: TextStyle(
                                             fontSize: Utils.blockWidth * 3.0,
@@ -462,7 +460,7 @@ class _HiveGroupChatPage extends HookWidget {
               },
             ),
           ),
-          _chatsProvider.contains(_participantsIDs)
+          hiveGroupChat.participants!.containsUser()
               ? Container(
                   height: 70,
                   color: Theme.of(context).scaffoldBackgroundColor,
@@ -535,7 +533,7 @@ class _HiveGroupChatPage extends HookWidget {
                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
                   child: Center(
                     child: Text(
-                      "You can no longer chat in this group because you left. You will no longer see any update or changes made to this group except messages",
+                      "You can no longer send messages to this group. You can still receive messages from this Group but you will no longer see updates of changes made to this group.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,

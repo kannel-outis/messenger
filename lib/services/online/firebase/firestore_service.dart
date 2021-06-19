@@ -35,7 +35,7 @@ class FireStoreService extends Online {
     await _cloud
         .collection(OnlineConstants.FIRESTORE_USER_REF)
         .doc(_newUser.id!)
-        .set(_newUser.toMap());
+        .set(_newUser.map);
     return _newUser;
   }
 
@@ -80,7 +80,7 @@ class FireStoreService extends Online {
     return _cloud
         .collection(OnlineConstants.FIRESTORE_ONGOING_CHATS)
         .doc(newChat.chatID!)
-        .set(newChat.toMap());
+        .set(newChat.map);
   }
 
   @override
@@ -103,7 +103,7 @@ class FireStoreService extends Online {
     return _cloud
         .collection(OnlineConstants.FIRESTORE_ONGOING_GROUP_CHATS)
         .doc(groupChat.groupID)
-        .set(groupChat.toMap());
+        .set(groupChat.map);
   }
 
   // @override
@@ -133,7 +133,7 @@ class FireStoreService extends Online {
     await _cloud
         .collection(OnlineConstants.FIRESTORE_USER_REF)
         .doc(user!.id!)
-        .update(user.toMap())
+        .update(user.map)
         .then(
       (value) {
         _updateOnGoingChats(user).then((value) => success = true);
@@ -160,21 +160,21 @@ class FireStoreService extends Online {
             newChat = Chat(
                 chatID: chat.chatID,
                 participantsIDs: chat.participantsIDs,
-                participants: [chat.participants.first!, user.toMap()]);
+                participants: [chat.participants.first!, user.map]);
           } else if (chat.participants[1]!['id'] == user.id &&
               chat.participants[0]!['id'] == user.id) {
             newChat = Chat(
                 chatID: chat.chatID,
                 participantsIDs: chat.participantsIDs,
-                participants: [user.toMap(), user.toMap()]);
+                participants: [user.map, user.map]);
           } else {
             newChat = Chat(
                 chatID: chat.chatID,
                 participantsIDs: chat.participantsIDs,
-                participants: [user.toMap(), secondUserMap]);
+                participants: [user.map, secondUserMap]);
           }
 
-          await element.reference.update(newChat.toMap());
+          await element.reference.update(newChat.map);
         }
       },
     );
@@ -197,16 +197,16 @@ class FireStoreService extends Online {
         if (user.id == groupChat.groupCreator['id']) _user = user;
 
         if (adminIndex != -1) {
-          groupChat.groupAdmins![adminIndex] = user.toMap();
+          groupChat.groupAdmins![adminIndex] = user.map;
         }
 
-        groupChat.participants[index] = user.toMap();
+        groupChat.participants[index] = user.map;
         newGroupChat = groupChat.copyWith(
-          groupCreator: _user.toMap(),
+          groupCreator: _user.map,
           participants: groupChat.participants,
           groupAdmins: groupChat.groupAdmins,
         );
-        await element.reference.update(newGroupChat.toMap());
+        await element.reference.update(newGroupChat.map);
       }
     });
   }

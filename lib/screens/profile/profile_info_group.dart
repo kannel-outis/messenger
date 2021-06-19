@@ -8,23 +8,27 @@ class _GroupProfileInfoPage extends StatefulWidget {
 
 class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
   late HiveGroupChat _chat;
+  late final String delete;
 
   @override
   void initState() {
     super.initState();
     _chat = widget.chat;
+    delete = _chat.participants!.containsUser() ? "Delete" : "Leave";
   }
 
   @override
   Widget build(BuildContext context) {
-    final _providerInfoProvider = Provider.of<ProfileInfoProvider>(context);
+    final _profileInfoProvider = Provider.of<ProfileInfoProvider>(context);
     final message =
-        _providerInfoProvider.getLastMessage(chatId: _chat.id!, isGroup: true);
-    final l = _chat.groupAdmins!.map((e) => e.id).toList();
-    final p = _chat.participants!.map((e) => e.id).toList();
+        _profileInfoProvider.getLastMessage(chatId: _chat.id!, isGroup: true);
 
     if (MediaQuery.of(context).orientation == Orientation.landscape) {
-      return _LandScape(chat: _chat, message: message);
+      return _LandScape(
+          chat: _chat,
+          message: message,
+          removeFromChat: () => _removeFromChat(_profileInfoProvider),
+          delete: delete);
     }
 
     return Scaffold(
@@ -97,8 +101,8 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
                           ],
                         ),
                       ),
-                      l.contains(_providerInfoProvider.userPrefData.id!) &&
-                              p.contains(_providerInfoProvider.userPrefData.id!)
+                      _chat.groupAdmins!.containsUser() &&
+                              _chat.participants!.containsUser()
                           ? Positioned(
                               top: 20 + MediaQuery.of(context).padding.top,
                               right: 15,
@@ -242,7 +246,7 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
                       ..._chat.participants!.map(
                         (e) => _BuildParticipantsTile(
                           e,
-                          l.contains(e.id),
+                          _chat.groupAdmins!.containsUser(e),
                         ),
                       ),
                     ],
@@ -257,16 +261,7 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
                       SizedBox(height: 15),
                       ElevatedButton(
                         onPressed: () {
-                          print(_chat.participants!.length);
-                          _chat.participants!.removeWhere((element) =>
-                              element.id ==
-                              _providerInfoProvider.userPrefData.id);
-                          print("${_chat.participants!.length} + ee");
-                          setState(() {});
-                          _providerInfoProvider
-                              .leaveGroupChat(_chat)
-                              .then((value) => _chat.save());
-                          print("somethinasdaddg");
+                          _removeFromChat(_profileInfoProvider);
                         },
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -279,7 +274,7 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
                             ),
                             SizedBox(width: 10),
                             Text(
-                              "Leave",
+                              delete,
                               style: TextStyle(
                                 fontSize: 18,
                               ),
@@ -324,17 +319,77 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
       ),
     );
   }
+
+  void _removeFromChat(ProfileInfoProvider _profileInfoProvider) {
+    bool stillaParticipant = _chat.participants!.containsUser();
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "SlideBarrierLabel",
+      transitionDuration: Duration(milliseconds: 200),
+      transitionBuilder: (context, ani1, ani2, child) {
+        return FadeTransition(
+          opacity: ani1,
+          child: ScaleTransition(
+            scale: ani1,
+            child: child,
+          ),
+        );
+      },
+      pageBuilder: (context, ani1, ani2) {
+        return alert.AlertDialog(
+          title: stillaParticipant ? "Delete Group Chat" : "Leave Group Chat",
+          details: stillaParticipant
+              ? "You will no longer be able to send message to this group. You will no longer listen to updates from this group"
+              : "All chats and messages related to this group will be deleted .you will no longer receive messages",
+          rightButtonChild: stillaParticipant
+              ? null
+              : Row(
+                  children: [
+                    Icon(Icons.exit_to_app_rounded, size: 20),
+                    SizedBox(width: 10),
+                    Text(
+                      'Leave',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+          rightButtonAction: () {
+            if (stillaParticipant) {
+              _chat.participants!.removeWhere((element) =>
+                  element.id == _profileInfoProvider.userPrefData.id);
+              setState(() {});
+              _profileInfoProvider
+                  .leaveGroupChat(_chat)
+                  .then((value) => _chat.save());
+              Fluttertoast.showToast(msg: "Removed From Group");
+              Navigator.pop(context);
+            } else {
+              _profileInfoProvider.deleteChatsAndMsssagesFromDB(_chat);
+              Fluttertoast.showToast(msg: "Group deleted");
+              Navigator.pop(context);
+            }
+          },
+        );
+      },
+    );
+  }
 }
 
 class _LandScape extends StatefulWidget {
   final HiveMessages? message;
   final HiveGroupChat chat;
+  final VoidCallback removeFromChat;
+  final String? delete;
   // final List<String?> listOfIds;
 
   const _LandScape({
     Key? key,
     required this.message,
     required this.chat,
+    required this.removeFromChat,
+    this.delete,
     // required this.listOfIds,
   }) : super(key: key);
   @override
@@ -344,15 +399,11 @@ class _LandScape extends StatefulWidget {
 class __LandScapeState extends State<_LandScape> {
   late final HiveMessages? message;
   late HiveGroupChat _chat;
-  late final List<String?> listOfAdminIds;
-  late final List<String?> participantsIDs;
   @override
   void initState() {
     super.initState();
     message = widget.message;
     _chat = widget.chat;
-    listOfAdminIds = widget.chat.groupAdmins!.map((e) => e.id).toList();
-    participantsIDs = widget.chat.participants!.map((e) => e.id).toList();
   }
 
   @override
@@ -426,14 +477,8 @@ class __LandScapeState extends State<_LandScape> {
                         ],
                       ),
                     ),
-                    listOfAdminIds.contains(context
-                                .read<ProfileInfoProvider>()
-                                .userPrefData
-                                .id!) &&
-                            participantsIDs.contains(context
-                                .read<ProfileInfoProvider>()
-                                .userPrefData
-                                .id!)
+                    _chat.groupAdmins!.containsUser() &&
+                            _chat.participants!.containsUser()
                         ? Positioned(
                             top: 20 + MediaQuery.of(context).padding.top,
                             right: 15,
@@ -585,7 +630,7 @@ class __LandScapeState extends State<_LandScape> {
                               ..._chat.participants!.map(
                                 (e) => _BuildParticipantsTile(
                                   e,
-                                  listOfAdminIds.contains(e.id),
+                                  _chat.groupAdmins!.containsUser(e),
                                 ),
                               ),
                             ],
@@ -594,30 +639,9 @@ class __LandScapeState extends State<_LandScape> {
                         Container(
                           child: Column(
                             children: [
-                              ElevatedButton(
-                                onPressed: () => print("something"),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      CupertinoIcons.slash_circle,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Block",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                               SizedBox(height: 15),
                               ElevatedButton(
-                                onPressed: () => print("somethingdafdf"),
+                                onPressed: widget.removeFromChat,
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -629,7 +653,7 @@ class __LandScapeState extends State<_LandScape> {
                                     ),
                                     SizedBox(width: 10),
                                     Text(
-                                      "Delete",
+                                      widget.delete!,
                                       style: TextStyle(
                                         fontSize: 18,
                                       ),

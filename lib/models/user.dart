@@ -43,7 +43,7 @@ class User {
   @override
   int get hashCode => hashValues(id, hashList(phoneNumbers));
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> get map {
     return {
       "id": id,
       "userName": userName,

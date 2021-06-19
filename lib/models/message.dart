@@ -19,7 +19,7 @@ class Message {
     required this.isGroup,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> get map {
     return {
       "message": message,
       "timeSent": timeOfMessage.toString(),

@@ -22,11 +22,11 @@ class HomeProvider extends ChangeNotifier {
   HiveHandler _hiveHandler = HiveHandler();
   EncryptClassHandler _encryptClassHandler = EncryptClassHandler();
   List<Map<String, dynamic>?> _list = [];
-  bool contains(List<String>? iDs) {
-    final User prefUser = User.fromMap(
-        json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
-    return iDs!.contains(prefUser.id);
-  }
+  // bool contains(List<String>? iDs) {
+  //   final User prefUser = User.fromMap(
+  //       json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
+  //   return iDs!.contains(prefUser.id);
+  // }
 
   void listenTocloudStreamAndSubscribeTopic() {
     _storeService
@@ -117,7 +117,7 @@ class HomeProvider extends ChangeNotifier {
       _list.add(event);
       try {
         if (_list.last!['isGroup'] == false) {
-          if (!contains([_list.last!["senderID"]])) {
+          if (![_list.last!["senderID"]].contains(user.id)) {
             // print(String.fromCharCodes(_encryptClassHandler.rsaDecrypt(
             //     _hiveHandler.myPrivateKeyFromDB, event!['message'])));
             _hiveHandler.saveMessages(
@@ -171,7 +171,6 @@ class HomeProvider extends ChangeNotifier {
       (value) async {
         _mqttHandler.unsubscribe(hiveChat.id!);
         await _hiveHandler.deleteChatAndMessagesFromLocalStorage(hiveChat);
-        // hiveChat.delete();
       },
     );
   }

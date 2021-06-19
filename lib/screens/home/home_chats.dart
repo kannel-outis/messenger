@@ -40,14 +40,9 @@ class HomeChats extends StatelessWidget {
               valueListenable2:
                   Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
               builder: (context, hiveChat, hiveMessage, child) {
-                final List<HiveChat> hiveChats =
-                    hiveChat!.values.where((element) {
-                  final List<String>? _iDs = [
-                    element.participants![0].id!,
-                    element.participants![1].id!
-                  ];
-                  return homeProvider.contains(_iDs);
-                }).toList();
+                final List<HiveChat> hiveChats = hiveChat!.values
+                    .where((element) => element.participants!.containsUser())
+                    .toList();
                 streamControllerG.sink
                     .add(messages(message: hiveMessage!, isGroup: true).length);
                 streamController.sink
