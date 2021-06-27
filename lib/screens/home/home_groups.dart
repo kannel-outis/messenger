@@ -88,7 +88,9 @@ class HomeGroup extends StatelessWidget {
                             context: context,
                             builder: (context) {
                               return BottomModalSheet(
-                                  chat: hiveGroupChats[index], isGroup: true);
+                                chat: hiveGroupChats[index],
+                                isGroup: true,
+                              );
                             },
                           );
                         },

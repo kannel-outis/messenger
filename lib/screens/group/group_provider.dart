@@ -164,7 +164,7 @@ class GroupProvider extends ChangeNotifier {
   }
 
   User get user {
-    return SharedPrefs.instance.getUserData();
+    return SharedPrefs.instance.user;
   }
 
   File? get internalImage => _internalImage;

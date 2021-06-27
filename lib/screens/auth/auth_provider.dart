@@ -124,7 +124,7 @@ class AuthProvider extends ChangeNotifier {
         user: _firebaseUser,
         userName: username,
         phoneNumberWithoutCC: _phoneNumberWithoutCC,
-        userDataPref: _prefs.getUserData(),
+        userDataPref: _prefs.user,
         newPhotoUrlString: _imageUrl,
         publicKey: _publicKey!,
       )
@@ -184,9 +184,7 @@ class AuthProvider extends ChangeNotifier {
   String? get phoneNumberWithoutCC => _phoneNumberWithoutCC;
   String? get imageUrl => _imageUrl;
   String? get photoUrlFromUserDataPref =>
-      _prefs.getUserData().id == _firebaseUser?.uid
-          ? _prefs.getUserData().photoUrl
-          : null;
+      _prefs.user.id == _firebaseUser?.uid ? _prefs.user.photoUrl : null;
   bool? get isTryingToVerify => _isTryingToVerify;
   bool? get isLoading => _isLoading;
   bool? get uploadingImageToStore => _uploadingImageToStore;

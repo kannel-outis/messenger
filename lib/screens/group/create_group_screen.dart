@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 
 import 'group_provider.dart';
 
+enum SelectContactState { active, dormant }
+
 class CreateGroupScreen extends StatefulWidget {
   @override
   _CreateGroupScreenState createState() => _CreateGroupScreenState();
@@ -34,8 +36,40 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
     }
   }
 
+  void _onLongPress(RegisteredPhoneContacts contact) {
+    _selectContactState = SelectContactState.active;
+    setState(() {});
+    if (!_selected.contains(contact) && _selected.length < 5) {
+      _animatedListKey.currentState!.insertItem(
+          _selected.isEmpty ? 0 : _selected.length,
+          duration: const Duration(milliseconds: 300));
+      _selected.add(contact);
+      print(_selected.length);
+    }
+  }
+
+  void _onTap(RegisteredPhoneContacts contact) {
+    if (!_selected.contains(contact) &&
+        _selectContactState == SelectContactState.active &&
+        _selected.length < 5) {
+      _animatedListKey.currentState!.insertItem(_selected.length,
+          duration: const Duration(milliseconds: 300));
+      _selected.add(contact);
+      setState(() {});
+      print(_selected.length);
+    } else if (_selected.contains(contact) &&
+        _selectContactState == SelectContactState.active) {
+      _animatedListKey.currentState!.removeItem(
+          _selected.indexOf(contact), (context, animation) => Container(),
+          duration: const Duration(milliseconds: 300));
+      _selected.remove(contact);
+      setState(() {});
+    }
+  }
+
   final List<RegisteredPhoneContacts> _selected = [];
-  bool _selectingMode = false;
+  SelectContactState _selectContactState = SelectContactState.dormant;
+
   @override
   Widget build(BuildContext context) {
     var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
@@ -43,8 +77,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
 
     return WillPopScope(
       onWillPop: () async {
-        if (_selectingMode) {
-          _selectingMode = false;
+        if (_selectContactState == SelectContactState.active) {
+          _selectContactState = SelectContactState.dormant;
           setState(() {});
           return false;
         }
@@ -60,10 +94,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
               kToolbarHeight + MediaQuery.of(context).padding.top / 2,
           elevation: 1.0,
           actions: [
-            _selectingMode
+            _selectContactState == SelectContactState.active
                 ? TextButton(
                     onPressed: () {
-                      _selectingMode = false;
+                      _selectContactState = SelectContactState.dormant;
                       setState(() {});
                     },
                     child: Text('Cancel'),
@@ -94,7 +128,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                     children: [
                       InkWell(
                         onTap: () {
-                          // print("camera something");
                           _groupProvider.pickeImageAndSaveToCloudStorage();
                         },
                         child: Container(
@@ -147,50 +180,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                         : ListView.builder(
                             itemCount: _listOfContacts[0].length,
                             itemBuilder: (context, index) {
+                              final contact = _listOfContacts[0][index]
+                                  as RegisteredPhoneContacts;
                               return InkWell(
                                 onLongPress: () {
-                                  _selectingMode = true;
-                                  setState(() {});
-                                  if (!_selected.contains(
-                                          _listOfContacts[0][index]) &&
-                                      _selected.length < 5) {
-                                    _animatedListKey.currentState!.insertItem(
-                                        _selected.isEmpty
-                                            ? 0
-                                            : _selected.length,
-                                        duration:
-                                            const Duration(milliseconds: 300));
-                                    _selected.add(_listOfContacts[0][index]
-                                        as RegisteredPhoneContacts);
-                                    print(_selected.length);
-                                  }
+                                  _onLongPress(contact);
                                 },
                                 onTap: () {
-                                  if (!_selected.contains(
-                                          _listOfContacts[0][index]) &&
-                                      _selectingMode &&
-                                      _selected.length < 5) {
-                                    _animatedListKey.currentState!.insertItem(
-                                        _selected.length,
-                                        duration:
-                                            const Duration(milliseconds: 300));
-                                    _selected.add(_listOfContacts[0][index]
-                                        as RegisteredPhoneContacts);
-                                    setState(() {});
-                                    print(_selected.length);
-                                  } else if (_selected.contains(
-                                          _listOfContacts[0][index]) &&
-                                      _selectingMode) {
-                                    var r = _listOfContacts[0][index]
-                                        as RegisteredPhoneContacts;
-                                    _animatedListKey.currentState!.removeItem(
-                                        _selected.indexOf(r),
-                                        (context, animation) => Container(),
-                                        duration:
-                                            const Duration(milliseconds: 300));
-                                    _selected.remove(r);
-                                    setState(() {});
-                                  }
+                                  _onTap(contact);
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(bottom: 20, left: 10),
@@ -223,53 +220,18 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                                       Expanded(
                                         child: BuildContactTile(
                                           fromHome: false,
-                                          element: _listOfContacts[0][index],
+                                          element: contact,
                                           isGroup: true,
                                         ),
                                       ),
-                                      _selectingMode == true
+                                      _selectContactState ==
+                                              SelectContactState.active
                                           ? Checkbox(
                                               activeColor: Colors.red,
                                               value: _selected.contains(
                                                   _listOfContacts[0][index]),
                                               onChanged: (e) {
-                                                if (!_selected.contains(
-                                                        _listOfContacts[0]
-                                                            [index]) &&
-                                                    _selectingMode &&
-                                                    _selected.length < 5) {
-                                                  _animatedListKey.currentState!
-                                                      .insertItem(
-                                                          _selected.length,
-                                                          duration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      300));
-                                                  _selected.add(_listOfContacts[
-                                                          0][index]
-                                                      as RegisteredPhoneContacts);
-                                                  setState(() {});
-                                                  print(_selected.length);
-                                                } else if (_selected.contains(
-                                                        _listOfContacts[0]
-                                                            [index]) &&
-                                                    _selectingMode) {
-                                                  var r = _listOfContacts[0]
-                                                          [index]
-                                                      as RegisteredPhoneContacts;
-                                                  _animatedListKey.currentState!
-                                                      .removeItem(
-                                                          _selected.indexOf(r),
-                                                          (context,
-                                                                  animation) =>
-                                                              Container(),
-                                                          duration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      300));
-                                                  _selected.remove(r);
-                                                  setState(() {});
-                                                }
+                                                _onTap(contact);
                                               },
                                               tristate: true,
                                             )
@@ -315,9 +277,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (context, index, animation) {
                             return ScaleAndSlide(
-                                selected: _selected,
-                                index: index,
-                                animation: animation);
+                              selected: _selected,
+                              index: index,
+                              animation: animation,
+                            );
                           },
                         ),
                       ),

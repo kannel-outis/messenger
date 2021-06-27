@@ -19,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     User? user = context.read<HomeProvider>().user;
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             _TopAppBar(),
@@ -70,8 +70,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class _TopAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
-      width: double.infinity,
+      // height: 30,
+      // width: double.infinity,
+      margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: Row(
         children: [
           IconButton(

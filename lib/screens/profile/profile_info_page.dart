@@ -14,6 +14,7 @@ import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 import '../../utils/_extensions_.dart';
 import '../../customs/widgets/custom_alert_dialog.dart' as alert;
+import '../../customs/widgets/custom_appbar.dart';
 part 'build_contact.dart';
 part 'profile_info_user.dart';
 part 'profile_info_group.dart';
@@ -26,9 +27,9 @@ class ProfileInfoPage extends HookWidget {
     print(chat.id);
     if (chat is HiveGroupChat) {
       print((chat as HiveGroupChat).groupAdmins!.length);
-      return _GroupProfileInfoPage(chat as HiveGroupChat);
+      return _GroupProfileInfoPage(chat);
     } else {
-      return _UserProfileInfoPage(chat as HiveChat);
+      return _UserProfileInfoPage(chat);
     }
   }
 }

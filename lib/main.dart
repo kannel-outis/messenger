@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.red,
         ),
         // theme: Theme.of(context),
-        home: SharedPrefs.instance.getUserData().id != null
+        home: SharedPrefs.instance.user.id != null
             ? HomeScreen()
             : RegistrationScreen(),
         builder: (context, child) {

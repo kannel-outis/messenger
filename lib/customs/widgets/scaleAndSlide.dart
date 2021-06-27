@@ -18,30 +18,26 @@ class ScaleAndSlide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScaleTransition(
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.center,
       scale: animation,
-      child: SizeTransition(
-        sizeFactor: animation,
-        axis: Axis.horizontal,
-        child: Column(
-          children: [
-            Container(
-              height: 70,
-              width: 70,
-              margin: EdgeInsets.only(left: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                image: DecorationImage(
-                    image: CachedNetworkImageProvider(
-                        _selected[index].user.photoUrl ??
-                            GeneralConstants.DEFAULT_PHOTOURL),
-                    fit: BoxFit.cover),
-              ),
+      child: Column(
+        children: [
+          Container(
+            height: 70,
+            width: 70,
+            margin: EdgeInsets.only(left: 15),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              image: DecorationImage(
+                  image: CachedNetworkImageProvider(
+                      _selected[index].user.photoUrl ??
+                          GeneralConstants.DEFAULT_PHOTOURL),
+                  fit: BoxFit.cover),
             ),
-            Text(_selected[index].contact.givenName ??
-                _selected[index].contact.displayName!),
-          ],
-        ),
+          ),
+          Text(_selected[index].contact.givenName ??
+              _selected[index].contact.displayName!),
+        ],
       ),
     );
   }

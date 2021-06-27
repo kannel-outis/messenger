@@ -4,25 +4,58 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:messenger/models/user.dart';
+import 'package:messenger/screens/profile/profile_info_page.dart';
+import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:messenger/utils/utils.dart';
 import 'package:messenger/utils/_extensions_.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
+  final LocalChat chat;
+
   final BuildContext context;
-  final String? photoUrl;
-  final String? friendContactName;
-  final bool isGroupChat;
-  final List<User>? listOfParticipants;
-  const CustomAppBar(
-      {required this.context,
-      this.friendContactName,
-      this.photoUrl,
-      this.listOfParticipants,
-      required this.isGroupChat});
-  // : assert(isGroupChat == true &&
-  //       listOfParticipants != null &&
-  //       listOfParticipants.length < 2);
+
+  const CustomAppBar({
+    required this.context,
+    required this.chat,
+  });
+
+  @override
+  _CustomAppBarState createState() => _CustomAppBarState();
+
+  @override
+  Size get preferredSize {
+    if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      return Size(
+        double.infinity,
+        70 + MediaQuery.of(context).padding.top,
+      );
+    }
+    return Size(
+        double.infinity,
+        (Utils.blockHeight * 20 > 350
+                ? 350
+                : Utils.blockHeight * 20 < 200
+                    ? 200
+                    : Utils.blockHeight * 20) +
+            MediaQuery.of(context).padding.top);
+  }
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  late final String? photoUrl;
+  late final String? friendContactName;
+  late final bool isGroupChat;
+  late final List<User>? listOfParticipants;
+
+  @override
+  void initState() {
+    super.initState();
+    photoUrl = widget.chat.photoUrl;
+    friendContactName = widget.chat.name;
+    isGroupChat = widget.chat is HiveGroupChat;
+    listOfParticipants = widget.chat.participants;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +262,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           LayoutBuilder(
                               // stream: null,
                               builder: (context, constrainsts) {
-                            if (preferredSize.height <= 130) {
+                            if (widget.preferredSize.height <= 130) {
                               return Container();
                             }
                             return Column(
@@ -266,7 +299,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                       color: Colors.white),
                                 ),
                                 SizedBox(height: isGroupChat ? 7 : 0),
-                                isGroupChat && preferredSize.height > 150
+                                isGroupChat && widget.preferredSize.height > 150
                                     ? Container(
                                         width:
                                             (MediaQuery.of(context).size.width /
@@ -374,7 +407,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               ],
                             );
                           }),
-                          preferredSize.height <= 150 && isGroupChat
+                          widget.preferredSize.height <= 150 && isGroupChat
                               ? Positioned(
                                   right: 20,
                                   child: Container(
@@ -429,28 +462,149 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
+        Positioned(
+          top: MediaQuery.of(context).padding.top,
+          right: 20,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: Icon(CupertinoIcons.info_circle_fill),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ProfileInfoPage(chat: widget.chat),
+                  ),
+                );
+              },
+              color: Colors.white,
+              iconSize: 30,
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  @override
-  Size get preferredSize {
-    if (MediaQuery.of(context).orientation == Orientation.landscape) {
-      return Size(
-        double.infinity,
-        70 + MediaQuery.of(context).padding.top,
-      );
-    }
-    return Size(
-        double.infinity,
-        (Utils.blockHeight * 20 > 350
-                ? 350
-                : Utils.blockHeight * 20 < 200
-                    ? 200
-                    : Utils.blockHeight * 20) +
-            MediaQuery.of(context).padding.top);
-  }
-
   // lowest 200
   // highest 350
+}
+
+class CustomProfileInfoAppBar extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String photoUrl;
+  final String name;
+  final String lastMessage;
+  final bool canEdit;
+  final bool isGroupChat;
+  final Orientation orientation;
+
+  const CustomProfileInfoAppBar({
+    Key? key,
+    required this.onPressed,
+    required this.photoUrl,
+    required this.name,
+    required this.lastMessage,
+    required this.canEdit,
+    required this.isGroupChat,
+    required this.orientation,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            height: orientation == Orientation.portrait
+                ? Utils.blockHeight * 50
+                : double.infinity,
+            width: orientation == Orientation.portrait
+                ? double.infinity
+                : Utils.blockHeight * 50,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: CachedNetworkImageProvider(photoUrl),
+              ),
+            ),
+          ),
+          Container(
+            height: 100,
+            width: orientation == Orientation.portrait
+                ? double.infinity
+                : Utils.blockHeight * 50,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0.3, 0.8],
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.25),
+                ],
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  textScaleFactor: .7,
+                  style: TextStyle(
+                    fontSize: Utils.blockWidth * 4 > 25
+                        ? 25
+                        : Utils.blockWidth * 4 < 17
+                            ? 17
+                            : Utils.blockWidth * 4,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  lastMessage,
+                  style: TextStyle(
+                    fontSize: Utils.blockWidth * 3.3 > 25
+                        ? 25
+                        : Utils.blockWidth * 3.3 < 18
+                            ? 18
+                            : Utils.blockWidth * 3.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 20 + MediaQuery.of(context).padding.top,
+            left: 15,
+            child: IconButton(
+              icon: Icon(
+                CupertinoIcons.back,
+                size: 35,
+                color: Colors.white,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          canEdit && isGroupChat
+              ? Positioned(
+                  top: 20 + MediaQuery.of(context).padding.top,
+                  right: 15,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.edit,
+                      size: 35,
+                      color: Colors.white,
+                    ),
+                    onPressed: onPressed,
+                  ),
+                )
+              : SizedBox(),
+        ],
+      ),
+    );
+  }
 }

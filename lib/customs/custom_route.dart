@@ -52,8 +52,14 @@ class CustomNoFadePageRoute<T> extends PageRoute<T> {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
+    print(secondaryAnimation.value);
+
     return builder!(context);
   }
+
+  // CupertinoPageRoute();
+
+  ///use stack
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
@@ -61,9 +67,17 @@ class CustomNoFadePageRoute<T> extends PageRoute<T> {
     return SlideTransition(
       position: Tween<Offset>(
         end: Offset.zero,
-        begin: const Offset(0.0, 1.0),
+        begin: const Offset(1.0, 0.0),
       ).animate(animation),
-      child: child,
+      child: Align(
+        child: SizeTransition(
+          sizeFactor:
+              CurvedAnimation(curve: Curves.easeInOut, parent: animation),
+          axis: Axis.horizontal,
+          axisAlignment: 0.0,
+          child: child,
+        ),
+      ),
     );
   }
 
@@ -71,5 +85,5 @@ class CustomNoFadePageRoute<T> extends PageRoute<T> {
   bool get maintainState => true;
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 300);
+  Duration get transitionDuration => const Duration(milliseconds: 500);
 }

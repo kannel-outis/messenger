@@ -182,6 +182,6 @@ class HomeProvider extends ChangeNotifier {
   }
 
   User get user {
-    return SharedPrefs.instance.getUserData();
+    return SharedPrefs.instance.user;
   }
 }

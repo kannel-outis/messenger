@@ -27,7 +27,7 @@ abstract class Offline {
     return false;
   }
 
-  User getUserData() => throw UnimplementedError();
+  User get user => throw UnimplementedError();
 
   Future<List<List<PhoneContacts>>> listOfRegisteredAndUnregisteredUsers() =>
       throw UnimplementedError();

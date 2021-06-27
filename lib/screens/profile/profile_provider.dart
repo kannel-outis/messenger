@@ -62,7 +62,7 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  User get userPrefData => _sharedPrefs.getUserData();
+  User get userPrefData => _sharedPrefs.user;
   bool get isDone => _isDone;
   String? get imageUrl => _imageUrl;
 }
@@ -96,33 +96,18 @@ class ProfileInfoProvider extends ProfileProvider {
                 publicKey: e.publicKey, textToEncrypt: stringifyMap))
             .toList(),
       ],
-      groupAdmins: _manageGroupAdmin(
-              hiveGroupChat.groupAdmins!, hiveGroupChat.participants!)
-          .map((e) => e.map)
-          .toList(),
+      // groupAdmins: _manageGroupAdmin(
+      //         hiveGroupChat.groupAdmins!, hiveGroupChat.participants!)
+      //     .map((e) => e.map)
+      //     .toList(),
+      groupAdmins: hiveGroupChat.groupAdmins!.map((e) => e.map).toList(),
       groupCreationTimeDate: hiveGroupChat.groupCreationTimeDate,
       groupDescription: hiveGroupChat.groupDescription,
       groupPhotoUrl: hiveGroupChat.groupPhotoUrl,
     );
+
     await _cloud.saveGroupChat(groupChat);
     return;
-  }
-
-  List<User> _manageGroupAdmin(
-      List<User> groupAdmins, List<User> groupParticipants) {
-    final List<String> pIds = groupParticipants.map((e) => e.id!).toList();
-    final List<String> aIds = groupAdmins.map((e) => e.id!).toList();
-    late final Set<String> newAdmins;
-    for (var id in aIds) {
-      if (!pIds.contains(id) && aIds.length == 1) {
-        newAdmins = {pIds.first};
-      } else {
-        newAdmins = {...aIds};
-      }
-    }
-    return groupParticipants
-        .where((element) => newAdmins.contains(element.id))
-        .toList();
   }
 
   bool deleteChatsAndMsssagesFromDB(HiveGroupChat hiveChat) {

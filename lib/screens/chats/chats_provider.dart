@@ -63,7 +63,7 @@ class ChatsProvider extends ChangeNotifier {
   }
 
   User get user {
-    return SharedPrefs.instance.getUserData();
+    return SharedPrefs.instance.user;
   }
 
   void sendGroupMessage(

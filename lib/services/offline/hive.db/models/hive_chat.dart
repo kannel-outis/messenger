@@ -3,15 +3,21 @@ import 'dart:ui';
 import 'package:hive/hive.dart';
 import 'package:messenger/models/user.dart' as u;
 import 'package:messenger/models/user.dart';
+import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
 
 import 'hive_group_chat_saltiv.dart';
 part 'hive_chat.g.dart';
 
+var _user = SharedPrefs.instance.user;
+
 abstract class LocalChat with HiveObjectMixin {
   // String? name = "";
   final String? id;
+  final String? photoUrl;
+  final List<User>? participants;
+  final String? name;
 
-  LocalChat({this.id});
+  LocalChat({this.id, this.name, this.participants, this.photoUrl});
 }
 
 @HiveType(typeId: 1)
@@ -24,7 +30,18 @@ class HiveChat extends LocalChat {
   HiveChat({
     this.chatId,
     this.participants,
-  }) : super(id: chatId);
+  }) : super(
+          id: chatId,
+          name: participants!
+              .where((element) => _user.id != element.id)
+              .single
+              .userName,
+          participants: participants,
+          photoUrl: participants
+              .where((element) => _user.id != element.id)
+              .single
+              .photoUrl,
+        );
 
   @override
   bool operator ==(dynamic other) {
@@ -58,7 +75,7 @@ class HiveGroupChat extends LocalChat {
   @HiveField(5)
   final DateTime? groupCreationTimeDate;
   @HiveField(6)
-  final List<u.User>? groupAdmins;
+  List<u.User>? groupAdmins;
   @HiveField(7)
   final List<u.User>? participants;
   @HiveField(8)
@@ -74,7 +91,11 @@ class HiveGroupChat extends LocalChat {
     this.groupAdmins,
     required this.participants,
     required this.hiveGroupChatSaltIV,
-  }) : super(id: groupID);
+  }) : super(
+            id: groupID,
+            name: groupName,
+            participants: participants,
+            photoUrl: groupPhotoUrl);
 
   HiveGroupChat copyWith({
     String? groupID,

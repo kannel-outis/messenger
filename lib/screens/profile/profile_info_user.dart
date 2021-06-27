@@ -1,7 +1,7 @@
 part of 'profile_info_page.dart';
 
 class _UserProfileInfoPage extends StatelessWidget {
-  final HiveChat _chat;
+  final LocalChat _chat;
   const _UserProfileInfoPage(this._chat);
   @override
   Widget build(BuildContext context) {

@@ -22,8 +22,6 @@ class ChatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print((_localChat as HiveGroupChat).groupAdmins![0].id);
-
     if (_localChat is HiveChat) {
       final hiveChat = _localChat as HiveChat;
       return _ChatScreen(
@@ -34,8 +32,6 @@ class ChatsScreen extends StatelessWidget {
       return _HiveGroupChatPage(
         hiveGroupChat: hiveGroupChat,
       );
-
-      // return Scaffold();
     }
   }
 }
@@ -64,12 +60,8 @@ class _ChatScreen extends HookWidget {
     final scrollController = useScrollController();
     return Scaffold(
       appBar: CustomAppBar(
-        isGroupChat: false,
         context: context,
-        friendContactName: hiveChat
-            .participants![_indexOf(_chatsProvider, isMe: false)].userName,
-        photoUrl: hiveChat
-            .participants![_indexOf(_chatsProvider, isMe: false)].photoUrl,
+        chat: hiveChat,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -305,7 +297,6 @@ class _HiveGroupChatPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(hiveGroupChat.groupCreator.userName);
     var valueListener = useState<String?>("");
 
     final _chatsProvider = Provider.of<ChatsProvider>(context);
@@ -314,11 +305,12 @@ class _HiveGroupChatPage extends HookWidget {
     final scrollController = useScrollController();
     return Scaffold(
       appBar: CustomAppBar(
-        isGroupChat: true,
+        // isGroupChat: true,
         context: context,
-        listOfParticipants: hiveGroupChat.participants,
-        friendContactName: hiveGroupChat.groupName,
-        photoUrl: hiveGroupChat.groupPhotoUrl,
+        // listOfParticipants: hiveGroupChat.participants,
+        // friendContactName: hiveGroupChat.groupName,
+        // photoUrl: hiveGroupChat.groupPhotoUrl,
+        chat: hiveGroupChat,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
