@@ -56,11 +56,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Messenger',
+        // theme: ThemeData(
+        //   scaffoldBackgroundColor: Colors.black,
+        //   brightness: Brightness.light,
+        // ),
         theme: ThemeData(
-          scaffoldBackgroundColor: Colors.black,
-          brightness: Brightness.light,
-        ),
-        darkTheme: ThemeData(
           brightness: Brightness.dark,
           primarySwatch: Colors.red,
           primaryColor: Colors.red,

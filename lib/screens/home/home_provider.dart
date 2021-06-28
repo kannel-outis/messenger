@@ -39,6 +39,7 @@ class HomeProvider extends ChangeNotifier {
             chatId: chat.chatID,
             participants:
                 chat.participants.map((e) => User.fromMap(e!)).toList(),
+            lastMessageUpdateTime: DateTime.now(),
           );
           bool exists = _hiveHandler.checkIfchatExists(hiveChat);
 
@@ -82,18 +83,20 @@ class HomeProvider extends ChangeNotifier {
             // print(_stringStringMap);
 
             HiveGroupChat hiveChat = HiveGroupChat(
-                groupID: chat.groupID,
-                participants:
-                    chat.participants.map((e) => User.fromMap(e!)).toList(),
-                groupCreator: User.fromMap(chat.groupCreator),
-                groupName: chat.groupName,
-                groupAdmins:
-                    chat.groupAdmins!.map((e) => User.fromMap(e)).toList(),
-                groupCreationTimeDate: chat.groupCreationTimeDate,
-                groupDescription: chat.groupDescription,
-                groupPhotoUrl: chat.groupPhotoUrl,
-                hiveGroupChatSaltIV:
-                    HiveGroupChatSaltIV.fromMap(_stringStringMap));
+              groupID: chat.groupID,
+              participants:
+                  chat.participants.map((e) => User.fromMap(e!)).toList(),
+              groupCreator: User.fromMap(chat.groupCreator),
+              groupName: chat.groupName,
+              groupAdmins:
+                  chat.groupAdmins!.map((e) => User.fromMap(e)).toList(),
+              groupCreationTimeDate: chat.groupCreationTimeDate,
+              groupDescription: chat.groupDescription,
+              groupPhotoUrl: chat.groupPhotoUrl,
+              hiveGroupChatSaltIV:
+                  HiveGroupChatSaltIV.fromMap(_stringStringMap),
+              lastMessageUpdateTime: DateTime.now(),
+            );
             bool exists = _hiveHandler.checkIfchatExists(hiveChat);
 
             if (exists == false) {

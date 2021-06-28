@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import "package:flutter/material.dart";
 import 'package:messenger/utils/utils.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:timeago_flutter/timeago_flutter.dart';
 // import 'package:timeago_flutter/timeago_flutter.dart';
 
 class CustomChatListTile extends StatelessWidget {
@@ -28,8 +29,6 @@ class CustomChatListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final DateTime? _dateTime =
-    // DateTime.now().subtract(Duration(minutes: dateTime.minute));
     return Column(
       children: [
         GestureDetector(
@@ -110,16 +109,29 @@ class CustomChatListTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       dateTime != null
-                          ? Text(
-                              timeago.format(
-                                DateTime.now().subtract(
-                                  Duration(minutes: dateTime!.minute),
-                                ),
+                          ? Timeago(
+                              date: dateTime!,
+                              allowFromNow: true,
+                              builder: (context, value) => Text(
+                                value.contains("about")
+                                    ? value.substring(6, value.length)
+                                    : value,
+                                textScaleFactor: .6,
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.grey),
                               ),
-                              textScaleFactor: .6,
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 20),
                             )
+                          // Text(
+                          //     timeago.format(
+                          //       DateTime.now().subtract(
+                          //         dateTime!.difference(DateTime.now()),
+                          //       ),
+                          //       allowFromNow: true,
+                          //     ),
+                          //     textScaleFactor: .6,
+                          //     style:
+                          //         TextStyle(color: Colors.grey, fontSize: 20),
+                          //   )
                           : SizedBox(),
                       SizedBox(height: 10),
                       isRead == false

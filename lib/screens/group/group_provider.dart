@@ -155,6 +155,7 @@ class GroupProvider extends ChangeNotifier {
         groupDescription: newGroupChat.groupDescription,
         groupPhotoUrl: newGroupChat.groupPhotoUrl,
         hiveGroupChatSaltIV: HiveGroupChatSaltIV.fromMap(stringToString),
+        lastMessageUpdateTime: oldGroupChat.lastMessageUpdateTime,
       );
       _hiveGroupChat = hiveGroupChat;
       return _hiveHandler.updateAllGroupInfo(hiveGroupChat);

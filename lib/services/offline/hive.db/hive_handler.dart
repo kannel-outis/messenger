@@ -25,7 +25,7 @@ class HiveHandler extends ManagerHandler<IHiveManager> {
     await manager!.saveChatToDB(chat, hiveGroupChatSaltIV: hiveGroupChatSaltIV);
   }
 
-  List<HiveChat> loadChatsFromDB() {
+  List<LocalChat> loadChatsFromDB() {
     return manager!.loadChatsFromLocalDB();
   }
 
