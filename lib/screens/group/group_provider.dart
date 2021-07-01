@@ -110,6 +110,7 @@ class GroupProvider extends ChangeNotifier {
   Future<HiveGroupChat> updateGroupInfo(
       {required List<User> selected,
       required HiveGroupChat oldGroupChat,
+      String? bio,
       required String groupName,
       VoidCallback? onCreatedSuccessful}) async {
     late final _hiveGroupChat;
@@ -128,7 +129,8 @@ class GroupProvider extends ChangeNotifier {
       participantsIDs: [...selected.map((e) => e.id).toList()],
       groupAdmins: oldGroupChat.groupAdmins!.map((e) => e.map).toList(),
       groupCreationTimeDate: oldGroupChat.groupCreationTimeDate,
-      groupDescription: "This is a New group created by ${user.userName}",
+      groupDescription: bio,
+      // groupDescription: "This is a New group created by ${user.userName}",
       groupID: oldGroupChat.groupID,
       groupPhotoUrl: _imageUrl ?? oldGroupChat.groupPhotoUrl,
       usersEncrytedKey: [

@@ -25,6 +25,7 @@ class UpdateGroupInfo extends StatefulWidget {
 class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
   late List<User> _participants;
   late TextEditingController _controller;
+  late TextEditingController _bioController;
   HiveGroupChat? _returnHiveGroupChat;
 
   ImageProvider<Object> image(File? internalImage) {
@@ -40,6 +41,8 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.hiveGroupChat.groupName);
+    _bioController =
+        TextEditingController(text: widget.hiveGroupChat.groupDescription);
     _participants = widget.hiveGroupChat.participants!;
   }
 
@@ -182,6 +185,26 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                   ),
                 ),
                 SizedBox(height: 30),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        controller: _bioController,
+                        decoration: InputDecoration(
+                          hintText: "Enter New Bio",
+                          border:
+                              UnderlineInputBorder(borderSide: BorderSide.none),
+                          focusColor: Colors.red,
+                          suffixIcon: Icon(Icons.edit, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
                 Consumer<GroupProvider>(
                   builder: (context, p, child) {
                     return p.uploadingImageToStorage
@@ -200,6 +223,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                       _returnHiveGroupChat =
                           await context.read<GroupProvider>().updateGroupInfo(
                                 groupName: _controller.text,
+                                bio: _bioController.text,
                                 oldGroupChat: widget.hiveGroupChat,
                                 onCreatedSuccessful: () =>
                                     Fluttertoast.showToast(

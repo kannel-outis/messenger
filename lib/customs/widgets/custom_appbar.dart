@@ -15,7 +15,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
   final BuildContext context;
 
-  const CustomAppBar({
+  CustomAppBar({
     required this.context,
     required this.chat,
   });
@@ -498,7 +498,7 @@ class CustomProfileInfoAppBar extends StatelessWidget {
   final bool isGroupChat;
   final Orientation orientation;
 
-  const CustomProfileInfoAppBar({
+  CustomProfileInfoAppBar({
     Key? key,
     required this.onPressed,
     required this.photoUrl,

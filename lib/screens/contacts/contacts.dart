@@ -1,9 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
+import 'package:messenger/screens/contacts/contacts_provider.dart';
 import 'package:messenger/screens/home/home.dart';
+import 'package:messenger/services/offline/hive.db/hive_init.dart';
+import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
 
 class ContactsScreen extends StatefulWidget {
   final bool? fromHome;
@@ -24,6 +30,7 @@ class _ContactsScreenState extends State<ContactsScreen>
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
       vsync: this,
       value: 0,
@@ -46,7 +53,7 @@ class _ContactsScreenState extends State<ContactsScreen>
   double _calcExpansionTileSpace(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
     const appBarHeight = 100;
-    const bothTilePanelHeihgt = 150;
+    const bothTilePanelHeihgt = 200;
     if (_registeredCollapse != null &&
         _registeredCollapse == true &&
         _unRegisteredCollapse != true) {
@@ -60,12 +67,14 @@ class _ContactsScreenState extends State<ContactsScreen>
       return MediaQuery.of(context).size.height -
           (bothTilePanelHeihgt + statusBarHeight + appBarHeight);
     }
-    return (MediaQuery.of(context).size.height / 2) - (100 + statusBarHeight);
+    return (Utils.blockHeight * 50) - (100 + statusBarHeight);
   }
 
   @override
   Widget build(BuildContext context) {
-    var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
+    final _contactsProvider = Provider.of<ContactProvider>(context);
+
+    // return ValueListenableBuilder(builder: ,);
 
     return Scaffold(
       appBar: AppBar(
@@ -101,196 +110,170 @@ class _ContactsScreenState extends State<ContactsScreen>
           ),
         ],
       ),
-      body: _listOfContacts.length <= 0
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
-              // bool _isRegistered =
-              //     _listOfContacts[index] == _listOfContacts.first;
-              children: [
-                Container(
-                  child: Column(
+      body: ValueListenableBuilder<Box<HivePhoneContactsList>>(
+          // stream: null,
+          valueListenable:
+              Hive.box<HivePhoneContactsList>(HiveInit.hiveContactsList)
+                  .listenable(),
+          builder: (context, box, child) {
+            if (box.values.isEmpty) {
+              Provider.of<List<List<PhoneContacts>>>(context);
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return FutureBuilder<List<List<PhoneContacts>>>(
+                future: _contactsProvider.decodeAndCreateContactsListFromJson(
+                    box.values.toList().first.phoneContacts),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData)
+                    return Center(child: CircularProgressIndicator());
+                  final _listOfContacts = snapshot.data!;
+                  return Column(
                     children: [
-                      ExpansionTile(
-                        trailing: AnimatedIcon(
-                          icon: AnimatedIcons.menu_close,
-                          progress: _controller2,
-                          color: Colors.grey,
-                        ),
-                        maintainState: true,
-                        onExpansionChanged: (boolean) {
-                          _registeredCollapse = boolean;
-                          if (_registeredCollapse == true) {
-                            _controller2.forward();
-                          } else if (_registeredCollapse == false) {
-                            _controller2.reverse();
-                          } else {
-                            _controller2.reset();
-                          }
-                          print(_registeredCollapse);
-                          setState(() {});
-                        },
-                        title: Container(
-                          height: 50,
-                          alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
-                          ),
-                          width: double.infinity,
-                          color: Colors.grey.shade600,
-                          child: Text(
-                            'Registered',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        children: [
-                          Container(
-                            height: (MediaQuery.of(context).size.height / 100) *
-                                5 *
-                                _listOfContacts[0].length,
-                            child: Column(
+                      Container(
+                        child: Column(
+                          children: [
+                            ExpansionTile(
+                              trailing: AnimatedIcon(
+                                icon: AnimatedIcons.menu_close,
+                                progress: _controller2,
+                                color: Colors.grey,
+                              ),
+                              maintainState: true,
+                              onExpansionChanged: (boolean) {
+                                _registeredCollapse = boolean;
+                                if (_registeredCollapse == true) {
+                                  _controller2.forward();
+                                } else if (_registeredCollapse == false) {
+                                  _controller2.reverse();
+                                } else {
+                                  _controller2.reset();
+                                }
+                                print(_registeredCollapse);
+                              },
+                              title: Container(
+                                height: 50,
+                                alignment: Alignment.bottomLeft,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 10,
+                                ),
+                                width: double.infinity,
+                                color: Colors.grey.shade600,
+                                child: Text(
+                                  'Registered',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
                               children: [
-                                Expanded(
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: _listOfContacts[0].length,
-                                      itemBuilder: (context, i) {
-                                        return BuildContactTile(
-                                          fromHome: widget.fromHome,
-                                          element: _listOfContacts[0][i],
-                                        );
-                                      }),
+                                Container(
+                                  height: Utils.blockHeight *
+                                      5 *
+                                      _listOfContacts[0].length,
+                                  constraints: BoxConstraints(
+                                    maxHeight:
+                                        Utils.blockHeight * 50 - 100 - 50,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount:
+                                                _listOfContacts[0].length,
+                                            itemBuilder: (context, i) {
+                                              return BuildContactTile(
+                                                fromHome: widget.fromHome,
+                                                element: _listOfContacts[0][i],
+                                              );
+                                            }),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      // ..._listOfContacts[index].map((e) {
-                      // return _BuildContactTile(
-                      //   fromHome: fromHome,
-                      //   contactModel: _contactModel,
-                      //   element: e,
-                      // );
-                      //   // return Text("Emir");
-                      // }).toList(),
-                      // ConstrainedBox(
-                      //   constraints: BoxConstraints(maxHeight: 1000),
-                      //   child: ListView.builder(
-                      //       shrinkWrap: true,
-                      //       itemCount: _listOfContacts[index].length,
-                      //       itemBuilder: (context, i) {
-                      //         return _BuildContactTile(
-                      //           fromHome: fromHome,
-                      //           contactModel: _contactModel,
-                      //           element: _listOfContacts[index][i],
-                      //         );
-                      //       }),
-                      // ),
-                    ],
-                  ),
-                ),
-                //
+                      //
 
-                Container(
-                  child: Column(
-                    children: [
-                      ExpansionTile(
-                        maintainState: true,
-                        // collapsedBackgroundColor: Colors.red,
-                        trailing: AnimatedIcon(
-                          icon: AnimatedIcons.menu_close,
-                          color: Colors.grey,
-                          progress: _controller,
-                        ),
-                        onExpansionChanged: (boolean) {
-                          _unRegisteredCollapse = boolean;
-                          if (_unRegisteredCollapse == true) {
-                            _controller.forward();
-                          } else if (_unRegisteredCollapse == false) {
-                            _controller.reverse();
-                          } else {
-                            _controller.reset();
-                          }
-                          setState(() {});
-                        },
-                        title: Container(
-                          height: 50,
-                          alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
-                          ),
-                          width: double.infinity,
-                          color: Colors.grey.shade600,
-                          child: Text(
-                            'UnRegistered',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        children: [
-                          Container(
-                            height: (MediaQuery.of(context).size.height / 100) *
-                                5 *
-                                _listOfContacts[1].length,
-                            constraints: BoxConstraints(
-                              // maxHeight: (MediaQuery.of(context).size.height /
-                              //         2) -
-                              //     (100 + MediaQuery.of(context).padding.top),
-                              maxHeight: _calcExpansionTileSpace(context),
-                            ),
-                            child: Column(
+                      Container(
+                        child: Column(
+                          children: [
+                            ExpansionTile(
+                              maintainState: true,
+                              // collapsedBackgroundColor: Colors.red,
+                              trailing: AnimatedIcon(
+                                icon: AnimatedIcons.menu_close,
+                                color: Colors.grey,
+                                progress: _controller,
+                              ),
+                              onExpansionChanged: (boolean) {
+                                _unRegisteredCollapse = boolean;
+                                if (_unRegisteredCollapse == true) {
+                                  _controller.forward();
+                                } else if (_unRegisteredCollapse == false) {
+                                  _controller.reverse();
+                                } else {
+                                  _controller.reset();
+                                }
+                              },
+                              title: Container(
+                                height: 50,
+                                alignment: Alignment.bottomLeft,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 10,
+                                ),
+                                width: double.infinity,
+                                color: Colors.grey.shade600,
+                                child: Text(
+                                  'UnRegistered',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
                               children: [
-                                Expanded(
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: _listOfContacts[1].length,
-                                      itemBuilder: (context, i) {
-                                        return BuildContactTile(
-                                          fromHome: widget.fromHome,
-                                          element: _listOfContacts[1][i],
-                                        );
-                                      }),
+                                Container(
+                                  height: Utils.blockHeight *
+                                      5 *
+                                      _listOfContacts[1].length,
+                                  constraints: BoxConstraints(
+                                    maxHeight: _calcExpansionTileSpace(context),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount:
+                                                _listOfContacts[1].length,
+                                            itemBuilder: (context, i) {
+                                              return BuildContactTile(
+                                                fromHome: widget.fromHome,
+                                                element: _listOfContacts[1][i],
+                                              );
+                                            }),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      // ..._listOfContacts[index].map((e) {
-                      // return _BuildContactTile(
-                      //   fromHome: fromHome,
-                      //   contactModel: _contactModel,
-                      //   element: e,
-                      // );
-                      //   // return Text("Emir");
-                      // }).toList(),
-                      // ConstrainedBox(
-                      //   constraints: BoxConstraints(maxHeight: 1000),
-                      //   child: ListView.builder(
-                      //       shrinkWrap: true,
-                      //       itemCount: _listOfContacts[index].length,
-                      //       itemBuilder: (context, i) {
-                      //         return _BuildContactTile(
-                      //           fromHome: fromHome,
-                      //           contactModel: _contactModel,
-                      //           element: _listOfContacts[index][i],
-                      //         );
-                      //       }),
-                      // ),
                     ],
-                  ),
-                ),
-              ],
-            ),
+                  );
+                });
+          }),
     );
   }
 }

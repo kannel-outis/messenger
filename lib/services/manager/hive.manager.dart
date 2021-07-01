@@ -153,7 +153,7 @@ class HiveManager implements IHiveManager {
 
   @override
   List<List<Map<String, dynamic>>> getContactsListFromDB() {
-    return _hiveContactsList.values.toList().single.phoneContacts;
+    return _hiveContactsList.values.toList().first.phoneContacts;
   }
 
   @override
@@ -198,7 +198,7 @@ class HiveManager implements IHiveManager {
 
   @override
   void updateUserOnContactsListInHive(User user, int index) {
-    return;
+    // return;
     print("Happen shele");
     _hiveContactsList.values
         // .where(

@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import "package:flutter/material.dart";
 import 'package:messenger/utils/utils.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:timeago_flutter/timeago_flutter.dart';
 // import 'package:timeago_flutter/timeago_flutter.dart';
 
@@ -29,6 +28,7 @@ class CustomChatListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(title);
     return Column(
       children: [
         GestureDetector(

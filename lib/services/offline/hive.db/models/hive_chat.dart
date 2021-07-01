@@ -13,11 +13,11 @@ var _user = SharedPrefs.instance.user;
 
 abstract class LocalChat with HiveObjectMixin {
   // String? name = "";
-  final String? id;
-  final String? photoUrl;
-  final List<User>? participants;
-  final String? name;
-  final DateTime? lastMessageUpdateTime;
+  String? id;
+  String? photoUrl;
+  List<User>? participants;
+  String? name;
+  DateTime? lastMessageUpdateTime;
 
   LocalChat(
       {this.id,
@@ -35,6 +35,20 @@ class HiveChat extends LocalChat {
   final List<u.User>? participants;
   @HiveField(2)
   DateTime? lastMessageUpdateTime;
+
+  void setSuper() {
+    super.id = chatId;
+    super.name = participants!
+        .where((element) => _user.id != element.id)
+        .single
+        .userName;
+    super.participants = participants;
+    super.photoUrl = participants!
+        .where((element) => _user.id != element.id)
+        .single
+        .photoUrl;
+    super.lastMessageUpdateTime = lastMessageUpdateTime!;
+  }
 
   HiveChat({
     this.chatId,
@@ -94,6 +108,14 @@ class HiveGroupChat extends LocalChat {
   final HiveGroupChatSaltIV? hiveGroupChatSaltIV;
   @HiveField(9)
   DateTime? lastMessageUpdateTime;
+
+  void setSuper() {
+    super.id = groupID;
+    super.name = groupName;
+    super.participants = participants;
+    super.photoUrl = groupPhotoUrl;
+    super.lastMessageUpdateTime = lastMessageUpdateTime;
+  }
 
   HiveGroupChat({
     this.groupID,

@@ -40,7 +40,7 @@ class HomeChats extends StatelessWidget {
               valueListenable2:
                   Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
               builder: (context, hiveChat, hiveMessage, child) {
-                final List<HiveChat> unSortedHiveChats = hiveChat!.values
+                final unSortedHiveChats = hiveChat!.values
                     .where((element) => element.participants!.containsUser())
                     .toList();
                 unSortedHiveChats.sort((a, b) => a.lastMessageUpdateTime!
@@ -100,7 +100,8 @@ class HomeChats extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => ChatsScreen(hiveChats[index]),
+                            builder: (_) =>
+                                ChatsScreen(hiveChats[index]..setSuper()),
                           ),
                         );
                       },
@@ -108,7 +109,8 @@ class HomeChats extends StatelessWidget {
                         await showModalBottomSheet(
                           context: context,
                           builder: (context) {
-                            return BottomModalSheet(chat: hiveChats[index]);
+                            return BottomModalSheet(
+                                chat: hiveChats[index]..setSuper());
                           },
                         );
                       },
