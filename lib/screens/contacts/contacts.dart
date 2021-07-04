@@ -122,13 +122,19 @@ class _ContactsScreenState extends State<ContactsScreen>
                 child: CircularProgressIndicator(),
               );
             }
-            return FutureBuilder<List<List<PhoneContacts>>>(
-                future: _contactsProvider.decodeAndCreateContactsListFromJson(
-                    box.values.toList().first.phoneContacts),
+            final phoneContacts = PhoneContacts(
+              firstList: box.values.toList().first.registeredContactsToMap,
+              lastList: box.values.toList().first.unRegisteredContactsToMap,
+            );
+            return FutureBuilder<
+                    PhoneContacts<RegisteredPhoneContacts,
+                        UnRegisteredPhoneContacts>>(
+                future: _contactsProvider
+                    .decodeAndCreateContactsListFromJson(phoneContacts),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return Center(child: CircularProgressIndicator());
-                  final _listOfContacts = snapshot.data!;
+                  final phoneContacts = snapshot.data!;
                   return Column(
                     children: [
                       Container(
@@ -173,7 +179,7 @@ class _ContactsScreenState extends State<ContactsScreen>
                                 Container(
                                   height: Utils.blockHeight *
                                       5 *
-                                      _listOfContacts[0].length,
+                                      phoneContacts.firstList!.length,
                                   constraints: BoxConstraints(
                                     maxHeight:
                                         Utils.blockHeight * 50 - 100 - 50,
@@ -184,11 +190,12 @@ class _ContactsScreenState extends State<ContactsScreen>
                                         child: ListView.builder(
                                             shrinkWrap: true,
                                             itemCount:
-                                                _listOfContacts[0].length,
+                                                phoneContacts.firstList!.length,
                                             itemBuilder: (context, i) {
                                               return BuildContactTile(
                                                 fromHome: widget.fromHome,
-                                                element: _listOfContacts[0][i],
+                                                element:
+                                                    phoneContacts.firstList![i],
                                               );
                                             }),
                                       ),
@@ -244,7 +251,7 @@ class _ContactsScreenState extends State<ContactsScreen>
                                 Container(
                                   height: Utils.blockHeight *
                                       5 *
-                                      _listOfContacts[1].length,
+                                      phoneContacts.lastList!.length,
                                   constraints: BoxConstraints(
                                     maxHeight: _calcExpansionTileSpace(context),
                                   ),
@@ -254,11 +261,12 @@ class _ContactsScreenState extends State<ContactsScreen>
                                         child: ListView.builder(
                                             shrinkWrap: true,
                                             itemCount:
-                                                _listOfContacts[1].length,
+                                                phoneContacts.lastList!.length,
                                             itemBuilder: (context, i) {
                                               return BuildContactTile(
                                                 fromHome: widget.fromHome,
-                                                element: _listOfContacts[1][i],
+                                                element:
+                                                    phoneContacts.lastList![i],
                                               );
                                             }),
                                       ),

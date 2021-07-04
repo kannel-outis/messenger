@@ -73,7 +73,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
 
   @override
   Widget build(BuildContext context) {
-    var _listOfContacts = Provider.of<ContactProvider>(context).listOfContact;
+    var _phoneContacts = Provider.of<ContactProvider>(context).phoneContacts;
     var _groupProvider = Provider.of<GroupProvider>(context);
 
     return WillPopScope(
@@ -176,13 +176,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: _listOfContacts.isEmpty
+                    child: _phoneContacts.firstList!.isEmpty
                         ? CircularProgressIndicator.adaptive()
                         : ListView.builder(
-                            itemCount: _listOfContacts[0].length,
+                            itemCount: _phoneContacts.firstList!.length,
                             itemBuilder: (context, index) {
-                              final contact = _listOfContacts[0][index]
-                                  as RegisteredPhoneContacts;
+                              final contact = _phoneContacts.firstList![index];
                               return InkWell(
                                 onLongPress: () {
                                   _onLongPress(contact);
@@ -209,8 +208,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                                               BorderRadius.circular(50),
                                           image: DecorationImage(
                                               image: CachedNetworkImageProvider(
-                                                  (_listOfContacts[0][index]
-                                                              as RegisteredPhoneContacts)
+                                                  _phoneContacts
+                                                          .firstList![index]
                                                           .user
                                                           .photoUrl ??
                                                       GeneralConstants
@@ -230,7 +229,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
                                           ? Checkbox(
                                               activeColor: Colors.red,
                                               value: _selected.contains(
-                                                  _listOfContacts[0][index]),
+                                                  _phoneContacts
+                                                      .firstList![index]),
                                               onChanged: (e) {
                                                 _onTap(contact);
                                               },

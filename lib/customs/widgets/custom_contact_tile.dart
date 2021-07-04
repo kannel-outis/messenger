@@ -13,7 +13,7 @@ class BuildContactTile extends StatelessWidget {
   }) : super(key: key);
 
   final bool? fromHome;
-  final PhoneContacts element;
+  final Object element;
   final bool isGroup;
 
   bool _isDenseLayout(ListTileTheme? tileTheme) {
@@ -78,7 +78,7 @@ class BuildContactTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${e.contact.givenName ?? e.contact.displayName}",
+                  "${e.contact.name ?? e.contact.name2}",
                   style: _titleTextStyle(
                     Theme.of(context),
                     ListTileTheme.of(context),
@@ -87,7 +87,7 @@ class BuildContactTile extends StatelessWidget {
                 Text(
                   e.contact.phones!.length == 0
                       ? ""
-                      : "${e.contact.phones?.toList()[0].value}",
+                      : "${e.contact.phones?.toList()[0]}",
                   style: _subtitleTextStyle(
                     Theme.of(context),
                     ListTileTheme.of(context),
@@ -159,7 +159,7 @@ class BuildContactTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${e.contact!.givenName ?? e.contact!.displayName}",
+                  "${e.contact!.name ?? e.contact!.name2}",
                   style: _titleTextStyle(
                     Theme.of(context),
                     ListTileTheme.of(context),
@@ -168,7 +168,7 @@ class BuildContactTile extends StatelessWidget {
                 Text(
                   e.contact!.phones!.length == 0
                       ? ""
-                      : "${e.contact!.phones?.toList()[0].value}",
+                      : "${e.contact!.phones?.toList()[0]}",
                   style: _subtitleTextStyle(
                     Theme.of(context),
                     ListTileTheme.of(context),

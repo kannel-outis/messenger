@@ -3,33 +3,59 @@ import 'package:hive/hive.dart';
 import 'package:messenger/models/user.dart' as model;
 part 'contacts_model.g.dart';
 
-class MyContact extends Contact {
-  final Contact contact;
-  MyContact(this.contact);
+class PhoneContacts<T, R> {
+  final List<T>? firstList;
+  final List<R>? lastList;
+
+  PhoneContacts({
+    required this.firstList,
+    required this.lastList,
+  });
 }
 
-class MyUser extends model.User {
-  MyUser() : super(publicKey: null);
+class MyContact {
+  final String? name;
+  final String? name2;
+  final List<String?>? phones;
+  final List<String?>? emails;
+  MyContact({
+    required this.name,
+    required this.name2,
+    required this.phones,
+    required this.emails,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      "name": name,
+      "name2": name2,
+      "emails": emails,
+      "phones": phones,
+    };
+  }
+
+  static MyContact fromMap(Map<String, dynamic> map) {
+    return MyContact(
+      name: map['name'],
+      name2: map['name2'],
+      emails: List<String>.from(map['emails']),
+      phones: List<String>.from(map['phones']),
+    );
+  }
 }
 
-abstract class PhoneContacts {
-  final Contact? contact;
-
-  PhoneContacts(this.contact);
-}
-
-class RegisteredPhoneContacts extends PhoneContacts {
-  final Contact contact;
+class RegisteredPhoneContacts {
+  final MyContact contact;
   final model.User user;
   RegisteredPhoneContacts({
     required this.contact,
     required this.user,
-  }) : super(contact);
+  });
 
   Map<String, Map<String, dynamic>> get map {
     print(user.map);
     return {
-      'contact': contact.toMap().cast<String, dynamic>(),
+      'contact': contact.toMap(),
       'user': user.map,
     };
   }
@@ -39,7 +65,7 @@ class RegisteredPhoneContacts extends PhoneContacts {
         .map((key, value) => MapEntry(key, Map<String, dynamic>.from(value)));
 
     return RegisteredPhoneContacts(
-      contact: Contact.fromMap(
+      contact: MyContact.fromMap(
         newMap['contact']!,
       ),
       user: model.User.fromMap(
@@ -49,13 +75,13 @@ class RegisteredPhoneContacts extends PhoneContacts {
   }
 }
 
-class UnRegisteredPhoneContacts extends PhoneContacts {
-  final Contact? contact;
-  UnRegisteredPhoneContacts({this.contact}) : super(contact);
+class UnRegisteredPhoneContacts {
+  final MyContact? contact;
+  UnRegisteredPhoneContacts({this.contact});
 
   Map<String, Map<String, dynamic>> get map {
     return {
-      'contact': contact!.toMap().cast<String, dynamic>(),
+      'contact': contact!.toMap(),
     };
   }
 
@@ -63,18 +89,21 @@ class UnRegisteredPhoneContacts extends PhoneContacts {
     final newMap = map
         .map((key, value) => MapEntry(key, Map<String, dynamic>.from(value)));
     return UnRegisteredPhoneContacts(
-      contact: Contact.fromMap(
+      contact: MyContact.fromMap(
         newMap['contact']!,
       ),
     );
   }
 }
 
-@HiveType(typeId: 6)
-class HivePhoneContactsList extends PhoneContacts with HiveObjectMixin {
-  @HiveField(0)
-  List<List<Map<String, dynamic>>> phoneContacts;
+// @HiveType(typeId: 6)
+class HivePhoneContactsList extends HiveObject {
+  // @HiveField(0)
+  // List<List<Map<String, dynamic>>> phoneContacts;
+  List<Map<String, dynamic>>? registeredContactsToMap;
+  List<Map<String, dynamic>>? unRegisteredContactsToMap;
   HivePhoneContactsList({
-    required this.phoneContacts,
-  }) : super(Contact.fromMap(phoneContacts[0][0]));
+    required this.registeredContactsToMap,
+    required this.unRegisteredContactsToMap,
+  });
 }

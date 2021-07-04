@@ -13,10 +13,10 @@ class Contacts extends Offline {
 
   Contacts(this._cloud);
   @override
-  Future<List<List<PhoneContacts>>>
+  Future<PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>>
       listOfRegisteredAndUnregisteredUsers() async {
-    Set<PhoneContacts> _registeredContacts = {};
-    Set<PhoneContacts> _unRegisteredContacts = {};
+    Set<RegisteredPhoneContacts> _registeredContacts = {};
+    Set<UnRegisteredPhoneContacts> _unRegisteredContacts = {};
     await PermissionHandler.checkContactsPermission(
             permission: Permission.contacts)
         .then((value) async {
@@ -41,20 +41,34 @@ class Contacts extends Offline {
           if (_isClean) {
             print('Found Something');
             _registeredContacts.add(RegisteredPhoneContacts(
-              contact: _contact,
+              contact: MyContact(
+                name: _contact.displayName,
+                name2: _contact.givenName,
+                emails: _contact.emails!.map((e) => e.value).toList(),
+                phones: _contact.phones!.map((e) => e.value).toList(),
+              ),
               user: User.fromMap(_result.docs[0].data()!),
             ));
           } else {
             print('Found Nothing');
             _unRegisteredContacts.add(UnRegisteredPhoneContacts(
-              contact: _contact,
+              contact: MyContact(
+                name: _contact.displayName,
+                name2: _contact.givenName,
+                emails: _contact.emails!.map((e) => e.value).toList(),
+                phones: _contact.phones!.map((e) => e.value).toList(),
+              ),
             ));
           }
         }
       }
     });
 
-    return [_registeredContacts.toList(), _unRegisteredContacts.toList()];
+    // return [_registeredContacts.toList(), _unRegisteredContacts.toList()];
+    return PhoneContacts(
+      firstList: _registeredContacts.toList(),
+      lastList: _unRegisteredContacts.toList(),
+    );
   }
 
   String _cleanNumber(String number) {

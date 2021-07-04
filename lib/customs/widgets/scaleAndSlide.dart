@@ -35,8 +35,8 @@ class ScaleAndSlide extends StatelessWidget {
                   fit: BoxFit.cover),
             ),
           ),
-          Text(_selected[index].contact.givenName ??
-              _selected[index].contact.displayName!),
+          Text(
+              _selected[index].contact.name ?? _selected[index].contact.name2!),
         ],
       ),
     );
