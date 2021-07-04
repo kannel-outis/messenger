@@ -216,7 +216,5 @@ class EncryptClass implements IEncryptManager {
   }
 
   @override
-  void dispose() {
-    // TODO: implement dispose
-  }
+  void dispose() {}
 }

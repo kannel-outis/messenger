@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:messenger/customs/error/error.dart';
-import 'package:messenger/models/chat.dart';
-import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/message.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/services/encryption_class.dart';
@@ -12,10 +8,7 @@ import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
 import 'package:messenger/services/offline/hive.db/models/keys.dart';
 import 'package:messenger/services/offline/shared_prefs/shared_prefs.dart';
-import 'package:messenger/services/online/firebase/firestore_service.dart';
 import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
-import 'package:messenger/services/online/online.dart';
-import 'package:messenger/utils/constants.dart';
 import 'package:messenger/utils/typedef.dart';
 import 'package:uuid/uuid.dart';
 
@@ -99,15 +92,4 @@ class ChatsProvider extends ChangeNotifier {
       handleExceptionInUi!(e.message);
     }
   }
-
-  // TODO: extension
-  // bool contains(List<String>? iDs) {
-  //   final User prefUser = User.fromMap(
-  //       json.decode(SharedPrefs.instance.getString(OfflineConstants.MY_DATA)!));
-  //   return iDs!.contains(prefUser.id);
-  // }
-
-  // LocalChat? local(LocalChat local) {
-  //   return _hiveHandler.loadSingleChat(local);
-  // }
 }

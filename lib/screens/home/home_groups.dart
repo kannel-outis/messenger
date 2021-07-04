@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -38,8 +37,12 @@ class HomeGroup extends StatelessWidget {
                     Hive.box<HiveMessages>(HiveInit.messagesBoxName)
                         .listenable(),
                 builder: (context, hiveChat, hiveMessage, child) {
-                  final List<HiveGroupChat> hiveGroupChats =
+                  final List<HiveGroupChat> unSortedHiveGroupChats =
                       hiveChat!.values.toList();
+                  unSortedHiveGroupChats.sort((a, b) => a.lastMessageUpdateTime!
+                      .compareTo(b.lastMessageUpdateTime!));
+                  final List<HiveGroupChat> hiveGroupChats =
+                      unSortedHiveGroupChats.reversed.toList();
 
                   return ListView.builder(
                     shrinkWrap: true,
@@ -62,16 +65,17 @@ class HomeGroup extends StatelessWidget {
                       return CustomChatListTile(
                         title: title,
                         subtitle: hiveMessages.isNotEmpty
-                            ? hiveMessages[0].senderID == homeProvider.user.id
-                                ? "you: ${hiveMessages[0].msg}"
-                                : "${hiveGroupChats[index].participants!.where((element) => element.id == hiveMessages[0].senderID).single.userName}: ${hiveMessages[0].msg}"
+                            ? hiveMessages.first.senderID ==
+                                    homeProvider.user.id
+                                ? "you: ${hiveMessages.first.msg}"
+                                : "${hiveGroupChats[index].participants!.where((element) => element.id == hiveMessages.first.senderID).first.userName}: ${hiveMessages.first.msg}"
                             : null,
                         photoUrl: photoUrl,
                         dateTime: hiveMessages.isNotEmpty
-                            ? hiveMessages[0].dateTime
+                            ? hiveMessages.first.dateTime
                             : null,
                         isRead: hiveMessages.isNotEmpty
-                            ? hiveMessages[0].isRead
+                            ? hiveMessages.first.isRead
                             : null,
                         messageCount:
                             hiveMessages.isNotEmpty ? isReadMessages.length : 0,

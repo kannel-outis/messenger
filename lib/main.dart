@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/customs/custom_scroll_config.dart';
-import 'package:messenger/screens/auth/set_name_screen.dart';
-import 'package:messenger/screens/auth/verify_otp.dart';
 import 'package:messenger/screens/contacts/contacts_provider.dart';
 import 'package:messenger/screens/group/group_provider.dart';
 import 'package:messenger/screens/home/home.dart';
@@ -56,11 +54,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Messenger',
+        // theme: ThemeData(
+        //   scaffoldBackgroundColor: Colors.black,
+        //   brightness: Brightness.light,
+        // ),
         theme: ThemeData(
-          scaffoldBackgroundColor: Colors.black,
-          brightness: Brightness.light,
-        ),
-        darkTheme: ThemeData(
           brightness: Brightness.dark,
           primarySwatch: Colors.red,
           primaryColor: Colors.red,

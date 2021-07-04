@@ -40,11 +40,17 @@ class HomeChats extends StatelessWidget {
               valueListenable2:
                   Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
               builder: (context, hiveChat, hiveMessage, child) {
-                final List<HiveChat> hiveChats = hiveChat!.values
+                final unSortedHiveChats = hiveChat!.values
                     .where((element) => element.participants!.containsUser())
                     .toList();
+                unSortedHiveChats.sort((a, b) => a.lastMessageUpdateTime!
+                    .compareTo(b.lastMessageUpdateTime!));
+                final hiveChats = unSortedHiveChats.reversed.toList();
+
+                final List<HiveMessages> _hiveMessages =
+                    hiveMessage!.values.toList();
                 streamControllerG.sink
-                    .add(messages(message: hiveMessage!, isGroup: true).length);
+                    .add(messages(message: hiveMessage, isGroup: true).length);
                 streamController.sink
                     .add(messages(message: hiveMessage).length);
 
@@ -56,7 +62,7 @@ class HomeChats extends StatelessWidget {
                         .participants!
                         .map((e) => e.id!)
                         .toList();
-                    final List<HiveMessages> hiveMessages = hiveMessage.values
+                    final List<HiveMessages> hiveMessages = _hiveMessages
                         .where((element) =>
                             element.chatID == hiveChats[index].chatId)
                         .toList()
@@ -80,21 +86,22 @@ class HomeChats extends StatelessWidget {
                     return CustomChatListTile(
                       title: title,
                       subtitle: hiveMessages.isNotEmpty
-                          ? hiveMessages[0].msg
+                          ? hiveMessages.first.msg
                           : "Tap to Start a direct message with $title",
                       messageCount:
                           hiveMessages.isNotEmpty ? isReadMessages.length : 0,
                       photoUrl: photoUrl,
                       isRead: hiveMessages.isNotEmpty
-                          ? hiveMessages[0].isRead
+                          ? hiveMessages.first.isRead
                           : null,
                       dateTime: hiveMessages.isNotEmpty
-                          ? hiveMessages[0].dateTime
+                          ? hiveMessages.first.dateTime
                           : null,
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => ChatsScreen(hiveChats[index]),
+                            builder: (_) =>
+                                ChatsScreen(hiveChats[index]..setSuper()),
                           ),
                         );
                       },
@@ -102,7 +109,8 @@ class HomeChats extends StatelessWidget {
                         await showModalBottomSheet(
                           context: context,
                           builder: (context) {
-                            return BottomModalSheet(chat: hiveChats[index]);
+                            return BottomModalSheet(
+                                chat: hiveChats[index]..setSuper());
                           },
                         );
                       },
@@ -129,11 +137,12 @@ int _indexOf(List<String> iDs, HomeProvider homeProvider, {bool isMe = true}) {
 
 Set<String> messages(
     {bool isGroup = false, required Box<HiveMessages> message}) {
-  return message.values.isNotEmpty
-      ? message.values
-          .where((e) => e.isRead == false && e.isGroup == false)
-          .toList()
-          .map((e) => e.chatID!)
-          .toSet()
-      : Set<String>();
+  if (message.values.isNotEmpty) {
+    return message.values
+        .where((e) => e.isRead == false && e.isGroup == isGroup)
+        .toList()
+        .map((e) => e.chatID!)
+        .toSet();
+  }
+  return Set<String>();
 }

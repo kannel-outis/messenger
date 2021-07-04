@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:messenger/models/user.dart' as u;
 import 'package:messenger/models/user.dart';
@@ -12,12 +13,18 @@ var _user = SharedPrefs.instance.user;
 
 abstract class LocalChat with HiveObjectMixin {
   // String? name = "";
-  final String? id;
-  final String? photoUrl;
-  final List<User>? participants;
-  final String? name;
+  String? id;
+  String? photoUrl;
+  List<User>? participants;
+  String? name;
+  DateTime? lastMessageUpdateTime;
 
-  LocalChat({this.id, this.name, this.participants, this.photoUrl});
+  LocalChat(
+      {this.id,
+      this.name,
+      this.participants,
+      this.photoUrl,
+      @required this.lastMessageUpdateTime});
 }
 
 @HiveType(typeId: 1)
@@ -26,10 +33,27 @@ class HiveChat extends LocalChat {
   final String? chatId;
   @HiveField(1)
   final List<u.User>? participants;
+  @HiveField(2)
+  DateTime? lastMessageUpdateTime;
+
+  void setSuper() {
+    super.id = chatId;
+    super.name = participants!
+        .where((element) => _user.id != element.id)
+        .single
+        .userName;
+    super.participants = participants;
+    super.photoUrl = participants!
+        .where((element) => _user.id != element.id)
+        .single
+        .photoUrl;
+    super.lastMessageUpdateTime = lastMessageUpdateTime!;
+  }
 
   HiveChat({
     this.chatId,
     this.participants,
+    required this.lastMessageUpdateTime,
   }) : super(
           id: chatId,
           name: participants!
@@ -41,6 +65,7 @@ class HiveChat extends LocalChat {
               .where((element) => _user.id != element.id)
               .single
               .photoUrl,
+          lastMessageUpdateTime: lastMessageUpdateTime,
         );
 
   @override
@@ -78,8 +103,19 @@ class HiveGroupChat extends LocalChat {
   List<u.User>? groupAdmins;
   @HiveField(7)
   final List<u.User>? participants;
+
   @HiveField(8)
   final HiveGroupChatSaltIV? hiveGroupChatSaltIV;
+  @HiveField(9)
+  DateTime? lastMessageUpdateTime;
+
+  void setSuper() {
+    super.id = groupID;
+    super.name = groupName;
+    super.participants = participants;
+    super.photoUrl = groupPhotoUrl;
+    super.lastMessageUpdateTime = lastMessageUpdateTime;
+  }
 
   HiveGroupChat({
     this.groupID,
@@ -89,13 +125,16 @@ class HiveGroupChat extends LocalChat {
     required this.groupCreator,
     this.groupCreationTimeDate,
     this.groupAdmins,
+    required this.lastMessageUpdateTime,
     required this.participants,
     required this.hiveGroupChatSaltIV,
   }) : super(
-            id: groupID,
-            name: groupName,
-            participants: participants,
-            photoUrl: groupPhotoUrl);
+          id: groupID,
+          name: groupName,
+          participants: participants,
+          photoUrl: groupPhotoUrl,
+          lastMessageUpdateTime: lastMessageUpdateTime,
+        );
 
   HiveGroupChat copyWith({
     String? groupID,
@@ -107,6 +146,7 @@ class HiveGroupChat extends LocalChat {
     List<u.User>? groupAdmins,
     List<u.User>? participants,
     HiveGroupChatSaltIV? hiveGroupChatSaltIV,
+    DateTime? lastMessageUpdateTime,
   }) {
     return HiveGroupChat(
       groupName: groupName ?? this.groupName,
@@ -119,6 +159,7 @@ class HiveGroupChat extends LocalChat {
       groupDescription: groupDescription ?? this.groupDescription,
       groupID: groupID ?? this.groupID,
       groupPhotoUrl: groupPhotoUrl ?? this.groupPhotoUrl,
+      lastMessageUpdateTime: lastMessageUpdateTime,
     );
   }
 

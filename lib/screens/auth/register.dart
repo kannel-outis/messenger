@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/screens/auth/verify_otp.dart';
 import 'package:messenger/screens/auth/set_name_screen.dart';
-import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 import '../../customs/widgets/country_drop_down.dart';

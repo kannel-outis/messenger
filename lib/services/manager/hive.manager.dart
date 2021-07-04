@@ -34,9 +34,10 @@ class HiveManager implements IHiveManager {
       {HiveGroupChatSaltIV? hiveGroupChatSaltIV}) async {
     if (chat is Chat) {
       final _hiveChat = HiveChat(
-          chatId: chat.chatID,
-          participants:
-              chat.participants.map((e) => User.fromMap(e!)).toList());
+        chatId: chat.chatID,
+        participants: chat.participants.map((e) => User.fromMap(e!)).toList(),
+        lastMessageUpdateTime: DateTime.now(),
+      );
       if (checkIfChatExists(_hiveChat)) {
         return;
       }
@@ -53,6 +54,7 @@ class HiveManager implements IHiveManager {
         groupID: chat.groupID,
         groupPhotoUrl: chat.groupPhotoUrl,
         hiveGroupChatSaltIV: hiveGroupChatSaltIV!,
+        lastMessageUpdateTime: DateTime.now(),
       );
       if (checkIfChatExists(hiveGroupChat)) {
         return;
@@ -65,6 +67,17 @@ class HiveManager implements IHiveManager {
   Future<void> saveMessages(HiveMessages message) async {
     if (_checkIfMessageExists(message)) return;
     try {
+      // tiny change for sorting
+      loadChatsFromLocalDB().forEach((element) {
+        if (element.id == message.chatID) {
+          if (element is HiveChat) {
+            element.lastMessageUpdateTime = message.dateTime;
+          } else if (element is HiveGroupChat) {
+            element.lastMessageUpdateTime = message.dateTime;
+          }
+          element.save();
+        }
+      });
       await _messageBox.add(message);
     } catch (e) {
       print(e.toString());
@@ -134,13 +147,13 @@ class HiveManager implements IHiveManager {
   }
 
   @override
-  List<HiveChat> loadChatsFromLocalDB() {
-    return _chatBox.values.toList();
+  List<LocalChat> loadChatsFromLocalDB() {
+    return [..._chatBox.values.toList(), ..._hiveGroupChatBox.values.toList()];
   }
 
   @override
   List<List<Map<String, dynamic>>> getContactsListFromDB() {
-    return _hiveContactsList.values.toList().single.phoneContacts;
+    return _hiveContactsList.values.toList().first.phoneContacts;
   }
 
   @override
@@ -185,34 +198,37 @@ class HiveManager implements IHiveManager {
 
   @override
   void updateUserOnContactsListInHive(User user, int index) {
-    // print("Happen shele");
-    // _hiveContactsList.values
-    //     .where(
-    //       (element) {
-    //         late bool isEqualToId;
-    //         element.phoneContacts[0].forEach(
-    //           (element) {
-    //             isEqualToId = element['user']['id'] == user.id;
-    //           },
-    //         );
-    //         return isEqualToId;
-    //       },
-    //     )
-    //     .toList()
-    //     .forEach(
-    //       (phoneContactList) {
-    //         phoneContactList.phoneContacts[0].forEach(
-    //           (element) {
-    //             if (Map<String, dynamic>.from(element['user']) !=
-    //                 user.toMap()) {
-    //               element['user'] = user.toMap() as dynamic;
-    //               phoneContactList.save();
-    //             }
-    //           },
-    //         );
-    //       },
-    //     );
+    // return;
+    print("Happen shele");
+    _hiveContactsList.values
+        // .where(
+        //   (element) {
+        //     late bool isEqualToId;
+        //     element.phoneContacts[0].forEach(
+        //       (element) {
+        //         isEqualToId = element['user']['id'] == user.id;
+        //       },
+        //     );
+        //     return isEqualToId;
+        //   },
+        // )
+        .toList()
+        .forEach(
+      (phoneContactList) {
+        phoneContactList.phoneContacts[0].forEach(
+          (element) {
+            if (element['user']['id'] == user.id &&
+                Map<String, dynamic>.from(element['user']) != user.map) {
+              element['user'] = user.map as dynamic;
+              element['user'] = user.map;
+              phoneContactList.save();
+            }
+          },
+        );
+      },
+    );
   }
+
   @override
   Future<void> saveContactsListToDB(
       List<List<PhoneContacts>> phoneContact) async {

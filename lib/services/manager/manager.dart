@@ -66,7 +66,7 @@ abstract class IHiveManager extends Manager {
   LocalChat loadSingleChat(String id, {bool? isGroupChat});
   void updateMessageIsRead(HiveMessages message);
   List<HiveMessages> getMessagesFromDB(String chatID);
-  List<HiveChat> loadChatsFromLocalDB();
+  List<LocalChat> loadChatsFromLocalDB();
   bool checkIfChatExists(LocalChat hiveChat);
   List<List<Map<String, dynamic>>> getContactsListFromDB();
   Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact);

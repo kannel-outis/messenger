@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
+import 'package:messenger/screens/contacts/contacts_provider.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:messenger/utils/utils.dart';
 import '../../customs/widgets/scaleAndSlide.dart';
@@ -72,7 +73,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
 
   @override
   Widget build(BuildContext context) {
-    var _listOfContacts = Provider.of<List<List<PhoneContacts>>>(context);
+    var _listOfContacts = Provider.of<ContactProvider>(context).listOfContact;
     var _groupProvider = Provider.of<GroupProvider>(context);
 
     return WillPopScope(
