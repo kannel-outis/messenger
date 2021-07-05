@@ -22,8 +22,12 @@ class HivePhoneContactsListAdapter extends TypeAdapter<HivePhoneContactsList> {
       //         .map((dynamic e) => (e as Map).cast<String, dynamic>())
       //         .toList())
       //     .toList(),
-      registeredContactsToMap: List<Map<String, dynamic>>.from(fields[0]),
-      unRegisteredContactsToMap: List<Map<String, dynamic>>.from(fields[1]),
+      registeredContactsToMap: (fields[0] as List)
+          .map((e) => (e as Map).cast<String, dynamic>())
+          .toList(),
+      unRegisteredContactsToMap: (fields[1] as List)
+          .map((e) => (e as Map).cast<String, dynamic>())
+          .toList(),
     );
   }
 
