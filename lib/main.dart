@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
             create: (_) => ContactProvider()),
         ChangeNotifierProvider<GroupProvider>(create: (_) => GroupProvider()),
         FutureProvider<
-            PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>>(
+            PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>>(
           initialData: PhoneContacts(
             firstList: null,
             lastList: null,
@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
             create: (_) => ProfileInfoProvider()),
       ],
       child: MaterialApp(
+        // showPerformanceOverlay: true,
         title: 'Messenger',
         // theme: ThemeData(
         //   scaffoldBackgroundColor: Colors.black,

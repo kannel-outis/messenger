@@ -2,7 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:messenger/models/contacts_model.dart';
+import 'package:messenger/screens/contacts/contacts_provider.dart';
+import 'package:messenger/screens/home/home.dart';
 import 'package:messenger/utils/utils.dart';
+import 'package:provider/provider.dart';
 
 class BuildContactTile extends StatelessWidget {
   const BuildContactTile({
@@ -60,11 +63,10 @@ class BuildContactTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final _contactModel = Provider.of<ContactProvider>(context);
+    final _contactModel = Provider.of<ContactProvider>(context);
 
     if (element is RegisteredPhoneContacts) {
       var e = element as RegisteredPhoneContacts;
-      // return Text("${e.contact.givenName ?? e.contact.displayName}");
       return Container(
         margin: EdgeInsets.only(bottom: 10),
         height: Utils.blockHeight * 5,
@@ -98,20 +100,20 @@ class BuildContactTile extends StatelessWidget {
             isGroup == false
                 ? InkWell(
                     onTap: () {
-                      // _contactModel.messageUser(
-                      //   _contactModel.getUserPref(),
-                      //   e.user,
-                      //   navigate: () {
-                      //     fromHome != true
-                      //         ? Navigator.of(context).push(
-                      //             MaterialPageRoute(
-                      //               builder: (_) => HomeScreen(),
-                      //             ),
-                      //           )
-                      //         : Navigator.pop(context);
-                      //   },
-                      // );
-                      // print(e.user.userName);
+                      _contactModel.messageUser(
+                        _contactModel.getUserPref(),
+                        e.user,
+                        navigate: () {
+                          fromHome != true
+                              ? Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => HomeScreen(),
+                                  ),
+                                )
+                              : Navigator.pop(context);
+                        },
+                      );
+                      print(e.user.userName);
                       log(e.user.userName!);
                     },
                     child: Container(
@@ -144,7 +146,6 @@ class BuildContactTile extends StatelessWidget {
       );
     } else {
       var e = element as UnRegisteredPhoneContacts;
-      // return Text("${e.contact?.givenName ?? e.contact?.displayName}");
       if (isGroup) return SizedBox();
       return Container(
         margin: EdgeInsets.only(bottom: 10),

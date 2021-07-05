@@ -46,6 +46,7 @@ class _ContactsScreenState extends State<ContactsScreen>
   void dispose() {
     _controller.dispose();
     _controller2.dispose();
+    disposeIsolate();
     super.dispose();
   }
 
@@ -98,7 +99,7 @@ class _ContactsScreenState extends State<ContactsScreen>
           if (box.values.isEmpty) {
             Provider.of<
                 PhoneContacts<RegisteredPhoneContacts,
-                    UnRegisteredPhoneContacts>>(context);
+                    UnRegisteredPhoneContacts?>>(context);
             return Center(
               child: CircularProgressIndicator(),
             );
@@ -109,17 +110,12 @@ class _ContactsScreenState extends State<ContactsScreen>
           );
           return FutureBuilder<
               PhoneContacts<RegisteredPhoneContacts,
-                  UnRegisteredPhoneContacts>?>(
-            future: isolateSpawn(phoneContacts),
+                  UnRegisteredPhoneContacts?>?>(
+            future: isolateSpawn(phoneContacts, false),
             builder: (context, snapshot) {
               if (!snapshot.hasData)
                 return Center(
-                  child: Text(
-                    "Loading...",
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
+                  child: CircularProgressIndicator(),
                 );
               final phoneContacts = snapshot.data!;
               return _BuildContact(
@@ -140,7 +136,7 @@ class _ContactsScreenState extends State<ContactsScreen>
 class _BuildContact extends StatelessWidget {
   final AnimationController _controller;
   final AnimationController _controller2;
-  final PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>
+  final PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>
       phoneContacts;
   final bool? fromHome;
 
@@ -301,7 +297,7 @@ class _BuildContact extends StatelessWidget {
                               itemBuilder: (context, i) {
                                 return BuildContactTile(
                                   fromHome: fromHome,
-                                  element: phoneContacts.lastList![i],
+                                  element: phoneContacts.lastList![i]!,
                                 );
                               }),
                         ),
