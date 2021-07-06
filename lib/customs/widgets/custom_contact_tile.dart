@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/screens/contacts/contacts_provider.dart';
 import 'package:messenger/screens/home/home.dart';
@@ -105,11 +106,8 @@ class BuildContactTile extends StatelessWidget {
                         e.user,
                         navigate: () {
                           fromHome != true
-                              ? Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => HomeScreen(),
-                                  ),
-                                )
+                              ? Navigator.pushNamed(
+                                  context, RouteGenerator.homeScreen)
                               : Navigator.pop(context);
                         },
                       );

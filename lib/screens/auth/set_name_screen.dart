@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
 import 'package:messenger/screens/contacts/contacts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -153,11 +154,8 @@ class SetNameScreen extends HookWidget {
                                         Fluttertoast.showToast(msg: e))
                                 .then(
                               (value) {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => ContactsScreen(),
-                                  ),
-                                );
+                                Navigator.pushNamed(
+                                    context, RouteGenerator.contactsScreen);
                               },
                             );
                             // _authProvider.signOut;

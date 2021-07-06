@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/customs/widgets/custom_contact_tile.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/screens/home/home.dart';
@@ -63,13 +64,15 @@ class _ContactsScreenState extends State<ContactsScreen>
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
-            onPressed: () => widget.fromHome != true
-                ? Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => HomeScreen(),
-                    ),
-                  )
-                : Navigator.pop(context),
+            onPressed: () {
+              if (widget.fromHome != true) {
+                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushReplacementNamed(
+                    context, RouteGenerator.homeScreen);
+              } else {
+                Navigator.pop(context);
+              }
+            },
             style: ButtonStyle(
               textStyle: MaterialStateProperty.all<TextStyle>(
                 TextStyle(fontSize: 18),

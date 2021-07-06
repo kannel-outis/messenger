@@ -1,12 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/screens/home/home_provider.dart';
 import 'package:messenger/utils/constants.dart';
 import 'package:provider/provider.dart';
-import '../../customs/custom_route.dart';
-import '../../screens/profile/profile_page.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -27,10 +26,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _ProfileTopSec(user: user),
             InkWell(
               onTap: () async {
-                User? returnUserValue = await Navigator.of(context).push(
-                  CustomRoute<User>(
-                    builder: (_) => ProfileScreen(user: user),
-                  ),
+                User? returnUserValue = await Navigator.pushNamed<User>(
+                  context,
+                  RouteGenerator.profileScreen,
+                  arguments: ProfileScreenArguments(user: user),
                 );
                 if (user != returnUserValue) {
                   setState(() {

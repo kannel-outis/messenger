@@ -275,10 +275,10 @@ class _UserProfileInfoPage extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(100),
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ChatsScreen(_chat),
-                    ),
+                  Navigator.pushReplacementNamed(
+                    context,
+                    RouteGenerator.chatScreen,
+                    arguments: ChatsScreenArgument(_chat),
                   );
                   // Navigator.pop(context);
                 },
@@ -551,10 +551,10 @@ class _UserProfileInfoPage extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ChatsScreen(_chat),
-                  ),
+                Navigator.pushReplacementNamed(
+                  context,
+                  RouteGenerator.chatScreen,
+                  arguments: ChatsScreenArgument(_chat),
                 );
                 // Navigator.pop(context);
               },

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/screens/profile/profile_info_page.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
@@ -470,10 +471,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
             child: IconButton(
               icon: Icon(CupertinoIcons.info_circle_fill),
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ProfileInfoPage(chat: widget.chat),
-                  ),
+                Navigator.pushReplacementNamed(
+                  context,
+                  RouteGenerator.profileInfoPage,
+                  arguments: ProfileInfoPageArguments(chat: widget.chat),
                 );
               },
               color: Colors.white,

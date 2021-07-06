@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/screens/auth/auth_provider.dart';
 import 'package:messenger/screens/auth/set_name_screen.dart';
 import 'package:messenger/utils/utils.dart';
@@ -76,11 +77,7 @@ class VerifyOTPScreen extends HookWidget {
                       _authProvider.verifyOTP(int.parse(_otpController!.text),
                           () {
                         Fluttertoast.showToast(msg: "Verification Successfull");
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => SetNameScreen(),
-                          ),
-                        );
+                        Navigator.pushNamed(context, RouteGenerator.setName);
                       }, handleExceptionInUi: (e) {
                         Fluttertoast.showToast(
                             msg: e, toastLength: Toast.LENGTH_LONG);

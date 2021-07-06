@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:messenger/screens/auth/verify_otp.dart';
-import 'package:messenger/screens/auth/set_name_screen.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 import '../../customs/widgets/country_drop_down.dart';
@@ -18,20 +17,17 @@ class RegistrationScreen extends HookWidget {
         if (await Future.delayed(
             Duration(seconds: 2), () => _authProvider.firebaseUser != null)) {
           print(_authProvider.firebaseUser!.phoneNumber);
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (_) => SetNameScreen()));
+          Navigator.pushNamed(context, RouteGenerator.setName);
         } else {
           print("Something Went Wrong");
         }
       }, timeOutFunction: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => VerifyOTPScreen()));
+        Navigator.pushNamed(context, RouteGenerator.verifyOtp);
       }, handleExceptionInUi: (eMessage) {
         Fluttertoast.showToast(msg: eMessage);
       });
     } else {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => VerifyOTPScreen()));
+      Navigator.pushNamed(context, RouteGenerator.verifyOtp);
     }
   }
 

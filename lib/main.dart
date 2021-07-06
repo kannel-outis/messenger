@@ -16,6 +16,7 @@ import 'screens/home/home_provider.dart';
 import 'screens/profile/profile_provider.dart';
 import 'services/offline/shared_prefs/shared_prefs.dart';
 import 'utils/utils.dart';
+import 'app/route/route.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -84,6 +85,7 @@ class MyApp extends StatelessWidget {
           );
           // return child!;
         },
+        onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );
   }

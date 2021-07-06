@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/screens/contacts/contacts.dart';
 import 'package:messenger/screens/group/create_group_screen.dart';
 import 'package:messenger/screens/home/home_provider.dart';
@@ -167,11 +168,8 @@ class _HomeScreenState extends State<HomeScreen>
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () {
               isDialOpen.value = false;
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ContactsScreen(fromHome: true),
-                ),
-              );
+              Navigator.pushNamed(context, RouteGenerator.contactsScreen,
+                  arguments: true);
             },
             onLongPress: () => print('FIRST CHILD LONG PRESS'),
           ),

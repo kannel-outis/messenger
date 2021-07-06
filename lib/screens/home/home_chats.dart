@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/customs/double_listenable.dart';
 import 'package:messenger/customs/widgets/custom_chat_list_tile.dart';
 import 'package:messenger/customs/widgets/modal_dialog.dart';
@@ -98,10 +99,11 @@ class HomeChats extends StatelessWidget {
                           ? hiveMessages.first.dateTime
                           : null,
                       onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                ChatsScreen(hiveChats[index]..setSuper()),
+                        Navigator.pushNamed(
+                          context,
+                          RouteGenerator.chatScreen,
+                          arguments: ChatsScreenArgument(
+                            hiveChats[index]..setSuper(),
                           ),
                         );
                       },

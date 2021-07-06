@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/screens/profile/profile_info_page.dart';
 import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
 import 'package:messenger/utils/utils.dart';
@@ -26,10 +27,10 @@ class BottomModalSheet extends StatelessWidget {
             behavior: HitTestBehavior.translucent,
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).push(
-                CustomNoFadePageRoute(
-                  builder: (context) => ProfileInfoPage(chat: chat!),
-                ),
+              Navigator.pushNamed(
+                context,
+                RouteGenerator.profileInfoPage,
+                arguments: ProfileInfoPageArguments(chat: chat!),
               );
             },
             child: Container(

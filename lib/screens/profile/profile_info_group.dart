@@ -48,12 +48,10 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
                       ? "No messages yet"
                       : "Last message: ${message.msg}",
                   onPressed: () async {
-                    final chat =
-                        await Navigator.of(context).push<HiveGroupChat?>(
-                      CupertinoPageRoute(
-                        maintainState: true,
-                        builder: (_) => UpdateGroupInfo(hiveGroupChat: _chat),
-                      ),
+                    final chat = await Navigator.pushNamed<HiveGroupChat?>(
+                      context,
+                      RouteGenerator.updateGroupInfo,
+                      arguments: UpdateGroupInfoArgument(hiveGroupChat: _chat),
                     );
                     if (chat != null) {
                       _chat = chat;
@@ -223,12 +221,11 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
             child: InkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ChatsScreen(_chat),
-                  ),
+                Navigator.pushReplacementNamed(
+                  context,
+                  RouteGenerator.chatScreen,
+                  arguments: ChatsScreenArgument(_chat),
                 );
-                // Navigator.pop(context);
               },
               child: Container(
                 alignment: Alignment.bottomRight,
@@ -372,11 +369,10 @@ class __LandScapeState extends State<_LandScape> {
                     ? "No messages yet"
                     : "Last message: ${message!.msg}",
                 onPressed: () async {
-                  final chat = await Navigator.of(context).push<HiveGroupChat?>(
-                    CupertinoPageRoute(
-                      maintainState: true,
-                      builder: (_) => UpdateGroupInfo(hiveGroupChat: _chat),
-                    ),
+                  final chat = await Navigator.pushNamed<HiveGroupChat?>(
+                    context,
+                    RouteGenerator.updateGroupInfo,
+                    arguments: UpdateGroupInfoArgument(hiveGroupChat: _chat),
                   );
                   if (chat != null) {
                     _chat = chat;
@@ -553,10 +549,10 @@ class __LandScapeState extends State<_LandScape> {
             child: InkWell(
               borderRadius: BorderRadius.circular(100),
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ChatsScreen(_chat),
-                  ),
+                Navigator.pushReplacementNamed(
+                  context,
+                  RouteGenerator.chatScreen,
+                  arguments: ChatsScreenArgument(_chat),
                 );
                 // Navigator.pop(context);
               },

@@ -31,7 +31,6 @@ dependencies:
   cached_network_image: ^3.0.0-nullsafety
   intl: ^0.17.0
   connectivity: ^3.0.2
-  indexed_list_view: ^2.0.0
   pointycastle: ^3.0.1
   rsa_encrypt:
     git:
@@ -41,7 +40,6 @@ dependencies:
   flutter_speed_dial: ^3.0.5
   timeago: ^3.0.2
   timeago_flutter: ^1.0.0
-  flutter_isolate: ^2.0.0
 
 dev_dependencies:
   flutter_test:

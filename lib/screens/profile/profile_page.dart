@@ -21,7 +21,8 @@ class ProfileScreen extends HookWidget {
     var _profileProvider = Provider.of<ProfileProvider>(context);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop(
+        Navigator.pop(
+          context,
           User(
             id: user!.id,
             phoneNumbers: user!.phoneNumbers,

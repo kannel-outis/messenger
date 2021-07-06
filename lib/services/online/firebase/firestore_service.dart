@@ -193,7 +193,7 @@ class FireStoreService extends Online {
             .indexWhere((element) => element!.containsValue(user.id));
         int adminIndex = groupChat.groupAdmins!
             .indexWhere((element) => element.containsValue(user.id));
-        late final User _user;
+        User? _user;
         if (user.id == groupChat.groupCreator['id']) _user = user;
         _user = User.fromMap(groupChat.groupCreator);
 

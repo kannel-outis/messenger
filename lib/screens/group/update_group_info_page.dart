@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:messenger/app/route/route.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
 import 'package:messenger/screens/group/group_provider.dart';
@@ -60,12 +61,9 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
           actions: [
             TextButton(
               onPressed: () async {
-                final _selectedList = await Navigator.of(context)
-                    .push<List<RegisteredPhoneContacts>>(
-                  MaterialPageRoute(
-                    builder: (context) => CreateGroupScreen(),
-                  ),
-                );
+                final _selectedList =
+                    await Navigator.pushNamed<List<RegisteredPhoneContacts>>(
+                        context, RouteGenerator.createGroupScreen);
                 if (_selectedList != null) {
                   _participants.addAll(_selectedList
                       .where((e) =>
