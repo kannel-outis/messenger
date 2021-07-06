@@ -14,9 +14,10 @@ import 'package:messenger/utils/constants.dart';
 import 'package:uuid/uuid.dart';
 import '../../models/chat.dart';
 
-class ContactProvider extends ChangeNotifier with ContactsIsolate_ {
+class ContactProvider extends ChangeNotifier with ContactsIsolate_CC {
   final Online _fireStoreService = FireStoreService();
   final SharedPrefs sharedPrefs = SharedPrefs.instance;
+  bool refreshing = false;
   final _hiveHandler = HiveHandler();
   PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>?
       _phoneContacts;
@@ -122,7 +123,7 @@ class ContactProvider extends ChangeNotifier with ContactsIsolate_ {
   Future<PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>?>
       getContactsListsFromDB() async {
     final list = _hiveHandler.getContactsListFromDB();
-    return _phoneContacts = await isolateSpawn(list, true);
+    return _phoneContacts = await isolateSpawn(list);
   }
 
   String _chatID() {

@@ -67,7 +67,10 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                   ),
                 );
                 if (_selectedList != null) {
-                  _participants.addAll(_selectedList.map((e) => e.user));
+                  _participants.addAll(_selectedList
+                      .where((e) =>
+                          !_participants.map((e) => e.id).contains(e.user.id))
+                      .map((e) => e.user));
                   setState(() => null);
 
                   print("${_participants.length}from Console");
