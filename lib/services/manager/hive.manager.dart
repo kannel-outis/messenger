@@ -152,8 +152,16 @@ class HiveManager implements IHiveManager {
   }
 
   @override
-  List<List<Map<String, dynamic>>> getContactsListFromDB() {
-    return _hiveContactsList.values.toList().first.phoneContacts;
+  PhoneContacts<Map<String, dynamic>, Map<String, dynamic>>
+      getContactsListFromDB() {
+    // return _hiveContactsList.values.toList().first;
+    return PhoneContacts(
+      firstList:
+          _hiveContactsList.values.toList().first.registeredContactsToMap,
+      lastList:
+          _hiveContactsList.values.toList().first.unRegisteredContactsToMap,
+    );
+    // throw UnimplementedError();
   }
 
   @override
@@ -215,7 +223,7 @@ class HiveManager implements IHiveManager {
         .toList()
         .forEach(
       (phoneContactList) {
-        phoneContactList.phoneContacts[0].forEach(
+        phoneContactList.registeredContactsToMap!.forEach(
           (element) {
             if (element['user']['id'] == user.id &&
                 Map<String, dynamic>.from(element['user']) != user.map) {
@@ -231,23 +239,23 @@ class HiveManager implements IHiveManager {
 
   @override
   Future<void> saveContactsListToDB(
-      List<List<PhoneContacts>> phoneContact) async {
-    List<Map<String, Map<String, dynamic>>> _registered = [];
-    List<Map<String, Map<String, dynamic>>> _unRegistered = [];
-    phoneContact.forEach((element) {
-      element.forEach((element) {
-        if (element is RegisteredPhoneContacts) {
-          _registered.add(element.map);
-        } else {
-          _unRegistered.add((element as UnRegisteredPhoneContacts).map);
-        }
-      });
+      PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>
+          phoneContact) async {
+    List<Map<String, dynamic>> _registered = [];
+    List<Map<String, dynamic>> _unRegistered = [];
+    phoneContact.firstList!.forEach((element) {
+      _registered.add(element.map);
+    });
+    phoneContact.lastList!.forEach((element) {
+      _unRegistered.add(element.map);
     });
     var hiveContact = HivePhoneContactsList(
-      phoneContacts: [
-        _registered,
-        _unRegistered,
-      ],
+      // phoneContacts: [
+      //   _registered,
+      //   _unRegistered,
+      // ],
+      registeredContactsToMap: _registered,
+      unRegisteredContactsToMap: _unRegistered,
     );
     await _hiveContactsList.add(hiveContact);
   }

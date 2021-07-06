@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
+import 'package:messenger/app/isolate__.dart';
 import 'package:messenger/customs/error/error.dart';
 import 'package:messenger/models/contacts_model.dart';
 import 'package:messenger/models/user.dart';
@@ -13,20 +14,28 @@ import 'package:messenger/utils/constants.dart';
 import 'package:uuid/uuid.dart';
 import '../../models/chat.dart';
 
-class ContactProvider extends ChangeNotifier {
+class ContactProvider extends ChangeNotifier with ContactsIsolate_CC {
   final Online _fireStoreService = FireStoreService();
   final SharedPrefs sharedPrefs = SharedPrefs.instance;
+  bool refreshing = false;
   final _hiveHandler = HiveHandler();
-  List<List<PhoneContacts>>? _listOfContact;
-  Future<List<List<PhoneContacts>>> registeredAndUnregisteredContacts() async {
+  PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>?
+      _phoneContacts;
+  Future<PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>>
+      registeredAndUnregisteredContacts() async {
     var _contacts = Contacts(_fireStoreService);
-    if (_listOfContact != null) return _listOfContact!;
+    if (_phoneContacts != null) return _phoneContacts!;
     try {
       // if (_hiveHandler.checkIfChatBoxExistAlready != true) {
       await _contacts.listOfRegisteredAndUnregisteredUsers().then((value) {
-        _listOfContact = value;
+        _phoneContacts = value;
         notifyListeners();
-        _hiveHandler.saveContactsListToDB(_listOfContact!);
+        _hiveHandler.saveContactsListToDB(
+          PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>(
+            firstList: _phoneContacts!.firstList,
+            lastList: _phoneContacts!.lastList!.map((e) => e!).toList(),
+          ),
+        );
       });
       // } else {
       // _listOfContact = _getPhoneContactsFromHiveDB();
@@ -36,7 +45,7 @@ class ContactProvider extends ChangeNotifier {
       print(s.toString());
       throw MessengerError(e.toString());
     }
-    return _listOfContact!;
+    return _phoneContacts!;
   }
 
   Future<void> messageUser(User myUser, User friendUser,
@@ -87,31 +96,34 @@ class ContactProvider extends ChangeNotifier {
     return _user;
   }
 
-  Future<List<List<PhoneContacts>>> decodeAndCreateContactsListFromJson(
-      List<List<Map<String, dynamic>>> list) async {
-    List<RegisteredPhoneContacts> registered = [];
-    List<UnRegisteredPhoneContacts> unRegistered = [];
-    return await Future<List<List<PhoneContacts>>>.microtask(() {
-      if (list.length > 0) {
-        for (var e in list[0]) {
-          final r = RegisteredPhoneContacts.fromMap(e);
-          registered.add(r);
-        }
-        for (var e in list[1]) {
-          final r = UnRegisteredPhoneContacts.fromMap(e);
-          unRegistered.add(r);
-        }
-      } else {
-        print("List is Empty");
-      }
-      return _listOfContact = [registered, unRegistered];
-    });
-  }
+  // Future<PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>>
+  //     decodeAndCreateContactsListFromJson(
+  //         PhoneContacts<Map<String, dynamic>, Map<String, dynamic>>
+  //             list) async {
+  //   List<RegisteredPhoneContacts> registered = [];
+  //   List<UnRegisteredPhoneContacts> unRegistered = [];
+  //   return await Future<
+  //       PhoneContacts<RegisteredPhoneContacts,
+  //           UnRegisteredPhoneContacts>>.microtask(() {
+  //     for (var e in list.firstList!) {
+  //       final r = RegisteredPhoneContacts.fromMap(e);
+  //       registered.add(r);
+  //     }
+  //     for (var e in list.lastList!) {
+  //       final r = UnRegisteredPhoneContacts.fromMap(e);
+  //       unRegistered.add(r);
+  //     }
 
-  Future<List<List<PhoneContacts>>> getContactsListsFromDB(
-      [String? name]) async {
+  //     // return _listOfContact = [registered, unRegistered];
+  //     return _phoneContacts =
+  //         PhoneContacts(firstList: registered, lastList: unRegistered);
+  //   });
+  // }
+
+  Future<PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>?>
+      getContactsListsFromDB() async {
     final list = _hiveHandler.getContactsListFromDB();
-    return await decodeAndCreateContactsListFromJson(list);
+    return _phoneContacts = await isolateSpawn(list);
   }
 
   String _chatID() {
@@ -119,6 +131,12 @@ class ContactProvider extends ChangeNotifier {
     return _chatID;
   }
 
-  List<List<PhoneContacts>> get listOfContact => _listOfContact!;
+  dispose() {
+    disposeIsolate();
+    super.dispose();
+  }
+
+  PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>
+      get phoneContacts => _phoneContacts!;
   bool get existInHive => _hiveHandler.checkIfChatBoxExistAlready;
 }

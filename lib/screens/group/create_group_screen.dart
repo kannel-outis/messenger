@@ -22,11 +22,28 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
     with SingleTickerProviderStateMixin {
   late GlobalKey<AnimatedListState> _animatedListKey;
   late final TextEditingController _controller;
+  PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts?>?
+      _phoneContacts;
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _animatedListKey = GlobalKey<AnimatedListState>();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getList();
+  }
+
+  void getList() async {
+    await Provider.of<ContactProvider>(context)
+        .getContactsListsFromDB()
+        .then((value) {
+      _phoneContacts = value!;
+      setState(() {});
+    });
   }
 
   ImageProvider<Object> image(provider) {
@@ -73,7 +90,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
 
   @override
   Widget build(BuildContext context) {
-    var _listOfContacts = Provider.of<ContactProvider>(context).listOfContact;
     var _groupProvider = Provider.of<GroupProvider>(context);
 
     return WillPopScope(
@@ -172,123 +188,130 @@ class _CreateGroupScreenState extends State<CreateGroupScreen>
               ],
             ),
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: _listOfContacts.isEmpty
-                        ? CircularProgressIndicator.adaptive()
-                        : ListView.builder(
-                            itemCount: _listOfContacts[0].length,
-                            itemBuilder: (context, index) {
-                              final contact = _listOfContacts[0][index]
-                                  as RegisteredPhoneContacts;
-                              return InkWell(
-                                onLongPress: () {
-                                  _onLongPress(contact);
-                                },
-                                onTap: () {
-                                  _onTap(contact);
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 20, left: 10),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        height: Utils.blockHeight * 5,
-                                        width: Utils.blockHeight * 5,
-                                        constraints: BoxConstraints(
-                                          maxHeight: 70,
-                                          maxWidth: 70,
-                                          minHeight: 50,
-                                          minWidth: 50,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey,
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          image: DecorationImage(
-                                              image: CachedNetworkImageProvider(
-                                                  (_listOfContacts[0][index]
-                                                              as RegisteredPhoneContacts)
-                                                          .user
-                                                          .photoUrl ??
-                                                      GeneralConstants
-                                                          .DEFAULT_PHOTOURL),
-                                              fit: BoxFit.cover),
+              child: _phoneContacts != null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: _phoneContacts!.firstList!.isEmpty
+                              ? CircularProgressIndicator.adaptive()
+                              : ListView.builder(
+                                  itemCount: _phoneContacts!.firstList!.length,
+                                  itemBuilder: (context, index) {
+                                    final contact =
+                                        _phoneContacts!.firstList![index];
+                                    return InkWell(
+                                      onLongPress: () {
+                                        _onLongPress(contact);
+                                      },
+                                      onTap: () {
+                                        _onTap(contact);
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                            bottom: 20, left: 10),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              height: Utils.blockHeight * 5,
+                                              width: Utils.blockHeight * 5,
+                                              constraints: BoxConstraints(
+                                                maxHeight: 70,
+                                                maxWidth: 70,
+                                                minHeight: 50,
+                                                minWidth: 50,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                image: DecorationImage(
+                                                    image: CachedNetworkImageProvider(
+                                                        _phoneContacts!
+                                                                .firstList![
+                                                                    index]
+                                                                .user
+                                                                .photoUrl ??
+                                                            GeneralConstants
+                                                                .DEFAULT_PHOTOURL),
+                                                    fit: BoxFit.cover),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: BuildContactTile(
+                                                fromHome: false,
+                                                element: contact,
+                                                isGroup: true,
+                                              ),
+                                            ),
+                                            _selectContactState ==
+                                                    SelectContactState.active
+                                                ? Checkbox(
+                                                    activeColor: Colors.red,
+                                                    value: _selected.contains(
+                                                        _phoneContacts!
+                                                            .firstList![index]),
+                                                    onChanged: (e) {
+                                                      _onTap(contact);
+                                                    },
+                                                    tristate: true,
+                                                  )
+                                                : SizedBox(),
+                                          ],
                                         ),
                                       ),
-                                      Expanded(
-                                        child: BuildContactTile(
-                                          fromHome: false,
-                                          element: contact,
-                                          isGroup: true,
-                                        ),
-                                      ),
-                                      _selectContactState ==
-                                              SelectContactState.active
-                                          ? Checkbox(
-                                              activeColor: Colors.red,
-                                              value: _selected.contains(
-                                                  _listOfContacts[0][index]),
-                                              onChanged: (e) {
-                                                _onTap(contact);
-                                              },
-                                              tristate: true,
-                                            )
-                                          : SizedBox(),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
-                  ),
-                  Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        ),
+                        Column(
                           children: [
-                            Text(
-                              "${_selected.length} participants",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "${_selected.length} participants",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  _selected.isNotEmpty
+                                      ? TextButton(
+                                          onPressed: () {
+                                            _selected.clear();
+                                            _animatedListKey =
+                                                GlobalKey<AnimatedListState>();
+                                            setState(() {});
+                                          },
+                                          child: Text("cancel"),
+                                        )
+                                      : SizedBox(),
+                                ],
+                              ),
                             ),
-                            _selected.isNotEmpty
-                                ? TextButton(
-                                    onPressed: () {
-                                      _selected.clear();
-                                      _animatedListKey =
-                                          GlobalKey<AnimatedListState>();
-                                      setState(() {});
-                                    },
-                                    child: Text("cancel"),
-                                  )
-                                : SizedBox(),
+                            Container(
+                              height: _selected.isEmpty ? 1 : 100,
+                              width: double.infinity,
+                              child: AnimatedList(
+                                key: _animatedListKey,
+                                initialItemCount: 0,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index, animation) {
+                                  return ScaleAndSlide(
+                                    selected: _selected,
+                                    index: index,
+                                    animation: animation,
+                                  );
+                                },
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                      Container(
-                        height: _selected.isEmpty ? 1 : 100,
-                        width: double.infinity,
-                        child: AnimatedList(
-                          key: _animatedListKey,
-                          initialItemCount: 0,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index, animation) {
-                            return ScaleAndSlide(
-                              selected: _selected,
-                              index: index,
-                              animation: animation,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    )
+                  : Center(child: CircularProgressIndicator()),
             ),
           ],
         ),

@@ -68,8 +68,11 @@ abstract class IHiveManager extends Manager {
   List<HiveMessages> getMessagesFromDB(String chatID);
   List<LocalChat> loadChatsFromLocalDB();
   bool checkIfChatExists(LocalChat hiveChat);
-  List<List<Map<String, dynamic>>> getContactsListFromDB();
-  Future<void> saveContactsListToDB(List<List<PhoneContacts>> phoneContact);
+  PhoneContacts<Map<String, dynamic>, Map<String, dynamic>>
+      getContactsListFromDB();
+  Future<void> saveContactsListToDB(
+      PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>
+          phoneContact);
   void updateUserInHive(User user, int index);
   void updateUserOnContactsListInHive(User user, int index);
   Future<void> deleteChatAndMessagesFromLocalStorage(LocalChat hiveChat);

@@ -33,12 +33,14 @@ class HiveHandler extends ManagerHandler<IHiveManager> {
     return manager!.checkIfChatExists(hiveChat);
   }
 
-  List<List<Map<String, dynamic>>> getContactsListFromDB() {
+  PhoneContacts<Map<String, dynamic>, Map<String, dynamic>>
+      getContactsListFromDB() {
     return manager!.getContactsListFromDB();
   }
 
   Future<void> saveContactsListToDB(
-      List<List<PhoneContacts>> phoneContact) async {
+      PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>
+          phoneContact) async {
     manager!.saveContactsListToDB(phoneContact);
   }
 

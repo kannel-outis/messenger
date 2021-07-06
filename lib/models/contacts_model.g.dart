@@ -17,10 +17,16 @@ class HivePhoneContactsListAdapter extends TypeAdapter<HivePhoneContactsList> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return HivePhoneContactsList(
-      phoneContacts: (fields[0] as List)
-          .map((dynamic e) => (e as List)
-              .map((dynamic e) => (e as Map).cast<String, dynamic>())
-              .toList())
+      // phoneContacts: (fields[0] as List)
+      //     .map((dynamic e) => (e as List)
+      //         .map((dynamic e) => (e as Map).cast<String, dynamic>())
+      //         .toList())
+      //     .toList(),
+      registeredContactsToMap: (fields[0] as List)
+          .map((e) => (e as Map).cast<String, dynamic>())
+          .toList(),
+      unRegisteredContactsToMap: (fields[1] as List)
+          .map((e) => (e as Map).cast<String, dynamic>())
           .toList(),
     );
   }
@@ -28,9 +34,11 @@ class HivePhoneContactsListAdapter extends TypeAdapter<HivePhoneContactsList> {
   @override
   void write(BinaryWriter writer, HivePhoneContactsList obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.phoneContacts);
+      ..write(obj.registeredContactsToMap)
+      ..writeByte(1)
+      ..write(obj.unRegisteredContactsToMap);
   }
 
   @override
