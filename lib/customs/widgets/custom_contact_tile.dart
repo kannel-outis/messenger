@@ -105,10 +105,14 @@ class BuildContactTile extends StatelessWidget {
                         _contactModel.getUserPref(),
                         e.user,
                         navigate: () {
-                          fromHome != true
-                              ? Navigator.pushNamed(
-                                  context, RouteGenerator.homeScreen)
-                              : Navigator.pop(context);
+                          if (fromHome != true) {
+                            Navigator.popUntil(
+                                context, (route) => route.isFirst);
+                            Navigator.pushReplacementNamed(
+                                context, RouteGenerator.homeScreen);
+                          } else {
+                            Navigator.pop(context);
+                          }
                         },
                       );
                       print(e.user.userName);
@@ -116,13 +120,13 @@ class BuildContactTile extends StatelessWidget {
                     },
                     child: Container(
                       height: 40,
-                      width: Utils.blockWidth * 35,
+                      width: Utils.blockWidth * 15,
                       constraints: BoxConstraints(
                         maxHeight: 40,
-                        maxWidth: 150,
+                        maxWidth: 200,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey,
+                        color: Colors.redAccent,
                         borderRadius: BorderRadius.all(
                           Radius.circular(7),
                         ),
@@ -179,13 +183,13 @@ class BuildContactTile extends StatelessWidget {
               onTap: () {},
               child: Container(
                 height: 40,
-                width: Utils.blockWidth * 35,
+                width: Utils.blockWidth * 15,
                 constraints: BoxConstraints(
                   maxHeight: 40,
-                  maxWidth: 150,
+                  maxWidth: 200,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.grey,
+                  color: Colors.redAccent,
                   borderRadius: BorderRadius.all(
                     Radius.circular(7),
                   ),

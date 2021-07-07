@@ -155,7 +155,10 @@ class SetNameScreen extends HookWidget {
                                 .then(
                               (value) {
                                 Navigator.pushNamed(
-                                    context, RouteGenerator.contactsScreen);
+                                  context,
+                                  RouteGenerator.contactsScreen,
+                                  arguments: false,
+                                );
                               },
                             );
                             // _authProvider.signOut;

@@ -121,7 +121,7 @@ class _ContactsScreenState extends State<ContactsScreen>
                     children: [
                       if (index == snapshot.data!.firstList!.length)
                         Divider(
-                          thickness: 2,
+                          thickness: 3,
                         ),
                       BuildContactTile(
                         fromHome: widget.fromHome,

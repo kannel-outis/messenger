@@ -113,7 +113,7 @@ class GroupProvider extends ChangeNotifier {
       String? bio,
       required String groupName,
       VoidCallback? onCreatedSuccessful}) async {
-    late final _hiveGroupChat;
+    late final HiveGroupChat _hiveGroupChat;
 
     final String generateSalt = oldGroupChat.hiveGroupChatSaltIV!.salt!;
     final iv = oldGroupChat.hiveGroupChatSaltIV!.iv;

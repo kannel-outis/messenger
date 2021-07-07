@@ -105,14 +105,16 @@ class __GroupProfileInfoPageState extends State<_GroupProfileInfoPage> {
                                           : Utils.blockWidth * 3.3,
                                 ),
                                 SizedBox(width: 30),
-                                Text(
-                                  _chat.groupDescription!,
-                                  style: TextStyle(
-                                      fontSize: Utils.blockWidth * 3.3 > 25
-                                          ? 25
-                                          : Utils.blockWidth * 3.3 < 18
-                                              ? 18
-                                              : Utils.blockWidth * 3.3),
+                                Expanded(
+                                  child: Text(
+                                    _chat.groupDescription!,
+                                    style: TextStyle(
+                                        fontSize: Utils.blockWidth * 3.3 > 25
+                                            ? 25
+                                            : Utils.blockWidth * 3.3 < 18
+                                                ? 18
+                                                : Utils.blockWidth * 3.3),
+                                  ),
                                 ),
                               ],
                             ),
@@ -429,18 +431,20 @@ class __LandScapeState extends State<_LandScape> {
                                                     : Utils.blockWidth * 3.3,
                                           ),
                                           SizedBox(width: 30),
-                                          Text(
-                                            _chat.groupDescription!,
-                                            style: TextStyle(
-                                                fontSize:
-                                                    Utils.blockWidth * 3.3 > 25
-                                                        ? 25
-                                                        : Utils.blockWidth *
-                                                                    3.3 <
-                                                                18
-                                                            ? 18
-                                                            : Utils.blockWidth *
-                                                                3.3),
+                                          Expanded(
+                                            child: Text(
+                                              _chat.groupDescription!,
+                                              style: TextStyle(
+                                                  fontSize: Utils.blockWidth *
+                                                              3.3 >
+                                                          25
+                                                      ? 25
+                                                      : Utils.blockWidth * 3.3 <
+                                                              18
+                                                          ? 18
+                                                          : Utils.blockWidth *
+                                                              3.3),
+                                            ),
                                           ),
                                         ],
                                       ),

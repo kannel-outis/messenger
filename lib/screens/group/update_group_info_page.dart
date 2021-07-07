@@ -28,6 +28,7 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
   late TextEditingController _controller;
   late TextEditingController _bioController;
   HiveGroupChat? _returnHiveGroupChat;
+  bool? _updated = false;
 
   ImageProvider<Object> image(File? internalImage) {
     // if(widget.hiveGroupChat.groupPhotoUrl)
@@ -51,7 +52,8 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context, _returnHiveGroupChat ?? widget.hiveGroupChat);
+        Navigator.pop(context,
+            _updated == true ? _returnHiveGroupChat : widget.hiveGroupChat);
         return true;
       },
       child: Scaffold(
@@ -221,17 +223,22 @@ class _UpdateGroupInfoState extends State<UpdateGroupInfo> {
                             msg: "Participants cannot be empty");
                         return;
                       }
-                      _returnHiveGroupChat =
-                          await context.read<GroupProvider>().updateGroupInfo(
-                                groupName: _controller.text,
-                                bio: _bioController.text,
-                                oldGroupChat: widget.hiveGroupChat,
-                                onCreatedSuccessful: () =>
-                                    Fluttertoast.showToast(
-                                        msg: "Updated Successfully"),
-                                selected: _participants,
-                              );
-                      setState(() => null);
+                      await context
+                          .read<GroupProvider>()
+                          .updateGroupInfo(
+                            groupName: _controller.text,
+                            bio: _bioController.text,
+                            oldGroupChat: widget.hiveGroupChat,
+                            onCreatedSuccessful: () => Fluttertoast.showToast(
+                                msg: "Updated Successfully"),
+                            selected: _participants,
+                          )
+                          .then((value) {
+                        _updated = true;
+                        _returnHiveGroupChat = value;
+
+                        setState(() {});
+                      });
                     },
                     style: TextButton.styleFrom(
                       minimumSize: Size(50, 50),

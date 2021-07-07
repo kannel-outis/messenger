@@ -196,15 +196,20 @@ class _UserProfileInfoPage extends StatelessWidget {
                                                   : Utils.blockWidth * 3.3,
                                         ),
                                         SizedBox(width: 30),
-                                        Text(
-                                          user.status!,
-                                          style: TextStyle(
-                                              fontSize: Utils.blockWidth * 3.3 >
-                                                      25
-                                                  ? 25
-                                                  : Utils.blockWidth * 3.3 < 18
-                                                      ? 18
-                                                      : Utils.blockWidth * 3.3),
+                                        Expanded(
+                                          child: Text(
+                                            user.status!,
+                                            style: TextStyle(
+                                                fontSize:
+                                                    Utils.blockWidth * 3.3 > 25
+                                                        ? 25
+                                                        : Utils.blockWidth *
+                                                                    3.3 <
+                                                                18
+                                                            ? 18
+                                                            : Utils.blockWidth *
+                                                                3.3),
+                                          ),
                                         ),
                                       ],
                                     ),
