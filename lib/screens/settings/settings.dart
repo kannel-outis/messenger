@@ -14,13 +14,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  /// return a User object on pop adn compare it to the user from settings page then update
   @override
   Widget build(BuildContext context) {
-    var user = context.read<HomeProvider>().user;
+    User? user = context.read<HomeProvider>().user;
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             _TopAppBar(),
@@ -28,8 +27,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _ProfileTopSec(user: user),
             InkWell(
               onTap: () async {
-                User returnUserValue = await Navigator.of(context).push(
-                  CustomRoute(
+                User? returnUserValue = await Navigator.of(context).push(
+                  CustomRoute<User>(
                     builder: (_) => ProfileScreen(user: user),
                   ),
                 );
@@ -43,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 height: 40,
                 width: 150,
                 decoration: BoxDecoration(
-                  color: Colors.yellow,
+                  color: Colors.red,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Center(
@@ -71,8 +70,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class _TopAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
-      width: double.infinity,
+      // height: 30,
+      // width: double.infinity,
+      margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: Row(
         children: [
           IconButton(
@@ -89,9 +89,9 @@ class _TopAppBar extends StatelessWidget {
 }
 
 class _ProfileTopSec extends StatelessWidget {
-  final User user;
+  final User? user;
 
-  const _ProfileTopSec({Key key, this.user}) : super(key: key);
+  const _ProfileTopSec({Key? key, this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -110,11 +110,11 @@ class _ProfileTopSec extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
                   border: Border.all(
-                      color: Colors.yellow, style: BorderStyle.solid, width: 2),
+                      color: Colors.red, style: BorderStyle.solid, width: 2),
                   image: DecorationImage(
                     fit: BoxFit.cover,
                     image: CachedNetworkImageProvider(
-                      user.photoUrl ?? GeneralConstants.DEFAULT_PHOTOURL,
+                      user!.photoUrl ?? GeneralConstants.DEFAULT_PHOTOURL,
                     ),
                   ),
                 ),
@@ -127,14 +127,14 @@ class _ProfileTopSec extends StatelessWidget {
                 SizedBox(height: 15),
                 Container(
                   child: Text(
-                    user.userName ?? "username",
+                    user!.userName ?? "username",
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
                 SizedBox(height: 5),
                 Container(
                   child: Text(
-                    user.phoneNumbers[0] ?? "phoneNumber",
+                    user!.phoneNumbers![0] ?? "phoneNumber",
                     style: TextStyle(fontSize: 15, color: Colors.grey),
                   ),
                 ),

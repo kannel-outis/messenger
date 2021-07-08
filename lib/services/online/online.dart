@@ -14,38 +14,43 @@ abstract class Online {
   //firebaseAuth
   Future<void> verifyPhoneNumber(
     String phoneNumber, {
-    VoidStringCallBack setVerificationId,
-    VoidStringCallBack setPhoneAutoRetrieval,
-    @required VoidUserCallBack setFirebaseUser,
-    @required VoidCallback voidCallBack,
-    @required VoidCallback timeOutFunction,
-  }) async {}
+    VoidStringCallBack? setVerificationId,
+    VoidStringCallBack? setPhoneAutoRetrieval,
+    required VoidUserCallBack? setFirebaseUser,
+    required VoidCallback? voidCallBack,
+    required VoidCallback? timeOutFunction,
+    required VoidExceptionCallBack? handleException,
+  }) async {
+    throw UnimplementedError();
+  }
 
   @protected
-  Stream<firebaseAuth.User> fireBaseUserOnChanged() =>
+  Stream<firebaseAuth.User?> fireBaseUserOnChanged() =>
       firebaseAuth.FirebaseAuth.instance.authStateChanges();
 
   Future<void> signOut() async {}
-  Future<void> verifyOTP({String verificationID, int otp}) =>
+  Future<void> verifyOTP({String? verificationID, int? otp}) =>
       throw UnimplementedError();
-  Stream<firebaseAuth.User> get firebaseUser => fireBaseUserOnChanged();
+  Stream<firebaseAuth.User?> get firebaseUser => fireBaseUserOnChanged();
 
   ///////////////////////////
 
   // fireStore
   Future<User> saveNewUserToCloud(
-          {String userName,
-          @required String phoneNumberWithoutCC,
-          firebaseAuth.User user,
-          @required User userDataPref,
-          @required String newPhotoUrlString}) async =>
+          {String? userName,
+          required String? phoneNumberWithoutCC,
+          firebaseAuth.User? user,
+          required User userDataPref,
+          required String publicKey,
+          required String? newPhotoUrlString}) async =>
       throw UnimplementedError();
   Future<User> getUserFromCloud(firebaseAuth.User user) async =>
       throw UnimplementedError();
   @mustCallSuper
   // ignore: missing_return
-  Future<bool> updateUserInCloud({User user}) async {
-    if (firebaseAuth.User == null) throw MessengerError('User is Null');
+  Future<bool> updateUserInCloud({User? user}) async {
+    if (user == null) throw MessengerError('User is Null');
+    return false;
   }
 
   Future<QuerySnapshot> queryMobileNumberORUsername(
@@ -54,15 +59,20 @@ abstract class Online {
   ) async =>
       throw UnimplementedError();
   Future<QuerySnapshot> queryInfo(dynamic query) => throw UnimplementedError();
-
+  Future<void> deleteChat({required String id, bool isGroup = false}) =>
+      throw UnimplementedError();
   Future<void> createNewChat(Chat chat) => throw UnimplementedError();
-  Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
-  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user) =>
+  Future<void> saveGroupChat(GroupChat groupChat) => throw UnimplementedError();
+  // Future<void> updateGroupChat(OnlineChat groupChat) =>
+  //     throw UnimplementedError();
+  // Stream<QuerySnapshot> getAllOnGoingchats() => throw UnimplementedError();
+  Stream<QuerySnapshot> listenWhenAUserInitializesAChat(User user,
+          {bool isGroup = false}) =>
       throw UnimplementedError();
 
   ///firebase Storage for profile pics setUp
-  Future<String> saveImageToFireStore(String uid, File file) =>
+  Future<String> saveImageToFireStore(String? uid, File? file) =>
       throw UnimplementedError();
+  // Stream<DocumentSnapshot> listenToUserConnectionUpdate(String userId) =>
+  //     throw UnimplementedError();
 }
-
-///Do listen for friend data change in firebase and apply changes to friend's data in hive db

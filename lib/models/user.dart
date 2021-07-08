@@ -7,15 +7,17 @@ part 'user.g.dart';
 @HiveType(typeId: 3)
 class User {
   @HiveField(0)
-  final String id;
+  final String? id;
   @HiveField(1)
-  final String userName;
+  final String? userName;
   @HiveField(2)
-  final List<dynamic> phoneNumbers;
+  final List<dynamic>? phoneNumbers;
   @HiveField(3)
-  final String photoUrl;
+  final String? photoUrl;
   @HiveField(4)
-  final String status;
+  final String? status;
+  @HiveField(5)
+  final String? publicKey;
 
   User({
     this.id,
@@ -23,6 +25,7 @@ class User {
     this.phoneNumbers,
     this.photoUrl,
     this.status,
+    required this.publicKey,
   });
 
   @override
@@ -33,26 +36,37 @@ class User {
         typedOther.phoneNumbers == phoneNumbers &&
         typedOther.photoUrl == photoUrl &&
         typedOther.status == status &&
-        typedOther.userName == userName;
+        typedOther.userName == userName &&
+        typedOther.publicKey == publicKey;
   }
 
   @override
   int get hashCode => hashValues(id, hashList(phoneNumbers));
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> get map {
     return {
       "id": id,
       "userName": userName,
       "phoneNumbers": phoneNumbers,
       "photoUrl": photoUrl,
       "status": status,
+      "publicKey": publicKey,
     };
   }
+
+  User.empty()
+      : this.id = null,
+        this.phoneNumbers = null,
+        this.photoUrl = null,
+        this.status = null,
+        this.userName = null,
+        this.publicKey = null;
 
   User.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         userName = map['userName'],
         phoneNumbers = List<String>.from(map['phoneNumbers']),
         photoUrl = map['photoUrl'],
-        status = map['status'];
+        status = map['status'],
+        publicKey = map['publicKey'];
 }

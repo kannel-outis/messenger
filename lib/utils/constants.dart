@@ -1,6 +1,7 @@
 class OnlineConstants {
   static const FIRESTORE_USER_REF = 'Users';
   static const FIRESTORE_ONGOING_CHATS = 'Chats';
+  static const FIRESTORE_ONGOING_GROUP_CHATS = 'Groups';
 }
 
 class OfflineConstants {

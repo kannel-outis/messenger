@@ -3,15 +3,15 @@ import 'package:messenger/models/contacts_model.dart';
 
 /// Handles all Offline operations
 abstract class Offline {
-  // const Offline();
+  const Offline();
 
   // SharedPReferences: User Personal info and app Data
 
-  String getString(String key) {
-    return null;
+  String? getString(String key) {
+    throw UnimplementedError();
   }
 
-  bool getBool(String key) {
+  bool? getBool(String key) {
     return false;
   }
 
@@ -27,5 +27,8 @@ abstract class Offline {
     return false;
   }
 
-  User getUserData() => throw UnimplementedError();
+  User get user => throw UnimplementedError();
+
+  Future<PhoneContacts<RegisteredPhoneContacts, UnRegisteredPhoneContacts>>
+      listOfRegisteredAndUnregisteredUsers() => throw UnimplementedError();
 }

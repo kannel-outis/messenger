@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:messenger/screens/auth/verify_otp.dart';
-import 'package:messenger/screens/set_name/set_name_screen.dart';
+import 'package:messenger/screens/auth/set_name_screen.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 import '../../customs/widgets/country_drop_down.dart';
@@ -10,13 +11,13 @@ import 'auth_provider.dart';
 
 class RegistrationScreen extends HookWidget {
   void _checkPlatformAndExecute(AuthProvider _authProvider,
-      BuildContext context, TextEditingController _phoneController) {
+      BuildContext context, TextEditingController? _phoneController) {
     if (Platform.isAndroid) {
-      _authProvider.verifyPhoneNumber("${_phoneController.text.toString()}",
+      _authProvider.verifyPhoneNumber("${_phoneController!.text.toString()}",
           navigate: () async {
         if (await Future.delayed(
             Duration(seconds: 2), () => _authProvider.firebaseUser != null)) {
-          print(_authProvider.firebaseUser.phoneNumber);
+          print(_authProvider.firebaseUser!.phoneNumber);
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (_) => SetNameScreen()));
         } else {
@@ -25,6 +26,8 @@ class RegistrationScreen extends HookWidget {
       }, timeOutFunction: () {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => VerifyOTPScreen()));
+      }, handleExceptionInUi: (eMessage) {
+        Fluttertoast.showToast(msg: eMessage);
       });
     } else {
       Navigator.of(context)
@@ -32,9 +35,19 @@ class RegistrationScreen extends HookWidget {
     }
   }
 
+  String? isloadinState(bool isLoading, bool isTryingToverify) {
+    if (isLoading == true) {
+      return "Loading...";
+    } else if (isTryingToverify == true) {
+      return "Trying to Verify...";
+    } else {
+      return "Send SMS";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final _phoneController = useTextEditingController();
+    final TextEditingController? _phoneController = useTextEditingController();
     final _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: SingleChildScrollView(
@@ -49,21 +62,25 @@ class RegistrationScreen extends HookWidget {
                     child: Text(
                       'Verify Your PhoneNumber',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.grey,
                         fontWeight: FontWeight.bold,
-                        fontSize: 25,
+                        fontSize: 28,
                       ),
                     ),
                   ),
                 ),
                 SizedBox(height: 30),
                 Center(
-                  child: Text('Enter your Phone Number'),
+                  child: Text(
+                    'Enter your Phone Number',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
                 SizedBox(height: 30),
                 Center(
                   child: Container(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Consumer<AuthProvider>(
                           builder: (context, provider, _) {
@@ -76,8 +93,8 @@ class RegistrationScreen extends HookWidget {
                         ),
                         SizedBox(width: 10),
                         SizedBox(
-                          width: 200,
-                          height: 35,
+                          width: 150,
+                          height: 40,
                           child: Container(
                             child: TextField(
                               keyboardType: TextInputType.phone,
@@ -87,14 +104,17 @@ class RegistrationScreen extends HookWidget {
                                   MaxLengthEnforcement.enforced,
                               buildCounter: (
                                 context, {
-                                int currentLength,
-                                int maxLength,
-                                bool isFocused,
+                                int? currentLength,
+                                int? maxLength,
+                                bool? isFocused,
                               }) {
                                 return SizedBox();
                               },
                               decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(bottom: 15),
+                                hintText: "Enter phone number",
+                                border: UnderlineInputBorder(
+                                    borderSide: BorderSide.none),
+                                focusColor: Colors.red,
                               ),
                             ),
                           ),
@@ -105,26 +125,30 @@ class RegistrationScreen extends HookWidget {
                 ),
                 SizedBox(height: 40),
                 Center(
-                  child: GestureDetector(
-                    onTap: () {
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all<Size>(
+                        Size(0, 40),
+                      ),
+                    ),
+                    onPressed: () {
                       _checkPlatformAndExecute(
                           _authProvider, context, _phoneController);
-                      // _authProvider.signOut;
-                      // print(
-                      //     _authProvider.firebaseUser?.uid ?? "Null from print");
+
                       print(
-                          "${_authProvider.countrycode.dialCode}${_phoneController.text.toString()}");
+                          "${_authProvider.countrycode.dialCode}${_phoneController!.text.toString()}");
                     },
-                    child: Container(
-                      height: MediaQuery.of(context).size.width / 9,
-                      width: MediaQuery.of(context).size.width / 3,
-                      color: Colors.blue,
-                      child: Center(
-                        child: Text(
-                          'Send SMS',
+                    child: Center(
+                      child: Consumer<AuthProvider>(
+                          builder: (context, provider, child) {
+                        String _label = isloadinState(
+                            provider.isLoading ?? false,
+                            provider.isTryingToVerify ?? false)!;
+                        return Text(
+                          _label,
                           style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+                        );
+                      }),
                     ),
                   ),
                 ),

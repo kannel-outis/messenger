@@ -1,183 +1,224 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:messenger/screens/contacts/first_launch_contact.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:messenger/screens/contacts/contacts.dart';
+import 'package:messenger/screens/group/create_group_screen.dart';
 import 'package:messenger/screens/home/home_provider.dart';
-import 'package:messenger/customs/double_listenable.dart';
-import 'package:messenger/services/offline/hive.db/hive_init.dart';
-import 'package:messenger/services/offline/hive.db/models/hive_chat.dart';
-import 'package:messenger/services/offline/hive.db/models/hive_messages.dart';
-import 'package:messenger/services/online/mqtt/mqtt_handler.dart';
-import '../../screens/chats/chats.dart';
+import 'package:messenger/utils/utils.dart';
 import 'package:provider/provider.dart';
 import '../../screens/settings/settings.dart';
-import '../../utils/_extensions_.dart';
+import 'home_chats.dart';
+import 'home_groups.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  late final PageController _pageController;
+  late final StreamController<int?> _streamControllerC;
+  late final StreamController<int?> _streamControllerG;
+  late final FocusNode _focusNode;
+  late final TextEditingController _textEditingController;
+  String? count;
+  int selectedIndex = 0;
   @override
   void initState() {
     super.initState();
+    context.read<HomeProvider>().iniState();
+    _focusNode = FocusNode();
+    _textEditingController = TextEditingController();
+    _pageController = PageController();
+    _streamControllerC = StreamController<int?>.broadcast();
+    _streamControllerG = StreamController<int?>.broadcast();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    MQTThandler().login().then((value) {
-      context.read<HomeProvider>().listenTocloudStreamAndSubscribeTopic();
-    });
+
+    // context.read<HomeProvider>().iniState();
   }
 
   @override
   void dispose() {
-    // MQTThandler().dispose();
+    _streamControllerC.close();
+    _streamControllerG.close();
+    _textEditingController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final _homeProvider = Provider.of<HomeProvider>(context);
+
+    ValueNotifier<bool> isDialOpen = ValueNotifier(false);
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              child: SizedBox(),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Messages',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-                Expanded(child: SizedBox()),
-                IconButton(
-                  icon: Icon(Icons.add_comment),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => FirstLaunchContactScreen(),
-                      ),
-                    );
-                  },
-                )
-              ],
-            ),
-            DoubleListenableBuilder<Box<HiveChat>, Box<HiveMessages>>(
-              valueListenable:
-                  Hive.box<HiveChat>(HiveInit.chatBoxName).listenable(),
-              valueListenable2:
-                  Hive.box<HiveMessages>(HiveInit.messagesBoxName).listenable(),
-              builder: (context, hiveChat, hiveMessage, child) {
-                final List<HiveChat> hiveChats = hiveChat.values
-                    .where((element) =>
-                        _homeProvider.isme(element.participants[0].id))
-                    .toList();
-
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: hiveChats.length,
-                  itemBuilder: (context, index) {
-                    final List<HiveMessages> hiveMessages = hiveMessage.values
-                        .where((element) =>
-                            element.chatID == hiveChats[index].chatId)
-                        .toList()
-                        .reversed
-                        .toList();
-                    final List<HiveMessages> isReadMessages = hiveMessages
-                        .where((element) => element.isRead == false)
-                        .toList();
-
-                    return ListTile(
-                      title: Text(
-                        hiveChats[index]
-                                .participants[1]
-                                .userName
-                                .capitalize() ??
-                            'Null',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      subtitle: hiveMessages.isNotEmpty
-                          ? Text(
-                              hiveMessages[0].msg ?? "cannot load this message",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontWeight: hiveMessages[0].isRead == false
-                                    ? FontWeight.w900
-                                    : FontWeight.normal,
-                                color: hiveMessages[0].isRead == false
-                                    ? Colors.black
-                                    : Colors.grey,
-                                fontSize: 16,
-                              ),
-                            )
-                          : null,
-                      trailing: hiveMessages.isNotEmpty
-                          ? Container(
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                color: hiveMessages[0].isRead == false
-                                    ? Colors.yellow
-                                    : Colors.white,
-                                borderRadius: hiveMessages[0].isRead == false
-                                    ? BorderRadius.circular(50)
-                                    : null,
-                              ),
-                              child: Center(
-                                child: hiveMessages[0].isRead == false
-                                    ? Text(
-                                        "${isReadMessages.length}",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      )
-                                    : SizedBox(),
-                              ),
-                            )
-                          : SizedBox(),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ChatsScreen(hiveChats[index]),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-          ],
+      appBar: AppBar(
+        toolbarHeight:
+            Utils.blockHeight * 7 > 100 ? 100 : Utils.blockHeight * 7,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0.0,
+        title: Text(
+          'Conversations',
+          style: TextStyle(
+              fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      floatingActionButton: InkWell(
-        onTap: () {
-          Navigator.of(context)
-              .push(CupertinoPageRoute(builder: (_) => SettingsScreen()));
-        },
-        child: Container(
-          height: 60,
-          width: 60,
-          decoration: BoxDecoration(
-            color: Colors.yellow,
-            borderRadius: BorderRadius.circular(5),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            // height: 100,
+            // color: Colors.pink,
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width / 100 * 80,
+                padding: EdgeInsets.symmetric(horizontal: 25),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: TextField(
+                  focusNode: _focusNode,
+                  controller: _textEditingController,
+                  style: TextStyle(fontSize: 18),
+                  decoration: InputDecoration(
+                    hintText: "Search Conversation",
+                    alignLabelWithHint: true,
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    ),
+                    focusedBorder:
+                        UnderlineInputBorder(borderSide: BorderSide.none),
+                    border: UnderlineInputBorder(borderSide: BorderSide.none),
+                  ),
+                ),
+              ),
+            ),
           ),
-          child: Center(
+          Expanded(
+            child: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              onPageChanged: (index) {
+                setState(() => selectedIndex = index);
+              },
+              controller: _pageController,
+              children: [
+                HomeChats(
+                    _homeProvider, _streamControllerC, _streamControllerG),
+                HomeGroup(_homeProvider),
+              ],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: SpeedDial(
+        marginEnd: 18,
+        marginBottom: 20,
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: IconThemeData(size: 22.0),
+        icon: Icons.add,
+        activeIcon: Icons.remove, openCloseDial: isDialOpen,
+        useRotationAnimation: true,
+
+        buttonSize: Utils.blockWidth * 15 > 56.0 ? 56.0 : Utils.blockWidth * 15,
+        visible: true,
+        closeManually: true,
+
+        /// If true overlay will render no matter what.
+        renderOverlay: false,
+        curve: Curves.bounceIn,
+        overlayColor: Colors.black,
+        overlayOpacity: 0.5,
+        onOpen: () => print('OPENING DIAL'),
+        onClose: () => print('DIAL CLOSED'),
+        tooltip: 'Speed Dial',
+        heroTag: 'speed-dial-hero-tag',
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 8.0,
+        shape: CircleBorder(),
+
+        children: [
+          SpeedDialChild(
             child: Icon(Icons.settings),
+            backgroundColor: Colors.red,
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+              isDialOpen.value = false;
+              Navigator.of(context)
+                  .push(CupertinoPageRoute(builder: (_) => SettingsScreen()));
+            },
+            onLongPress: () => print('FIRST CHILD LONG PRESS'),
           ),
-        ),
+          SpeedDialChild(
+            child: Icon(Icons.add_comment),
+            backgroundColor: Colors.green,
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+              isDialOpen.value = false;
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ContactsScreen(fromHome: true),
+                ),
+              );
+            },
+            onLongPress: () => print('FIRST CHILD LONG PRESS'),
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.group_add),
+            backgroundColor: Colors.blue,
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+              isDialOpen.value = false;
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => CreateGroupScreen(), fullscreenDialog: true));
+            },
+            onLongPress: () => print('SECOND CHILD LONG PRESS'),
+          ),
+        ],
+      ),
+      bottomNavigationBar: StreamBuilder<int?>(
+        stream: _streamControllerC.stream,
+        initialData: 0,
+        builder: (context, snap) {
+          return StreamBuilder<int?>(
+            stream: _streamControllerG.stream,
+            initialData: 0,
+            builder: (context, shot) {
+              return BottomNavigationBar(
+                currentIndex: selectedIndex,
+                selectedItemColor: Colors.deepOrange,
+                onTap: (value) {
+                  setState(() => selectedIndex = value);
+                  _pageController.animateToPage(selectedIndex,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut);
+                },
+                items: [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.chat),
+                      label:
+                          "Chats ${snap.data == 0 ? ("") : "(${snap.data})"}"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.group),
+                      label:
+                          "Groups ${shot.data == 0 ? ("") : "(${shot.data})"}"),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }

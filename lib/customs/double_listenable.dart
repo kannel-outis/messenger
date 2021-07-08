@@ -1,36 +1,32 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:messenger/utils/typedef.dart';
 
-typedef DoubleListenableWidgetBuilder<T, E> = Widget Function(
-    BuildContext context, T value1, E value2, Widget child);
-
-class DoubleListenableBuilder<T, E> extends StatefulWidget {
-  const DoubleListenableBuilder({
-    Key key,
-    @required this.valueListenable,
-    @required this.builder,
-    @required this.valueListenable2,
+class DoubleValueListenableBuilder<T, E> extends StatefulWidget {
+  const DoubleValueListenableBuilder({
+    Key? key,
+    required this.valueListenable,
+    required this.builder,
+    required this.valueListenable2,
     this.child,
-  })  : assert(valueListenable != null),
-        assert(valueListenable2 != null),
-        assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   final ValueListenable<T> valueListenable;
   final ValueListenable<E> valueListenable2;
 
-  final DoubleListenableWidgetBuilder<T, E> builder;
+  final DoubleValueListenableWidgetBuilder<T, E> builder;
 
-  final Widget child;
+  final Widget? child;
 
   @override
-  State<StatefulWidget> createState() => _DoubleListenableBuilderState<T, E>();
+  State<StatefulWidget> createState() =>
+      _DoubleValueListenableBuilderState<T, E>();
 }
 
-class _DoubleListenableBuilderState<T, E>
-    extends State<DoubleListenableBuilder<T, E>> {
-  T value;
-  E value2;
+class _DoubleValueListenableBuilderState<T, E>
+    extends State<DoubleValueListenableBuilder<T?, E?>> {
+  T? value;
+  E? value2;
 
   @override
   void initState() {
@@ -42,7 +38,7 @@ class _DoubleListenableBuilderState<T, E>
   }
 
   @override
-  void didUpdateWidget(DoubleListenableBuilder<T, E> oldWidget) {
+  void didUpdateWidget(DoubleValueListenableBuilder<T?, E?> oldWidget) {
     if (oldWidget.valueListenable != widget.valueListenable ||
         oldWidget.valueListenable2 != widget.valueListenable2) {
       oldWidget.valueListenable.removeListener(_valueChanged);

@@ -17,21 +17,22 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return HiveMessages(
-      chatID: fields[0] as String,
-      msg: fields[1] as String,
-      messageType: fields[2] as String,
-      dateTime: fields[3] as DateTime,
-      senderID: fields[4] as String,
-      receiverID: fields[5] as String,
-      messageID: fields[6] as String,
-      isRead: fields[7] as bool,
+      chatID: fields[0] as String?,
+      msg: fields[1] as String?,
+      messageType: fields[2] as String?,
+      dateTime: fields[3] as DateTime?,
+      senderID: fields[4] as String?,
+      receiverIDs: (fields[5] as List?)?.cast<String>(),
+      messageID: fields[6] as String?,
+      isRead: fields[7] as bool?,
+      isGroup: fields[8] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, HiveMessages obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.chatID)
       ..writeByte(1)
@@ -43,11 +44,13 @@ class HiveMessagesAdapter extends TypeAdapter<HiveMessages> {
       ..writeByte(4)
       ..write(obj.senderID)
       ..writeByte(5)
-      ..write(obj.receiverID)
+      ..write(obj.receiverIDs)
       ..writeByte(6)
       ..write(obj.messageID)
       ..writeByte(7)
-      ..write(obj.isRead);
+      ..write(obj.isRead)
+      ..writeByte(8)
+      ..write(obj.isGroup);
   }
 
   @override
